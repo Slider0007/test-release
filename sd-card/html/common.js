@@ -1,7 +1,7 @@
  
 /* The UI can also be run locally, but you have to set the IP of your devide accordingly.
  * And you also might have to disable CORS in your webbrowser! */
-var domainname_for_testing = "192.168.178.23";
+var domainname_for_testing = "192.168.2.18";
 
 
 
@@ -145,8 +145,8 @@ function compareVersions() {
     console.log("FW Hash: " + fWGitHash + ", Web UI Hash: " + webUiHash);
     
     if (fWGitHash != webUiHash) {
-        firework.launch("The Version of the Web Interface (" + webUiHash + 
-            ") does not match the Firmware Version (" + 
+        firework.launch("The version of the web interface (" + webUiHash + 
+            ") does not match the firmware version (" + 
             fWGitHash + ")! It is suggested to keep them on the same version!", 'warning', 30000);
     }
 }
