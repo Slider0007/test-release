@@ -19,7 +19,7 @@ CRotateImage::CRotateImage(std::string _name, CImageBasis *_org, CImageBasis *_t
 }
 
 
-void CRotateImage::Mirror(){
+void IRAM_ATTR CRotateImage::Mirror(){
     int memsize = width * height * channels;
     uint8_t* odata;
     if (ImageTMP)
@@ -62,7 +62,7 @@ void CRotateImage::Mirror(){
     RGBImageRelease();
 }
 
-void CRotateImage::Rotate(float _angle, int _centerx, int _centery)
+void IRAM_ATTR CRotateImage::Rotate(float _angle, int _centerx, int _centery)
 {
     int org_width, org_height;
     float m[2][3];
@@ -282,7 +282,7 @@ void CRotateImage::RotateAntiAliasing(float _angle, int _centerx, int _centery)
 }
 
 
-void CRotateImage::Rotate(float _angle)
+void IRAM_ATTR CRotateImage::Rotate(float _angle)
 {
 //    ESP_LOGD(TAG, "width %d, height %d", width, height);
     Rotate(_angle, width / 2, height / 2);
