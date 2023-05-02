@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xml:lang="en"> 
 <head>
-<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <title>AI on the edge</title>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,6 +52,7 @@ body, html {
     margin: 0px 0px 0px 2px; 
     padding: 0; 
     font-family: arial;
+    width: -moz-fit-content;
     width: fit-content;
 }
 
@@ -268,7 +268,7 @@ body, html {
             break;
 
         case 6: // Config page
-            document.getElementById('maincontent').src = 'edit_config_param.html?v=$COMMIT_HASH?InitialSetup=true#description';
+            document.getElementById('maincontent').src = 'edit_config_param.html?v=$COMMIT_HASH#description';
 
             document.getElementById('h_iframe_explain').style.display = "";
             document.getElementById('h_iframe_explain').style="height:100px;"

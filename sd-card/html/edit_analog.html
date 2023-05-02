@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xml:lang="en"> 
 <head>
-    <link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
     <meta charset="UTF-8" />
-    <title>Analog ROI's</title>
+    <title>Analog ROI</title>
 
     <style>
         h1 {font-size: 2em;}
@@ -84,14 +83,14 @@
 
 <body style="font-family: arial; padding: 0px 10px;">
 
-    <h2>Analog ROIs</h2>
+    <h2>Analog ROI</h2>
     <details id="desc_details" style="font-size:16px">
         <summary><b>CLICK HERE</b> for usage description. More infos in documentation: 
             <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/ROI-Configuration/ target=_blank>ROI Configuration</a>
         </summary>
         <p>
             <b>R</b>egion <b>O</b>f <b>I</b>nterest (ROI) for analog pointer counter can be defined on this page. If no analog pointer counter need to be 
-            processed, disable analog pointer counter processing by deselecting <b>"Process Analog ROIs"</b>.
+            processed, disable analog pointer counter processing by deselecting <b>"Analog ROI Processing"</b>.
         </p>
         <p>
             By default one number sequence (a number seqence contains of 1-x digit ROIs + 1-x analog counter ROIs which are processed together) is 
@@ -112,16 +111,15 @@
             the additionally corrected by decimal shift setting (configuration, expert parameter, default: 0). 
         </p>
         <p>
-            After definition of digit ROIs is completed don't forget to save with the <b>"Save config"</b> button!<br>
-            <b>NOTE:</b> There is no need to perform a reboot after every saving or step. It's sufficient to reboot after all configuration steps 
-            (reference image, alignment, ROI configuration) are completed to activate new configuration.
+            After definition of digit ROIs is completed don't forget to save with the <b>"Save And Apply"</b> button!<br>
+            The new configuration get automatically applied. No reboot is required.
         </p>
     </details>
     <hr />
 
     <p>   
         <input type="checkbox" id="Category_Analog_enabled" value="1"  onclick = 'EnDisableAnalog()' checked >
-            <label style="font-weight: bold; font-size: larger;" for="Category_Analog_enabled">Process Analog ROIs</label>
+            <label style="font-weight: bold; font-size: larger;" for="Category_Analog_enabled">Analog ROI Processing</label>
     </p>
 
 
@@ -211,7 +209,7 @@
         <tr>
             <td colspan="3" style="vertical-align: bottom;"><b>Reference Image:</b></td>
             <!---<td><button class="button" id="reboot" type="button" onclick="doReboot()">Reboot device</button></td>-->
-            <td><input style="font-weight:bold;" class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save Config" tabindex=10></td>
+            <td><input style="font-weight:bold;" class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save And Apply" tabindex=10></td>
         </tr>
         <tr>
             <td colspan="4"><canvas id="canvas" crossorigin></canvas></td>
@@ -373,12 +371,19 @@ function ChangeSelection(){
 }
 
 function SaveToConfig(){
-//    _zwcat = getConfigCategory();
-    cofcat["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
-    WriteConfigININew();
-    SaveConfigToServer(domainname);
-    UpdateROIs();
-    firework.launch('Configuration saved. It will get applied after next reboot', 'success', 5000);
+    if (confirm("Are you sure you want to save and apply the new analog ROI configuration?")) {
+        //_zwcat = getConfigCategory();
+        cofcat["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
+        WriteConfigININew();
+        SaveConfigToServer(domainname);
+        UpdateROIs();
+        document.getElementById("saveroi").disabled = true;
+
+        firework.launch('Save and apply configuration...', 'success', 5000);
+        setTimeout(function() {
+            reload_config();
+        }, 1000);
+    }
 }
 
 

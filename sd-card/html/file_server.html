@@ -33,8 +33,8 @@
                 padding-top: 12px;
                 padding-bottom: 12px;
                 text-align: left;
-                background-color: #0011ff;
-                color: white;
+                background-color:lightgrey;
+                color: black;
             }
 
             input[type=file] {
@@ -160,6 +160,7 @@
                             document.open();
                             document.write(xhttp.responseText);
                             document.close();
+                            firework.launch('File upload completed', 'success', 5000);
                         } else if (xhttp.status == 0) {
                             firework.launch('Server closed the connection abruptly!', 'danger', 30000);
                             UpdatePage(false);

@@ -146,7 +146,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
 {
     std::vector<string> splitted;
     FILE* pFile;
-    char zw[1024];
+    char zw[256];
     string zwtime, zwvalue, name;
     bool _done = false;
 
@@ -157,7 +157,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
     if (pFile == NULL)
         return false;
 
-    fgets(zw, 1024, pFile);
+    fgets(zw, sizeof(zw), pFile);
     ESP_LOGD(TAG, "Read line Prevalue.ini: %s", zw);
     zwtime = trim(std::string(zw));
     if (zwtime.length() == 0)
@@ -205,7 +205,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
                 }
             }
 
-            if (!fgets(zw, 1024, pFile))
+            if (!fgets(zw, sizeof(zw), pFile))
                 _done = true;
             else
             {
@@ -223,7 +223,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
     }   
     else        // Old Format
     {
-        fgets(zw, 1024, pFile);
+        fgets(zw, sizeof(zw), pFile);
         fclose(pFile);
         ESP_LOGD(TAG, "%s", zw);
         zwvalue = trim(std::string(zw));
@@ -301,6 +301,7 @@ void ClassFlowPostProcessing::SavePreValue()
 
 ClassFlowPostProcessing::ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc, ClassFlowCNNGeneral *_analog, ClassFlowCNNGeneral *_digit)
 {
+    PresetFlowStateHandler(true);
     PreValueUse = false;
     PreValueAgeStartup = 30;
     ErrorMessage = false;
@@ -424,7 +425,7 @@ void ClassFlowPostProcessing::handleAllowNegativeRate(string _decsep, string _va
         _digit = _decsep.substr(0, _pospunkt);
     else
         _digit = "default";
-  
+
     for (int j = 0; j < NUMBERS.size(); ++j)
     {
         bool _rt = false;
@@ -561,15 +562,20 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
         if ((toUpper(_param) == "PREVALUEUSE") && (splitted.size() > 1))
         {
             if (toUpper(splitted[1]) == "TRUE")
-            {
                 PreValueUse = true;
-            }
+            else
+                PreValueUse = false;
         }
         if ((toUpper(_param) == "CHECKDIGITINCREASECONSISTENCY") && (splitted.size() > 1))
         {
-            if (toUpper(splitted[1]) == "TRUE")
+            if (toUpper(splitted[1]) == "TRUE") {
                 for (_n = 0; _n < NUMBERS.size(); ++_n)
                     NUMBERS[_n]->checkDigitIncreaseConsistency = true;
+            }
+            else {
+                for (_n = 0; _n < NUMBERS.size(); ++_n)
+                    NUMBERS[_n]->checkDigitIncreaseConsistency = false; 
+            }
         }        
         if ((toUpper(_param) == "ALLOWNEGATIVERATES") && (splitted.size() > 1))
         {
@@ -584,11 +590,15 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             if (toUpper(splitted[1]) == "TRUE")
                 ErrorMessage = true;
+            else
+                ErrorMessage = false;
         }
         if ((toUpper(_param) == "IGNORELEADINGNAN") && (splitted.size() > 1))
         {
             if (toUpper(splitted[1]) == "TRUE")
                 IgnoreLeadingNaN = true;
+            else
+                IgnoreLeadingNaN = false;
         }
 
         
@@ -727,6 +737,7 @@ string ClassFlowPostProcessing::ShiftDecimal(string in, int _decShift){
 
 bool ClassFlowPostProcessing::doFlow(string zwtime)
 {
+    PresetFlowStateHandler();
     string result = "";
     string digit = "";
     string analog = "";
@@ -871,7 +882,6 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
                      NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))
                       ) ;
                 #endif
-            
                 // Include inaccuracy of 0.2 for isExtendedResolution.
                 if (NUMBERS[j]->Value >= (NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))) && NUMBERS[j]->isExtendedResolution) {
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
@@ -1131,3 +1141,7 @@ string ClassFlowPostProcessing::getReadoutError(int _number)
 }
 
 
+ClassFlowPostProcessing::~ClassFlowPostProcessing()
+{
+    // nothing to do
+}

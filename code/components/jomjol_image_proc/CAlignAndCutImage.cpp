@@ -8,7 +8,7 @@
 #include "psram.h"
 #include "../../include/defines.h"
 
-static const char* TAG = "c_align_and_cut_image";
+static const char* TAG = "IMG_ALIGNCUT";
 
 CAlignAndCutImage::CAlignAndCutImage(std::string _name, CImageBasis *_org, CImageBasis *_temp) : CImageBasis(_name)
 {
@@ -33,7 +33,7 @@ void CAlignAndCutImage::GetRefSize(int *ref_dx, int *ref_dy)
     ref_dy[1] = t1_dy;
 }
 
-bool IRAM_ATTR CAlignAndCutImage::Align(RefInfo *_temp1, RefInfo *_temp2)
+bool CAlignAndCutImage::Align(RefInfo *_temp1, RefInfo *_temp2, float *angle)
 {
     int dx, dy;
     int r0_x, r0_y, r1_x, r1_y;
@@ -88,6 +88,7 @@ bool IRAM_ATTR CAlignAndCutImage::Align(RefInfo *_temp1, RefInfo *_temp2)
     rt.Rotate(d_winkel, _temp1->target_x, _temp1->target_y);
     ESP_LOGD(TAG, "Alignment: dx %d - dy %d - rot %f", dx, dy, d_winkel);
 
+    *angle = d_winkel;
     return (isSimilar1 && isSimilar2);
 }
 
@@ -95,7 +96,7 @@ bool IRAM_ATTR CAlignAndCutImage::Align(RefInfo *_temp1, RefInfo *_temp2)
 
 
 
-void IRAM_ATTR CAlignAndCutImage::CutAndSave(std::string _template1, int x1, int y1, int dx, int dy)
+void CAlignAndCutImage::CutAndSave(std::string _template1, int x1, int y1, int dx, int dy)
 {
 
     int x2, y2;
@@ -137,7 +138,7 @@ void IRAM_ATTR CAlignAndCutImage::CutAndSave(std::string _template1, int x1, int
     stbi_image_free(odata);
 }
 
-void IRAM_ATTR CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy, CImageBasis *_target)
+void CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy, CImageBasis *_target)
 {
     int x2, y2;
 
@@ -175,7 +176,7 @@ void IRAM_ATTR CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy, CIm
 }
 
 
-CImageBasis* IRAM_ATTR CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy)
+CImageBasis* CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy)
 {
     int x2, y2;
 

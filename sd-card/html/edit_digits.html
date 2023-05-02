@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xml:lang="en"> 
 <head>
-    <link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
     <meta charset="UTF-8" />
-    <title>Digit ROI's</title>
+    <title>Digit ROI</title>
 
     <style>
         h1 {font-size: 2em;}
@@ -74,14 +73,14 @@
 
 <body style="font-family: arial; padding: 0px 10px;">
 
-    <h2>Digit ROIs</h2>
+    <h2>Digit ROI</h2>
     <details id="desc_details" style="font-size:16px">
         <summary><b>CLICK HERE</b> for usage description. More infos in documentation: 
             <a href=https://jomjol.github.io/AI-on-the-edge-device-docs/ROI-Configuration/ target=_blank>ROI Configuration</a>
         </summary>
         <p>
             <b>R</b>egion <b>O</b>f <b>I</b>nterest (ROI) for digit numbers can be defined on this page. If no digit numbers need to be processed, 
-            disable digit processing by deselecting <b>"Process Digit ROIs"</b>.
+            disable digit processing by deselecting <b>"Digit ROI Processing"</b>.
         </p>
         <p>
             By default one number sequence (a number seqence contains of 1-x digit ROIs + 1-x analog counter ROIs which are processed together) is 
@@ -102,16 +101,15 @@
             the additionally corrected by decimal shift setting (configuration, expert parameter, default: 0). 
         </p>
         <p>
-            After definition of digit ROIs is completed don't forget to save with the <b>"Save Config"</b> button!<br>
-            <b>NOTE:</b> There is no need to perform a reboot after every saving or step. It's sufficient to reboot after all configuration steps 
-            (reference image, alignment, ROI configuration) are completed to activate new configuration.
+            After definition of digit ROIs is completed don't forget to save with the <b>"Save And Apply"</b> button!<br>
+            The new configuration get automatically applied. No reboot is required.
         </p>
     </details>
     <hr />
 
     <p>
         <input type="checkbox" id="Category_Digits_enabled" value="1"  onclick = 'EnDisableDigits()' checked>
-            <label style="font-weight: bold; font-size: larger;" for="Category_Digits_enabled">Process Digit ROIs</label>
+            <label style="font-weight: bold; font-size: larger;" for="Category_Digits_enabled">Digit ROI Processing</label>
     </p>   
 
 
@@ -202,7 +200,7 @@
         </colgroup>
 	    <tr>
             <td colspan="3" style="vertical-align: bottom;"><b>Reference Image:</b></td>
-            <td><input style="font-weight:bold;" class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save Config" tabindex=10></td>
+            <td><input style="font-weight:bold;" class="button" type="submit" id="saveroi" name="saveroi" onclick="SaveToConfig()" value="Save And Apply" tabindex=10></td>
 	    </tr> 
         <tr>
             <td colspan="4"><canvas id="canvas" crossorigin></canvas></td>
@@ -380,12 +378,19 @@ function ChangeSelection(){
 }
 
 function SaveToConfig(){
-//    _zwcat = getConfigCategory();
-    cofcat["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
-    WriteConfigININew();
-    SaveConfigToServer(domainname);
-    UpdateROIs();
-    firework.launch('Configuration saved. It will get applied after next reboot', 'success', 5000);
+    if (confirm("Are you sure you want to save and apply the new digit ROI configuration?")) {
+        // _zwcat = getConfigCategory();
+        cofcat["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
+        WriteConfigININew();
+        SaveConfigToServer(domainname);
+        UpdateROIs();
+        document.getElementById("saveroi").disabled = true;
+
+        firework.launch('Save and apply configuration...', 'success', 5000);
+        setTimeout(function() {
+            reload_config();
+        }, 1000);
+    }
 }
 
 

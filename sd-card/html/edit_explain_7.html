@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xml:lang="en"> 
 <head>
-<link rel="icon" href="favicon.ico?v=$COMMIT_HASH" type="image/x-icon">
 <title>AI on the edge</title>
 <meta charset="UTF-8" />
 
@@ -30,14 +29,14 @@ p {font-size: 1em;}
     <h4>Step 7 / 7: Initial setup completed!</h4>
 
     <p>
-        Congratulations! You have completed the initial setup and you are now ready to reboot to the regular operation mode!
+        Congratulations! You have completed the initial setup and you are now ready to switch to the regular operation mode!
     </p>
     <p>
-        Once you push the button below, the setup mode will be completed and the device will be automatically restart to regular web interface. 
+        Once you push the button below, the setup mode will be completed and the device will be automatically switch to regular web interface. 
        If configuration is error free, the device will automatically start with first processing. It will take some time until you get the first reading.
     </p>
     <p>
-        <button class="button" onclick="reboot()">Complete Setup + Reboot</button>
+        <button class="button" onclick="reboot()">Complete Setup</button>
     </p>
 
     <script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
@@ -47,7 +46,7 @@ p {font-size: 1em;}
     <script type="text/javascript">
     
     function reboot() {
-        if (confirm("Do you want to complete the setup mode and restart to regular web interface?")) {
+        if (confirm("Do you want to complete the setup mode and switch to regular web interface?")) {
             domainname = getDomainname(); 
             if (!loadConfig(domainname)) {
                 firework.launch('Setup mode could not be deactivated! Please try again!', 'danger', 30000);
@@ -59,13 +58,21 @@ p {font-size: 1em;}
             param["System"]["SetupMode"]["value1"] = "false";
 
             WriteConfigININew();
-            SaveConfigToServer(domainname);    
+            SaveConfigToServer(domainname);  
 
-            var stringota = getDomainname() + "/reboot";
-            window.location = stringota;
-            window.location.href = stringota;
-            window.location.assign(stringota);
-            window.location.replace(stringota);
+            firework.launch('Setup completed', 'success', 5000);
+            setTimeout(function() {
+                reload_config();
+            }, 1000);
+
+            firework.launch('Regular web interface gets loaded in a few seconds...', 'success', 5000);
+            setTimeout(function() {
+                var stringota = getDomainname();
+                parent.location = stringota;
+		        parent.location.href = stringota;
+		        parent.location.assign(stringota);
+                parent.location.replace(stringota);
+            }, 7000);    
         }
     }
 

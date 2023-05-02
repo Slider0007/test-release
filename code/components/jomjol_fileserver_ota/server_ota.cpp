@@ -117,10 +117,10 @@ void CheckUpdate()
         return;
 	}
 
-	char zw[1024] = "";
-	fgets(zw, 1024, pfile);
+	char zw[256] = "";
+	fgets(zw, sizeof(zw), pfile);
     _file_name_update = std::string(zw);
-    if (fgets(zw, 1024, pfile))
+    if (fgets(zw, sizeof(zw), pfile))
 	{
 		std::string _szw = std::string(zw);
         if (_szw == "init")
@@ -307,18 +307,18 @@ void CheckOTAUpdate(void)
     partition.size      = ESP_PARTITION_TABLE_MAX_LEN;
     partition.type      = ESP_PARTITION_TYPE_DATA;
     esp_partition_get_sha256(&partition, sha_256);
-    print_sha256(sha_256, "SHA-256 for the partition table: ");
+    print_sha256(sha_256, "SHA-256 for the partition table");
 
     // get sha256 digest for bootloader
     partition.address   = ESP_BOOTLOADER_OFFSET;
     partition.size      = ESP_PARTITION_TABLE_OFFSET;
     partition.type      = ESP_PARTITION_TYPE_APP;
     esp_partition_get_sha256(&partition, sha_256);
-    print_sha256(sha_256, "SHA-256 for bootloader: ");
+    print_sha256(sha_256, "SHA-256 for bootloader");
 
     // get sha256 digest for running partition
     esp_partition_get_sha256(esp_ota_get_running_partition(), sha_256);
-    print_sha256(sha_256, "SHA-256 for current firmware: ");
+    print_sha256(sha_256, "SHA-256 for current firmware");
 
     const esp_partition_t *running = esp_ota_get_running_partition();
     esp_ota_img_states_t ota_state;
@@ -598,15 +598,17 @@ void task_reboot(void *DeleteMainFlow)
         DeleteMainFlowTask();  // Kill autoflow task if executed in extra task, if not don't kill parent task
     }
 
-    Camera.LightOnOff(false);
-    StatusLEDOff();
-
     /* Stop service tasks */
     #ifdef ENABLE_MQTT
         MQTTdestroy_client(true);
     #endif //ENABLE_MQTT
+
     gpio_handler_destroy();
+
+    Camera.LightOnOff(false);
+    StatusLEDOff();
     esp_camera_deinit();
+
     WIFIDestroy();
 
     vTaskDelay(3000 / portTICK_PERIOD_MS);
@@ -631,7 +633,7 @@ void doReboot()
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "task_reboot not created -> force reboot without killing flow");
         task_reboot((void*) false);
     }
-    vTaskDelay(10000 / portTICK_PERIOD_MS); // Prevent serving web client fetch response until system is shuting down
+    vTaskDelay(15000 / portTICK_PERIOD_MS); // Prevent serving web client fetch response until system is shuting down
 }
 
 

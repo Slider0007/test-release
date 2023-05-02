@@ -16,6 +16,28 @@ function SaveConfigToServer(_domainname){
      FileSendContent(config_gesamt, "/config/config.ini", _domainname);          
 }
 
+
+function reload_config() {
+     var url = getDomainname() + '/reload_config';     
+     var xhttp = new XMLHttpRequest();
+     xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+               if (xhttp.responseText.substring(0,3) == "001" || xhttp.responseText.substring(0,3) == "002" || xhttp.responseText.substring(0,3) == "003") {
+                    firework.launch('Configuration updated and applied', 'success', 5000);
+               }
+               else if (xhttp.responseText.substring(0,3) == "004") {
+                    firework.launch('Configuration updated and get applied after round is completed', 'success', 5000);
+               }
+               else if (xhttp.responseText.substring(0,3) == "099") {
+                    firework.launch('Configuration updated, but cannot get applied (no flow task running)', 'danger', 5000);
+               }
+          }
+     }
+     xhttp.open("GET", url, true);
+     xhttp.send();
+}
+
+
 function UpdateConfig(zw, _index, _enhance, _domainname){
      var namezw = zw["name"];
      FileCopyOnServer("/img_tmp/ref_zw.jpg", namezw, _domainname);
@@ -85,6 +107,7 @@ function ZerlegeZeile(input, delimiter = " =\t\r")
      
      }    
 
+
 function findDelimiterPos(input, delimiter)
      {
           var pos = -1;
@@ -131,7 +154,8 @@ function getConfig()
 }
 
      
-function loadConfig(_domainname) {
+function loadConfig(_domainname)
+{
      var xhttp = new XMLHttpRequest();
      try {
           url = _domainname + '/fileserver/config/config.ini';     
@@ -148,17 +172,17 @@ function loadConfig(_domainname) {
 }
 
      
-
-
-function dataURLtoBlob(dataurl) {
+function dataURLtoBlob(dataurl)
+{
      var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
           bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
      while(n--){
           u8arr[n] = bstr.charCodeAt(n);
      }
      return new Blob([u8arr], {type:mime});
-     }	
-     
+}	
+ 
+
 function FileCopyOnServer(_source, _target, _domainname = ""){
      url = _domainname + "/editflow?task=copy&in=" + _source + "&out=" + _target;
      var xhttp = new XMLHttpRequest();  
@@ -170,6 +194,7 @@ function FileCopyOnServer(_source, _target, _domainname = ""){
 //	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
      }
 }
+
 
 function FileDeleteOnServer(_filename, _domainname = ""){
      var xhttp = new XMLHttpRequest();
@@ -200,6 +225,7 @@ function FileDeleteOnServer(_filename, _domainname = ""){
 
      return okay;
 }
+
 
 function FileSendContent(_content, _filename, _domainname = ""){
      var xhttp = new XMLHttpRequest();  
@@ -242,6 +268,7 @@ function SaveCanvasToImage(_canvas, _filename, _delete = true, _domainname = "")
      FileSendContent(rtn, _filename, _domainname);
 }
 
+
 function MakeContrastImageZW(zw, _enhance, _domainname){
      _filename = zw["name"].replace("/config/", "/img_tmp/");
      url = _domainname + "/editflow?task=cutref&in=/config/reference.jpg&out=" + _filename + "&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
@@ -252,13 +279,13 @@ function MakeContrastImageZW(zw, _enhance, _domainname){
      var xhttp = new XMLHttpRequest();  
      try {
           xhttp.open("GET", url, false);
-          xhttp.send();     }
+          xhttp.send();
+     }
      catch (error)
      {
 //	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
      }
 }
-
 
 
 function MakeRefZW(zw, _domainname){
@@ -268,7 +295,8 @@ function MakeRefZW(zw, _domainname){
      var xhttp = new XMLHttpRequest();  
      try {
           xhttp.open("GET", url, false);
-          xhttp.send();     }
+          xhttp.send();
+     }
      catch (error)
      {
 //	    firework.launch('Deleting Config.ini failed!', 'danger', 30000);
