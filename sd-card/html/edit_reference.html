@@ -183,7 +183,6 @@
             domainname = getDomainname();   
             isActReference = false;
             param;
-            new_image = false;
 
        
         function doReboot() {
@@ -229,9 +228,11 @@
             if (new_image) {
                 url = getDomainname() + "/img_tmp/raw.jpg" + "?session=" + Math.floor((Math.random() * 1000000) + 1);
                 document.getElementById("updatereferenceimage").disabled = false;
+                isActReference = false;
             }
             else {
                 document.getElementById("updatereferenceimage").disabled = true;
+                isActReference = true;
             }
 
             document.getElementById("finerotate").disabled = false;
@@ -271,9 +272,8 @@
 //            if (param["TakeImage"]["Contrast"].found)
 //                document.getElementById("TakeImage_Contrast_value1").disabled = false;
 
-            isActReference = false;
-            loadCanvas(url);  
-            drawRotated();          
+
+            loadCanvas(url, true);
         }
         
 
@@ -318,8 +318,7 @@
             document.getElementById("flip").disabled = true;
 
             isActReference = true;                                  
-            loadCanvas(url);
-            drawRotated(false, true);
+            loadCanvas(url, false);
         }
         
         
@@ -379,14 +378,17 @@
         }
 
 
-        function loadCanvas(dataURL) {
+        function loadCanvas(dataURL, grid) {
                 var canvas = document.getElementById('canvas');
                 var context = canvas.getContext('2d');
 
                 imageObj.onload = function() {
                     canvas.width = this.width;
                     canvas.height = this.height;
-                    drawRotated();
+                    if (grid)
+                        drawRotated(true);
+                    else
+                        drawRotated(false);
                 };
 
                 imageObj.src = dataURL;
@@ -520,7 +522,7 @@
         }
 
 
-        function drawRotated(_grid = true, _isreference = false){
+        function drawRotated(_grid = true) {
             finerot= parseFloat(document.getElementById("finerotate").value);
             prerot = parseFloat(document.getElementById("prerotateangle").value);
             mirror = document.getElementById("mirror").checked;
@@ -572,10 +574,9 @@
             
             
             context.restore();
-            if (_grid == true && !isActReference){
-                drawGrid();
-            }
 
+            if (_grid)
+                    drawGrid();
         }
 
 
