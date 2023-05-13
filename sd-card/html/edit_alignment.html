@@ -188,7 +188,23 @@ function EnhanceContrast(){
 }
 
 function UpdateReference(){
-    document.getElementById("img_ref").onload = function () {
+    var filenameurl = refInfo[aktindex]["name"].replace("/config/", "/img_tmp/");
+
+    var url = domainname + "/fileserver" + filenameurl + "?"  + Date.now();
+    document.getElementById("img_ref").src = url;
+
+    filenameurl = filenameurl.replace(".jpg", "_org.jpg");
+    url = domainname + "/fileserver" + filenameurl +  "?" + Date.now();
+    document.getElementById("img_ref_org").src = url;
+
+    document.getElementById("name").value = refInfo[aktindex]["name"];
+
+    document.getElementById("refx").value = refInfo[aktindex]["x"];
+    document.getElementById("refy").value = refInfo[aktindex]["y"]; 
+    rect.startX = document.getElementById("refx").value;
+    rect.startY = document.getElementById("refy").value;
+
+    document.getElementById("img_ref_org").onload = function () {
         document.getElementById("refdx").value = this.width;
         document.getElementById("refdy").value = this.height;   
         refInfo[aktindex]["dx"] = this.width;
@@ -197,21 +213,6 @@ function UpdateReference(){
         rect.h = document.getElementById("refdy").value;
         draw();
     }
-
-    _filenameurl = refInfo[aktindex]["name"].replace("/config/", "/img_tmp/");
-
-    var url = domainname + "/fileserver" + _filenameurl + "?"  + Date.now();
-    document.getElementById("img_ref").src = url;
-
-    _filenameurl = _filenameurl.replace(".jpg", "_org.jpg");
-    var url = domainname + "/fileserver" + _filenameurl +  "?" + Date.now();
-    document.getElementById("img_ref_org").src = url;
-
-    document.getElementById("name").value = refInfo[aktindex]["name"];
-    document.getElementById("refx").value = refInfo[aktindex]["x"];
-    document.getElementById("refy").value = refInfo[aktindex]["y"];  
-    rect.startX = document.getElementById("refx").value;
-    rect.startY = document.getElementById("refy").value; 
     draw();      
 }
 
@@ -273,15 +274,15 @@ function dataURLtoBlob(dataurl) {
             document.getElementById("enhancecontrast").disabled = true;
             document.getElementById("savemarker").disabled = true;
 
+            CopyReferenceToImgTmp(domainname);
+
+            refInfo = GetReferencesInfo();
+            UpdateReference();
+
             canvas.addEventListener('mousedown', mouseDown, false);
             canvas.addEventListener('mouseup', mouseUp, false);
             canvas.addEventListener('mousemove', mouseMove, false);
             loadCanvas(domainname + "/fileserver/config/reference.jpg");
-
-            CopyReferenceToImgTmp(domainname);
-            refInfo = GetReferencesInfo();
-
-            UpdateReference();
 
             drawImage();
             document.getElementById("updatemarker").disabled = false;
@@ -301,7 +302,7 @@ function dataURLtoBlob(dataurl) {
 
         function MakeRefZW(zw, _domainname){
             _filetarget = zw["name"].replace("/config/", "/img_tmp/");
-            _filetarget = _filetarget.replace(".jpg", "_org.jpg");
+            //_filetarget = _filetarget.replace(".jpg", "_org.jpg"); // not needed here -> replacement _org.jpg will be done in firmware
             url = _domainname + "/editflow?task=cutref&in=/config/reference.jpg&out="+_filetarget+"&x=" + zw["x"] + "&y="  + zw["y"] + "&dx=" + zw["dx"] + "&dy=" + zw["dy"];
             var xhttp = new XMLHttpRequest();  
             try {
@@ -310,7 +311,7 @@ function dataURLtoBlob(dataurl) {
             }
             catch (error)
             {
-                //firework.launch('Deleting Config.ini failed!', 'danger', 30000);
+                firework.launch('Update Maker failed. Please repeat or check logs', 'danger', 30000);
             }
         }
 
@@ -332,7 +333,7 @@ function dataURLtoBlob(dataurl) {
                         UpdateReference();
                         document.getElementById("enhancecontrast").disabled = false;
                         document.getElementById("savemarker").disabled = false;
-                        firework.launch("Marker updated", 'success', 5000);
+                        firework.launch("Marker updated", 'success', 3000);
                     }
                     else {
                         var str = "Update marker only possible in any IDLE / SETUP state (Actual State: " + xhttp.responseText.split("] ")[1] + 
@@ -353,28 +354,27 @@ function dataURLtoBlob(dataurl) {
             ctx.save();
             ctx.strokeStyle = '#00FF00';
 
-            for (i = h/2; i < h; i += 100) 
-                {
+            for (i = h/2; i < h; i += 100) {
                 ctx.moveTo(0, i);
                 ctx.lineTo(w, i);
                 ctx.stroke();
                 ctx.moveTo(0, h-i);
                 ctx.lineTo(w, h-i);
                 ctx.stroke();
-                }
-            for (i = w/2; i < w; i += 100) 
-                {
+            }
+            for (i = w/2; i < w; i += 100) {
                 ctx.moveTo(i, 0);
                 ctx.lineTo(i, h);
                 ctx.stroke();
                 ctx.moveTo(w-i, 0);
                 ctx.lineTo(w-i, h);
-                ctx.stroke();                }
+                ctx.stroke();
+            }
 //            ctx.restore();
         }
 
 
-        function draw() {
+    function draw() {
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
         context.drawImage(imageObj, 0, 0);
