@@ -6,7 +6,6 @@
 #include "CImageBasis.h"
 #include "CFindTemplate.h"
 
-
 class CAlignAndCutImage : public CImageBasis
 {
     public:
@@ -18,8 +17,7 @@ class CAlignAndCutImage : public CImageBasis
         CAlignAndCutImage(std::string name, CImageBasis *_org, CImageBasis *_temp);
         ~CAlignAndCutImage();
 
-        bool Align(RefInfo *_temp1, RefInfo *_temp2, float *angle);
-//        void Align(std::string _template1, int x1, int y1, std::string _template2, int x2, int y2, int deltax = 40, int deltay = 40, std::string imageROI = "");
+        int Align(strRefInfo *_temp1, strRefInfo *_temp2);
         void CutAndSave(std::string _template1, int x1, int y1, int dx, int dy);
         CImageBasis* CutAndSave(int x1, int y1, int dx, int dy);
         void CutAndSave(int x1, int y1, int dx, int dy, CImageBasis *_target);
