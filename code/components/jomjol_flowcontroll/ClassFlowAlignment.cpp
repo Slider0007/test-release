@@ -279,22 +279,38 @@ bool ClassFlowAlignment::SaveReferenceAlignmentValues()
     
     nvs_handle_t align_nvshandle;
     err = nvs_open("align", NVS_READWRITE, &align_nvshandle);
-
-    if (err == ESP_OK) {
-        err = nvs_set_i32(align_nvshandle, "Ref0fastalg_x", References[0].fastalg_x);
-        err = nvs_set_i32(align_nvshandle, "Ref0fastalg_y", References[0].fastalg_y);
-        //err = nvs_set_i32(align_nvshandle, "Ref0fastalg_SAD", References[0].fastalg_SAD);
-
-        err = nvs_set_i32(align_nvshandle, "Ref1fastalg_x", References[1].fastalg_x);
-        err = nvs_set_i32(align_nvshandle, "Ref1fastalg_y", References[1].fastalg_y);
-        //err = nvs_set_i32(align_nvshandle, "Ref1fastalg_SAD", References[1].fastalg_SAD);
-
-        err = nvs_commit(align_nvshandle);
-        nvs_close(align_nvshandle);
+    if (err != ESP_OK) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SaveReferenceAlignmentValues: No valid NVS handle - error code : " + std::to_string(err));
+        return false;
     }
 
+    err = nvs_set_i32(align_nvshandle, "Ref0fastalg_x", References[0].fastalg_x);
     if (err != ESP_OK) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to save alignment data to NVS: " + err);
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SaveReferenceAlignmentValues: Ref0fastalg_x - error code: " + std::to_string(err));
+        return false;
+    }
+    err = nvs_set_i32(align_nvshandle, "Ref0fastalg_y", References[0].fastalg_y);
+    if (err != ESP_OK) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SaveReferenceAlignmentValues: Ref0fastalg_y - error code: " + std::to_string(err));
+        return false;
+    }
+
+    err = nvs_set_i32(align_nvshandle, "Ref1fastalg_x", References[1].fastalg_x);
+    if (err != ESP_OK) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SaveReferenceAlignmentValues: Ref1fastalg_x - error code: " + std::to_string(err));
+        return false;
+    }
+    err = nvs_set_i32(align_nvshandle, "Ref1fastalg_y", References[1].fastalg_y);
+    if (err != ESP_OK) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SaveReferenceAlignmentValues: Ref1fastalg_y - error code: " + std::to_string(err));
+        return false;
+    }
+
+    err = nvs_commit(align_nvshandle);
+    nvs_close(align_nvshandle);
+
+    if (err != ESP_OK) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SaveReferenceAlignmentValues: nvs_commit - error code: " + std::to_string(err));
         return false;
     }
 
@@ -308,25 +324,34 @@ bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
 
     nvs_handle_t align_nvshandle;
     err = nvs_open("align", NVS_READONLY, &align_nvshandle);
-
     if (err != ESP_OK) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "LoadReferenceAlignmentValues: No valid NVS handle - error code : " + std::to_string(err));
         return false;
     }
 
     err = nvs_get_i32(align_nvshandle, "Ref0fastalg_x", (int32_t*)&References[0].fastalg_x);
-    err = nvs_get_i32(align_nvshandle, "Ref0fastalg_y", (int32_t*)&References[0].fastalg_y);
-    //err = nvs_get_i32(align_nvshandle, "Ref0fastalg_SAD", (int32_t*)&References[0].fastalg_SAD);
-
-    err = nvs_get_i32(align_nvshandle, "Ref1fastalg_x", (int32_t*)&References[1].fastalg_x);
-    err = nvs_get_i32(align_nvshandle, "Ref1fastalg_y", (int32_t*)&References[1].fastalg_y);
-    //err = nvs_get_i32(align_nvshandle, "Ref1fastalg_SAD", (int32_t*)&References[1].fastalg_SAD);
-
-    nvs_close(align_nvshandle);
-
     if (err != ESP_OK) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to load alignment data from NVS: " + err);
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "LoadReferenceAlignmentValues: Ref0fastalg_x - error code: " + std::to_string(err));
         return false;
     }
+    err = nvs_get_i32(align_nvshandle, "Ref0fastalg_y", (int32_t*)&References[0].fastalg_y);
+    if (err != ESP_OK) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "LoadReferenceAlignmentValues: Ref0fastalg_y - error code: " + std::to_string(err));
+        return false;
+    }
+
+    err = nvs_get_i32(align_nvshandle, "Ref1fastalg_x", (int32_t*)&References[1].fastalg_x);
+    if (err != ESP_OK) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "LoadReferenceAlignmentValues: Ref1fastalg_x - error code: " + std::to_string(err));
+        return false;
+    }
+    err = nvs_get_i32(align_nvshandle, "Ref1fastalg_y", (int32_t*)&References[1].fastalg_y);
+        if (err != ESP_OK) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "LoadReferenceAlignmentValues: Ref1fastalg_y - error code: " + std::to_string(err));
+        return false;
+    }
+    
+    nvs_close(align_nvshandle);
     
     return true;
 }
