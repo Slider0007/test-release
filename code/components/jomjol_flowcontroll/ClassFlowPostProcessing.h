@@ -15,18 +15,12 @@ class ClassFlowPostProcessing : public ClassFlow
 {
 protected:
     bool UpdatePreValueINI;
-
     int PreValueAgeStartup; 
     bool ErrorMessage;
     bool IgnoreLeadingNaN;          // SPECIAL CASE for User Gustl ???
 
-
     ClassFlowCNNGeneral* flowAnalog;
     ClassFlowCNNGeneral* flowDigit;    
-
-
-    string FilePreValue;
-
     ClassFlowTakeImage *flowTakeImage;
 
     bool LoadPreValue(void);
@@ -47,13 +41,9 @@ protected:
 
     void WriteDataLog(int _index);
 
-
-
-
 public:
     bool PreValueUse;
     std::vector<NumberPost*> NUMBERS;
-
 
     ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc, ClassFlowCNNGeneral *_analog, ClassFlowCNNGeneral *_digit);
     virtual ~ClassFlowPostProcessing();
@@ -64,7 +54,7 @@ public:
     string getReadoutError(int _number = 0);
     string getReadoutRate(int _number = 0);
     string getReadoutTimeStamp(int _number = 0);
-    void SavePreValue();
+    bool SavePreValue(void);
     string getJsonFromNumber(int i, std::string _lineend);
     string GetPreValue(std::string _number = "");
     bool SetPreValue(double zw, string _numbers, bool _extern = false);
@@ -78,6 +68,5 @@ public:
 
     string name(){return "ClassFlowPostProcessing";};
 };
-
 
 #endif //CLASSFFLOWPOSTPROCESSING_H
