@@ -324,7 +324,7 @@ bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
 
     nvs_handle_t align_nvshandle;
     err = nvs_open("align", NVS_READONLY, &align_nvshandle);
-    if (err != ESP_OK) {
+    if (err != ESP_OK && err != ESP_ERR_NVS_NOT_FOUND ) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "LoadReferenceAlignmentValues: No valid NVS handle - error code : " + std::to_string(err));
         return false;
     }
