@@ -45,7 +45,8 @@ sdmmc_csd_t SDCardCsd;
 // #define DEBUG_DETAIL_ON 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-string getESPHeapInfo(){
+string getESPHeapInfo()
+{
 	string espInfoResultStr = "";
 	char aMsgBuf[80];
 
@@ -94,7 +95,8 @@ size_t getInternalESPHeapSize()
 }
 
 
-string getSDCardPartitionSize(){
+string getSDCardPartitionSize()
+{
 	FATFS *fs;
     uint32_t fre_clust, tot_sect;
 
@@ -108,7 +110,8 @@ string getSDCardPartitionSize(){
 }
 
 
-string getSDCardFreePartitionSpace(){
+string getSDCardFreePartitionSpace()
+{
 	FATFS *fs;
     uint32_t fre_clust, fre_sect;
   
@@ -122,7 +125,8 @@ string getSDCardFreePartitionSpace(){
 }
 
 
-string getSDCardPartitionAllocationSize(){
+string getSDCardPartitionAllocationSize()
+{
 	FATFS *fs;
     uint32_t fre_clust, allocation_size;
   
@@ -136,13 +140,15 @@ string getSDCardPartitionAllocationSize(){
 }
 
 
-void SaveSDCardInfo(sdmmc_card_t* card) {
+void SaveSDCardInfo(sdmmc_card_t* card)
+{
 	SDCardCid = card->cid;
     SDCardCsd = card->csd;
 }
 
 
-string getSDCardManufacturer(){
+string getSDCardManufacturer()
+{
 	string SDCardManufacturer = SDCardParseManufacturerIDs(SDCardCid.mfg_id);
 	//ESP_LOGD(TAG, "SD Card Manufacturer: %s", SDCardManufacturer.c_str());
 	
@@ -150,7 +156,8 @@ string getSDCardManufacturer(){
 }
 
 
-string getSDCardName(){
+string getSDCardName()
+{
 	char *SDCardName = SDCardCid.name;
 	//ESP_LOGD(TAG, "SD Card Name: %s", SDCardName); 
 
@@ -158,7 +165,8 @@ string getSDCardName(){
 }
 
 
-string getSDCardCapacity(){
+string getSDCardCapacity()
+{
 	int SDCardCapacity = SDCardCsd.capacity / (1024/SDCardCsd.sector_size) / 1024;  // total sectors * sector size  --> Byte to MB (1024*1024)
 	//ESP_LOGD(TAG, "SD Card Capacity: %s", std::to_string(SDCardCapacity).c_str()); 
 
@@ -166,7 +174,8 @@ string getSDCardCapacity(){
 }
 
 
-string getSDCardSectorSize(){
+string getSDCardSectorSize()
+{
 	int SDCardSectorSize = SDCardCsd.sector_size;
 	//ESP_LOGD(TAG, "SD Card Sector Size: %s bytes", std::to_string(SDCardSectorSize).c_str()); 
 
@@ -194,7 +203,8 @@ std::string FormatFileName(std::string input)
 }
 
 
-std::size_t file_size(const std::string& file_name) {
+std::size_t file_size(const std::string& file_name)
+{
     std::ifstream file(file_name.c_str(),std::ios::in | std::ios::binary);
     if (!file) return 0;
     file.seekg (0, std::ios::end);
@@ -202,7 +212,8 @@ std::size_t file_size(const std::string& file_name) {
 }
 
 
-void FindReplace(std::string& line, std::string& oldString, std::string& newString) {
+void FindReplace(std::string& line, std::string& oldString, std::string& newString)
+{
     const size_t oldSize = oldString.length();
 
     // do nothing if line is shorter than the string to find
@@ -473,7 +484,8 @@ string getFileType(string filename)
 
 
 /* recursive mkdir */
-int mkdir_r(const char *dir, const mode_t mode) {
+int mkdir_r(const char *dir, const mode_t mode)
+{
     char tmp[FILE_PATH_MAX];
     char *p = NULL;
     struct stat sb;
@@ -556,14 +568,16 @@ float temperatureRead()
 }
 
 
-time_t addDays(time_t startTime, int days) {
+time_t addDays(time_t startTime, int days)
+{
 	struct tm* tm = localtime(&startTime);
 	tm->tm_mday += days;
 	return mktime(tm);
 }
 
 
-int removeFolder(const char* folderPath, const char* logTag) {
+int removeFolder(const char* folderPath, const char* logTag)
+{
 	//ESP_LOGD(logTag, "Delete content in path %s", folderPath);
 
 	DIR *dir = opendir(folderPath);
@@ -649,17 +663,6 @@ std::vector<string> ZerlegeZeile(std::string input, std::string delimiter)
 
 	return Output;
 
-}
-
-
-std::string ReplaceString(std::string subject, const std::string& search,
-                          const std::string& replace) {
-    size_t pos = 0;
-    while ((pos = subject.find(search, pos)) != std::string::npos) {
-         subject.replace(pos, search.length(), replace);
-         pos += replace.length();
-    }
-    return subject;
 }
 
 
@@ -826,7 +829,8 @@ string RundeOutput(double _in, int _anzNachkomma)
 }
 
 
-string getMac(void) {
+string getMac(void)
+{
     uint8_t macInt[6];
     char macFormated[6*2 + 5 + 1]; // AA:BB:CC:DD:EE:FF
 
@@ -837,7 +841,8 @@ string getMac(void) {
 }
 
 
-void setSystemStatusFlag(SystemStatusFlag_t flag) {
+void setSystemStatusFlag(SystemStatusFlag_t flag)
+{
 	systemStatus = systemStatus | flag; // set bit
 
 	char buf[20];
@@ -846,7 +851,8 @@ void setSystemStatusFlag(SystemStatusFlag_t flag) {
 }
 
 
-void clearSystemStatusFlag(SystemStatusFlag_t flag) {
+void clearSystemStatusFlag(SystemStatusFlag_t flag)
+{
 	systemStatus = systemStatus | ~flag; // clear bit
 
 	char buf[20];
@@ -855,12 +861,14 @@ void clearSystemStatusFlag(SystemStatusFlag_t flag) {
 }
 
 
-int getSystemStatus(void) {
+int getSystemStatus(void)
+{
     return systemStatus;
 }
 
 
-bool isSetSystemStatusFlag(SystemStatusFlag_t flag) {
+bool isSetSystemStatusFlag(SystemStatusFlag_t flag)
+{
 	//ESP_LOGE(TAG, "Flag (0x%08X) is set (0x%08X): %d", flag, systemStatus , ((systemStatus & flag) == flag));
 
 	if ((systemStatus & flag) == flag) {
@@ -872,12 +880,14 @@ bool isSetSystemStatusFlag(SystemStatusFlag_t flag) {
 }
 
 
-time_t getUpTime(void) {
+time_t getUpTime(void)
+{
     return (uint32_t)(esp_timer_get_time()/1000/1000); // in seconds
 }
 
 
-string getResetReason(void) {
+string getResetReason(void)
+{
 	std::string reasonText;
 
 	switch(esp_reset_reason()) {
@@ -903,7 +913,8 @@ string getResetReason(void) {
 /**
  * Returns the current uptime  formated ad xxf xxh xxm [xxs]
  */
-std::string getFormatedUptime(bool compact) {
+std::string getFormatedUptime(bool compact)
+{
 	char buf[20];
 	#pragma GCC diagnostic ignored "-Wformat-truncation"
 
@@ -925,7 +936,8 @@ std::string getFormatedUptime(bool compact) {
 }
 
 
-const char* get404(void) {
+const char* get404(void)
+{
     return 
 "<pre>\n\n\n\n"
 "        _\n"
@@ -967,12 +979,41 @@ std::string UrlDecode(const std::string& value)
 }
 
 
-bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith) {
+std::vector<std::string> splitString(const std::string& str)
+{
+    std::vector<std::string> tokens;
+ 
+    std::stringstream ss(str);
+    std::string token;
+
+    while (std::getline(ss, token, '\n')) {
+        tokens.push_back(token);
+    }
+ 
+    return tokens;
+}
+
+
+std::string ReplaceString(std::string subject, const std::string& search,
+                          const std::string& replace)
+{
+    size_t pos = 0;
+    while ((pos = subject.find(search, pos)) != std::string::npos) {
+         subject.replace(pos, search.length(), replace);
+         pos += replace.length();
+    }
+    return subject;
+}
+
+
+bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith)
+{
     return replaceString(s, toReplace, replaceWith, true);
 }
 
 
-bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt) {
+bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt)
+{
     std::size_t pos = s.find(toReplace);
 
     if (pos == std::string::npos) { // Not found
@@ -988,7 +1029,8 @@ bool replaceString(std::string& s, std::string const& toReplace, std::string con
 }
 
 
-bool isInString(std::string& s, std::string const& toFind) {
+bool isInString(std::string& s, std::string const& toFind)
+{
     std::size_t pos = s.find(toFind);
 
     if (pos == std::string::npos) { // Not found

@@ -97,6 +97,7 @@ const char* get404(void);
 
 std::string UrlDecode(const std::string& value);
 
+std::vector<std::string> splitString(const std::string& str);
 bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith);
 bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt);
 bool isInString(std::string& s, std::string const& toFind);
