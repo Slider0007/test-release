@@ -3,13 +3,28 @@
 #ifndef CLASSFLOWDEFINETYPES_H
 #define CLASSFLOWDEFINETYPES_H
 
-#include "ClassFlowImage.h"
+#include <vector>
+#include "CImageBasis.h"
+
+using namespace std;
+
+
+enum t_CNNType {
+    AutoDetect,
+    Analogue,
+    Analogue100,
+    Digital,
+    DigitalHyprid10,
+    DoubleHyprid10,
+    Digital100,
+    None
+ };
+
 
 struct roi {
-    int posx, posy, deltax, deltay;
-    float result_float;
-    int result_klasse;
-    bool isReject, CCW;
+    int posx, posy, deltax, deltay; 
+    int CNNResult = -10;     // normalized to 0-99 (exception for class11: 0-10: 0-9+NaN), default: negative number equal to "-1.0"
+    bool isRejected, CCW;
     string name;
     CImageBasis *image, *image_org;
 };
@@ -49,7 +64,7 @@ struct NumberPost {
     int AnzahlDigital;
     int DecimalShift;
     int DecimalShiftInitial;
-    float AnalogDigitalTransitionStart; // When is the digit > x.1, i.e. when does it start to tilt?
+    int AnalogDigitalTransitionStart; // When is the digit > x.1, i.e. when does it start to tilt?
     int Nachkomma;
 
     string FieldV1; // Fieldname in InfluxDBv1  

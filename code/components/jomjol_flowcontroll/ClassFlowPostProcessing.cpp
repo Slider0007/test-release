@@ -93,7 +93,7 @@ string ClassFlowPostProcessing::GetPreValue(std::string _number)
     if (index == -1)
         return std::string("");
 
-    result = RundeOutput(NUMBERS[index]->PreValue, NUMBERS[index]->Nachkomma);
+    result = to_stringWithPrecision(NUMBERS[index]->PreValue, NUMBERS[index]->Nachkomma);
 
     return result;
 }
@@ -223,7 +223,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
             {
 
                 NUMBERS[j]->PreValue = stod(std::string(cValue));
-                NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma + 1);      // To be on the safe side, 1 digit more, as Exgtended Resolution may be on (will only be set during the first run).
+                NUMBERS[j]->ReturnPreValue = to_stringWithPrecision(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma + 1);      // To be on the safe side, 1 digit more, as Exgtended Resolution may be on (will only be set during the first run).
 
                 time_t tStart;
                 int yy, month, dd, hh, mm, ss;
@@ -244,10 +244,13 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
                 localtime(&tStart);
                 double difference = difftime(tStart, NUMBERS[j]->lastvalue);
                 difference /= 60;
-                if (difference > PreValueAgeStartup)
+                if (difference > PreValueAgeStartup) {
                     NUMBERS[j]->PreValueOkay = false;
-                else
+                    NUMBERS[j]->ReturnPreValue = "";
+                }
+                else {
                     NUMBERS[j]->PreValueOkay = true;
+                }
             }
         }
     }
@@ -282,7 +285,7 @@ bool ClassFlowPostProcessing::SavePreValue()
     for (int j = 0; j < NUMBERS.size(); ++j)
     {           
         //ESP_LOGI(TAG, "name: %s, time: %s, value: %s", (NUMBERS[j]->name).c_str(), (NUMBERS[j]->timeStamp).c_str(), 
-        //                                        (RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma)).c_str());
+        //                                        (to_stringWithPrecision(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma)).c_str());
 
         struct tm* timeinfo = localtime(&NUMBERS[j]->lastvalue);
         strftime(buffer, 80, PREVALUE_TIME_FORMAT_OUTPUT, timeinfo);
@@ -299,7 +302,7 @@ bool ClassFlowPostProcessing::SavePreValue()
             return false;
         }
         err = nvs_set_str(prevalue_nvshandle, ("value" + std::to_string(j)).c_str(), 
-                            (RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma)).c_str());
+                            (to_stringWithPrecision(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma)).c_str());
         if (err != ESP_OK) {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SavePreValue: nvs_set_str prevalue - error code: " + std::to_string(err));
             return false;
@@ -408,7 +411,7 @@ void ClassFlowPostProcessing::handleAnalogDigitalTransitionStart(std::string _de
     for (int j = 0; j < NUMBERS.size(); ++j)
     {    
         if (_digit == "default" || NUMBERS[j]->name == _digit)  // Set to default first (if nothing else is set)
-            NUMBERS[j]->AnalogDigitalTransitionStart = stof(_value);
+            NUMBERS[j]->AnalogDigitalTransitionStart = (int) (stof(_value) * 10);
 
         //ESP_LOGI(TAG, "handleAnalogDigitalTransitionStart: Name: %s, Pospunkt: %d, value: %f", _digit.c_str(), _pospunkt, NUMBERS[j]->AnalogDigitalTransitionStart);
     }
@@ -426,12 +429,16 @@ void ClassFlowPostProcessing::handleAllowNegativeRate(std::string _decsep, std::
     else
         _digit = "default";
 
-    for (int j = 0; j < NUMBERS.size(); ++j)
-    {
-        if (toUpper(_value) == "TRUE")
+    for (int j = 0; j < NUMBERS.size(); ++j) {
+        if (toUpper(_value) == "TRUE") {
             value = true;
-        else
+        }
+        else {
             value = false;
+            
+            if (!PreValueUse) // Previous Value is mandatory to evaluate negative rates
+                LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Activate parameter \'Previous Value\' to use negative rate evaluation"); 
+        }
 
         if (_digit == "default" || NUMBERS[j]->name == _digit)
             NUMBERS[j]->AllowNegativeRates = value;
@@ -452,11 +459,13 @@ void ClassFlowPostProcessing::handleMaxRateType(std::string _decsep, std::string
     else
         _digit = "default";
 
-    for (int j = 0; j < NUMBERS.size(); ++j)
-    {
+    for (int j = 0; j < NUMBERS.size(); ++j) {
         if (toUpper(_value) == "RATECHANGE") {
             NUMBERS[j]->useMaxRateValue = true;
             _rt = RateChange;
+
+            if (!PreValueUse) // Previous Value is mandatory to evaluate rate limits
+                LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Activate parameter \'Previous Value\' to use rate limit evaluation"); 
         }
         else if (toUpper(_value) == "OFF") {
             NUMBERS[j]->useMaxRateValue = false;
@@ -465,6 +474,9 @@ void ClassFlowPostProcessing::handleMaxRateType(std::string _decsep, std::string
         else {
             NUMBERS[j]->useMaxRateValue = true;
             _rt = AbsoluteChange;
+
+            if (!PreValueUse) // Previous Value is mandatory to evaluate rate limits
+                LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Activate parameter \'Previous Value\' to use rate limit evaluation"); 
         }
 
         if (_digit == "default" || NUMBERS[j]->name == _digit)
@@ -498,8 +510,6 @@ void ClassFlowPostProcessing::handleMaxRateValue(std::string _decsep, std::strin
 bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
 {
     std::vector<string> splitted;
-    int _n;
-
     aktparamgraph = trim(aktparamgraph);
 
     if (aktparamgraph.size() == 0)
@@ -512,86 +522,81 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph)
 
     InitNUMBERS();
 
-
-    while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
-    {
+    while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph)) {
         splitted = ZerlegeZeile(aktparamgraph);
         std::string _param = GetParameterName(splitted[0]);
 
-        if ((toUpper(_param) == "PREVALUEUSE") && (splitted.size() > 1))
-        {
+        if ((toUpper(_param) == "PREVALUEUSE") && (splitted.size() > 1)) {
             if (toUpper(splitted[1]) == "TRUE")
                 PreValueUse = true;
             else
                 PreValueUse = false;
         }
 
-        if ((toUpper(_param) == "PREVALUEAGESTARTUP") && (splitted.size() > 1))
-        {
+        if ((toUpper(_param) == "PREVALUEAGESTARTUP") && (splitted.size() > 1)) {
             PreValueAgeStartup = std::stoi(splitted[1]);
         }
 
-        if ((toUpper(_param) == "ERRORMESSAGE") && (splitted.size() > 1))
-        {
+        if ((toUpper(_param) == "ERRORMESSAGE") && (splitted.size() > 1)) {
             if (toUpper(splitted[1]) == "TRUE")
                 ErrorMessage = true;
             else
                 ErrorMessage = false;
         }
 
-        if ((toUpper(_param) == "CHECKDIGITINCREASECONSISTENCY") && (splitted.size() > 1))
-        {
+        if ((toUpper(_param) == "CHECKDIGITINCREASECONSISTENCY") && (splitted.size() > 1)) {
             if (toUpper(splitted[1]) == "TRUE") {
-                for (_n = 0; _n < NUMBERS.size(); ++_n)
-                    NUMBERS[_n]->checkDigitIncreaseConsistency = true;
+                for (int j = 0; j < NUMBERS.size(); ++j) {
+                    NUMBERS[j]->checkDigitIncreaseConsistency = true;
+
+                    if (flowDigit != NULL && flowDigit->getCNNType() != Digital)
+                        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Skip \'Digit Increase Consistency\' check, only applicable for dig-class11 models"); 
+                }
             }
             else {
-                for (_n = 0; _n < NUMBERS.size(); ++_n)
-                    NUMBERS[_n]->checkDigitIncreaseConsistency = false; 
+                for (int j = 0; j < NUMBERS.size(); ++j) {
+                    NUMBERS[j]->checkDigitIncreaseConsistency = false;
+                }
             }
         } 
         
-        if ((toUpper(_param) == "ALLOWNEGATIVERATES") && (splitted.size() > 1))
-        {
+        if ((toUpper(_param) == "ALLOWNEGATIVERATES") && (splitted.size() > 1)) {
             handleAllowNegativeRate(splitted[0], splitted[1]);
-/*          Updated to allow individual Settings
-            if (toUpper(splitted[1]) == "TRUE")
-                for (_n = 0; _n < NUMBERS.size(); ++_n)
-                    NUMBERS[_n]->AllowNegativeRates = true;
-*/
         }
 
-        if ((toUpper(_param) == "DECIMALSHIFT") && (splitted.size() > 1))
-        {
+        if ((toUpper(_param) == "DECIMALSHIFT") && (splitted.size() > 1)) {
             handleDecimalSeparator(splitted[0], splitted[1]);
         }
 
-        if ((toUpper(_param) == "ANALOGDIGITALTRANSITIONSTART") && (splitted.size() > 1))
-        {
+        if ((toUpper(_param) == "ANALOGDIGITALTRANSITIONSTART") && (splitted.size() > 1)) {
             handleAnalogDigitalTransitionStart(splitted[0], splitted[1]);
         }
 
-        if ((toUpper(_param) == "MAXRATETYPE") && (splitted.size() > 1))
-        {
+        if ((toUpper(_param) == "MAXRATETYPE") && (splitted.size() > 1)) {
             handleMaxRateType(splitted[0], splitted[1]);
         }
 
-        if ((toUpper(_param) == "MAXRATEVALUE") && (splitted.size() > 1))
-        {
+        if ((toUpper(_param) == "MAXRATEVALUE") && (splitted.size() > 1)) {
             handleMaxRateValue(splitted[0], splitted[1]);
         }
 
-        if ((toUpper(_param) == "EXTENDEDRESOLUTION") && (splitted.size() > 1))
-        {
+        if ((toUpper(_param) == "EXTENDEDRESOLUTION") && (splitted.size() > 1)) {
             handleDecimalExtendedResolution(splitted[0], splitted[1]);
         }
 
-        if ((toUpper(_param) == "IGNORELEADINGNAN") && (splitted.size() > 1))
-        {
-            if (toUpper(splitted[1]) == "TRUE")
-                IgnoreLeadingNaN = true;
-            else
+        if ((toUpper(_param) == "IGNORELEADINGNAN") && (splitted.size() > 1)) {
+            if (toUpper(splitted[1]) == "TRUE") {
+                if (flowDigit != NULL && flowDigit->getCNNType() != Digital) {
+                    LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Skip \'Ignore Leading NaNs\' check, only applicable for dig-class11 models");
+                    IgnoreLeadingNaN = false;
+                }
+                else {
+                    IgnoreLeadingNaN = true;
+                }
+            }
+            else {
                 IgnoreLeadingNaN = false;
+            }
         }
     }
 
@@ -646,8 +651,8 @@ void ClassFlowPostProcessing::InitNUMBERS()
         else
             _number->AnzahlAnalog = 0;
 
-        _number->ReturnRawValue = ""; // Raw value (with N & leading 0).    
-        _number->ReturnValue = ""; // corrected return value, possibly with error message
+        _number->ReturnRawValue = "";   // Raw value (with N & leading 0).    
+        _number->ReturnValue = "";      // Corrected return value, possibly with error message
         _number->ErrorMessageText = ""; // Error message for consistency check
         _number->ReturnPreValue = "";
         _number->PreValueOkay = false;
@@ -659,15 +664,11 @@ void ClassFlowPostProcessing::InitNUMBERS()
         _number->DecimalShift = 0;
         _number->DecimalShiftInitial = 0;
         _number->isExtendedResolution = false;
-        _number->AnalogDigitalTransitionStart=9.2;
-
+        _number->AnalogDigitalTransitionStart = 92; // 9.2
 
         _number->FlowRateAct = 0; // m3 / min
         _number->PreValue = 0; // last value read out well
         _number->Value = 0; // last value read out, incl. corrections
-        _number->ReturnRawValue = ""; // raw value (with N & leading 0)    
-        _number->ReturnValue = ""; // corrected return value, possibly with error message
-        _number->ErrorMessageText = ""; // Error message for consistency check
 
         _number->Nachkomma = _number->AnzahlAnalog;
 
@@ -675,7 +676,9 @@ void ClassFlowPostProcessing::InitNUMBERS()
     }
 
     for (int i = 0; i < NUMBERS.size(); ++i) {
-        ESP_LOGD(TAG, "Number %s, Anz DIG: %d, Anz ANA %d", NUMBERS[i]->name.c_str(), NUMBERS[i]->AnzahlDigital, NUMBERS[i]->AnzahlAnalog);
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Number sequence: " + NUMBERS[i]->name + 
+                                                ", Digits: " + std::to_string(NUMBERS[i]->AnzahlDigital) + 
+                                                ", Analogs: " + std::to_string(NUMBERS[i]->AnzahlAnalog));
     }
 
 }
@@ -722,82 +725,78 @@ string ClassFlowPostProcessing::ShiftDecimal(string in, int _decShift){
     return zw;
 }
 
+
 bool ClassFlowPostProcessing::doFlow(string zwtime)
 {
     PresetFlowStateHandler();
-    string result = "";
-    string digit = "";
-    string analog = "";
-    string zwvalue;
-    string zw;
     time_t imagetime = 0;
-    string rohwert;
-
-    // Update decimal point, as the decimal places can also change when changing from CNNType Auto --> xyz:
+    int resultPreviousNumberAnalog = -1;
 
     imagetime = flowTakeImage->getTimeImageTaken();
     if (imagetime == 0)
         time(&imagetime);
 
-    struct tm* timeinfo;
-    timeinfo = localtime(&imagetime);
-    char strftime_buf[64];
-    strftime(strftime_buf, sizeof(strftime_buf), "%Y-%m-%dT%H:%M:%S", timeinfo);
-    zwtime = std::string(strftime_buf);
+    #ifdef SERIAL_DEBUG
+        ESP_LOGD(TAG, "Quantity NUMBERS: %d", NUMBERS.size());
+    #endif
 
-    ESP_LOGD(TAG, "Quantity NUMBERS: %d", NUMBERS.size());
-
-    for (int j = 0; j < NUMBERS.size(); ++j)
-    {
+    /* Post-processing for all defined number sequences */
+    for (int j = 0; j < NUMBERS.size(); ++j) { 
         NUMBERS[j]->ReturnRawValue = "";
         NUMBERS[j]->ReturnRateValue = "";
         NUMBERS[j]->ReturnValue = "";
         NUMBERS[j]->ErrorMessageText = "";
-        NUMBERS[j]->Value = -1;
+        NUMBERS[j]->Value = -1.0;
 
-        /* calculate time difference BEFORE we overwrite the 'lastvalue' */
-        double difference = difftime(imagetime, NUMBERS[j]->lastvalue);      // in seconds
+        /* Calculate time difference BEFORE 'NUMBERS[j]->lastvalue' gets overwritten */
+        double difference = difftime(imagetime, NUMBERS[j]->lastvalue); // Calc difference between this eval und last eval in seconds
+        NUMBERS[j]->lastvalue = imagetime; // update timestamp
 
-        /* TODO:
-         * We could call `NUMBERS[j]->lastvalue = imagetime;` here and remove all other such calls further down.
-         * But we should check nothing breaks! */
-
+        /* Set decimal shift and number of decimal places */
         UpdateNachkommaDecimalShift();
 
-        int previous_value = -1;
+        /* Process analog numbers of sequence */
+        if (NUMBERS[j]->analog_roi) {      
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Get analog numbers");
+            NUMBERS[j]->ReturnRawValue = flowAnalog->getReadout(j, NUMBERS[j]->isExtendedResolution);
 
-        if (NUMBERS[j]->analog_roi)
-        {
-            NUMBERS[j]->ReturnRawValue = flowAnalog->getReadout(j, NUMBERS[j]->isExtendedResolution); 
-            if (NUMBERS[j]->ReturnRawValue.length() > 0)
-            {
-                char zw = NUMBERS[j]->ReturnRawValue[0];
-                if (zw >= 48 && zw <=57)
-                    previous_value = zw - 48;
+            if (NUMBERS[j]->ReturnRawValue.length() > 0) {
+                char zw = NUMBERS[j]->ReturnRawValue[0];  // Convert highest analog number to integer
+                if (zw >= 48 && zw <= 57) // A number?
+                    resultPreviousNumberAnalog = zw - 48;
             }
         }
+
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After analog->getReadout: ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
+
+        /* Add decimal separator */
         if (NUMBERS[j]->digit_roi && NUMBERS[j]->analog_roi)
             NUMBERS[j]->ReturnRawValue = "." + NUMBERS[j]->ReturnRawValue;
 
-        if (NUMBERS[j]->digit_roi)
-        {
-            if (NUMBERS[j]->analog_roi) 
-                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, previous_value, NUMBERS[j]->analog_roi->ROI[0]->result_float, NUMBERS[j]->AnalogDigitalTransitionStart) + NUMBERS[j]->ReturnRawValue;
+        /* Process digit numbers of sequence */
+        if (NUMBERS[j]->digit_roi) {
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Get digit numbers");
+            if (NUMBERS[j]->analog_roi) // If analog numbers available
+                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, NUMBERS[j]->analog_roi->ROI[0]->CNNResult, resultPreviousNumberAnalog, 
+                                                                    NUMBERS[j]->AnalogDigitalTransitionStart) + NUMBERS[j]->ReturnRawValue;
             else
-                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution, previous_value);        // Extended Resolution only if there are no analogue digits
+                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution); // Extended resolution for digits only if no analog previous number
         }
+
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After digital->getReadout: ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
+
+        /* Apply parametrized decimal shift */
         NUMBERS[j]->ReturnRawValue = ShiftDecimal(NUMBERS[j]->ReturnRawValue, NUMBERS[j]->DecimalShift);
 
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After ShiftDecimal: ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
 
+        /* Remove leading N */
         if (IgnoreLeadingNaN)               
             while ((NUMBERS[j]->ReturnRawValue.length() > 1) && (NUMBERS[j]->ReturnRawValue[0] == 'N'))
                 NUMBERS[j]->ReturnRawValue.erase(0, 1);
@@ -805,52 +804,60 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After IgnoreLeadingNaN: ReturnRaw %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
+
         NUMBERS[j]->ReturnValue = NUMBERS[j]->ReturnRawValue;
 
-        if (findDelimiterPos(NUMBERS[j]->ReturnValue, "N") != std::string::npos)
-        {
-            if (PreValueUse && NUMBERS[j]->PreValueOkay)
-            {
+        /* Substitute N position with last valid number if available */
+        if (findDelimiterPos(NUMBERS[j]->ReturnValue, "N") != std::string::npos) {
+            if (PreValueUse && NUMBERS[j]->PreValueOkay) { // PreValue can be used to replace the N
                 NUMBERS[j]->ReturnValue = ErsetzteN(NUMBERS[j]->ReturnValue, NUMBERS[j]->PreValue); 
             }
-            else
-            {
-                string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
-               /* TODO to be discussed, see https://github.com/jomjol/AI-on-the-edge-device/issues/1617 */
-                NUMBERS[j]->lastvalue = imagetime;
+            else { // Prevalue not valid to replace any N
+                if (!PreValueUse)
+                    LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Activate parameter \'Previous Value\' to be able to substitude N");
+
+                NUMBERS[j]->ErrorMessageText = "No data to substitute N"; 
+                NUMBERS[j]->ReturnValue = "";   // Reset return value
+                string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + 
+                                                ", Status: " + NUMBERS[j]->ErrorMessageText;             
+                LogFile.WriteToFile(ESP_LOG_WARN, TAG, _zw);
 
                 WriteDataLog(j);
                 continue; // there is no number because there is still an N.
             }
         }
+
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After findDelimiterPos: ReturnValue %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
-        // Delete leading zeros (unless there is only one 0 left)
+
+        /* Delete leading zeros (unless there is only one 0 left) */
         while ((NUMBERS[j]->ReturnValue.length() > 1) && (NUMBERS[j]->ReturnValue[0] == '0'))
             NUMBERS[j]->ReturnValue.erase(0, 1);
+        
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After removeLeadingZeros: ReturnValue %s", NUMBERS[j]->ReturnRawValue.c_str());
         #endif
+
         NUMBERS[j]->Value = std::stod(NUMBERS[j]->ReturnValue);
+
         #ifdef SERIAL_DEBUG
             ESP_LOGD(TAG, "After setting the Value: Value %f and as double is %f", NUMBERS[j]->Value, std::stod(NUMBERS[j]->ReturnValue));
         #endif
 
-        if (NUMBERS[j]->checkDigitIncreaseConsistency)
-        {
-            if (flowDigit)
-            {
+        /* Check digit plausibitily (only support and necessary for class-11 models (0-9 + NaN)) */
+        if (NUMBERS[j]->checkDigitIncreaseConsistency) {
+            if (flowDigit) {
                 if (flowDigit->getCNNType() != Digital)
-                    ESP_LOGD(TAG, "checkDigitIncreaseConsistency = true - ignored due to wrong CNN-Type (not Digital Classification)");
-                else 
+                    LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Skip \'Digit Increase Consistency\' check, only applicable for dig-class11 models"); 
+                else {
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Check digit increase consistency for sequence: " + NUMBERS[j]->name);
                     NUMBERS[j]->Value = checkDigitConsistency(NUMBERS[j]->Value, NUMBERS[j]->DecimalShift, NUMBERS[j]->analog_roi != NULL, NUMBERS[j]->PreValue);
+                }
             }
-            else
-            {
+            else {
                 #ifdef SERIAL_DEBUG
-                    ESP_LOGD(TAG, "checkDigitIncreaseConsistency = true - no digital numbers defined");
+                    ESP_LOGD(TAG, "checkDigitIncreaseConsistency: Skip; no digit numbers");
                 #endif
             }
         }
@@ -859,32 +866,36 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
             ESP_LOGD(TAG, "After checkDigitIncreaseConsistency: Value %f", NUMBERS[j]->Value);
         #endif
 
-        if (!NUMBERS[j]->AllowNegativeRates)
-        {
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handleAllowNegativeRate for device: " + NUMBERS[j]->name);
-            if ((NUMBERS[j]->Value < NUMBERS[j]->PreValue))
-            {
-                #ifdef SERIAL_DEBUG
-                    ESP_LOGD(TAG, "Neg: value=%f, preValue=%f, preToll%f", NUMBERS[j]->Value, NUMBERS[j]->PreValue,
-                     NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))
-                      ) ;
-                #endif
-                // Include inaccuracy of 0.2 for isExtendedResolution.
-                if (NUMBERS[j]->Value >= (NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))) && NUMBERS[j]->isExtendedResolution) {
-                    NUMBERS[j]->Value = NUMBERS[j]->PreValue;
-                    NUMBERS[j]->ReturnValue = to_string(NUMBERS[j]->PreValue);
-                } else {
-                    NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
-                    NUMBERS[j]->Value = NUMBERS[j]->PreValue;
-                    NUMBERS[j]->ReturnValue = "";
-                    NUMBERS[j]->lastvalue = imagetime;
+        /* Check negative rate */
+        if (!NUMBERS[j]->AllowNegativeRates) {
+            if (PreValueUse && NUMBERS[j]->PreValueOkay) {
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Check negative rate for sequence: " + NUMBERS[j]->name);
+                if (NUMBERS[j]->Value < NUMBERS[j]->PreValue)
+                {
+                    #ifdef SERIAL_DEBUG
+                        ESP_LOGD(TAG, "Neg: value=%f, preValue=%f, preToll%f", NUMBERS[j]->Value, NUMBERS[j]->PreValue,
+                                    NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma)));
+                    #endif
 
-                    string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
-                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
-                    WriteDataLog(j);
-                    continue;
+                    // Include inaccuracy of 0.2 for isExtendedResolution.
+                    if (NUMBERS[j]->Value >= (NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))) && NUMBERS[j]->isExtendedResolution) {
+                        NUMBERS[j]->Value = NUMBERS[j]->PreValue;
+                        NUMBERS[j]->ReturnValue = to_string(NUMBERS[j]->PreValue);
+                    } 
+                    else {
+                        NUMBERS[j]->ErrorMessageText = "Neg. Rate: Read: " + to_stringWithPrecision(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) +
+                                                            ", Pre: " + to_stringWithPrecision(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma); 
+                        NUMBERS[j]->Value = NUMBERS[j]->PreValue;
+                        NUMBERS[j]->ReturnValue = "";
+
+                        string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + 
+                                                        ", Status: " + NUMBERS[j]->ErrorMessageText;
+                        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
+
+                        WriteDataLog(j);
+                        continue;
+                    }   
                 }
-                
             }
         }
 
@@ -896,24 +907,27 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
         NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / difference;
         NUMBERS[j]->ReturnRateValue =  to_string(NUMBERS[j]->FlowRateAct);
 
-        if (NUMBERS[j]->useMaxRateValue && PreValueUse && NUMBERS[j]->PreValueOkay)
-        {
+        /* Check rate too high */
+        if (NUMBERS[j]->useMaxRateValue && PreValueUse && NUMBERS[j]->PreValueOkay) {
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Check rate limit for sequence: " + NUMBERS[j]->name);
             double _ratedifference;  
             if (NUMBERS[j]->RateType == RateChange)
                 _ratedifference = NUMBERS[j]->FlowRateAct;
             else
                 _ratedifference = (NUMBERS[j]->Value - NUMBERS[j]->PreValue);
 
-            if (abs(_ratedifference) > abs(NUMBERS[j]->MaxRateValue))
-            {
-                NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Rate too high - Read: " + RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " - Rate: " + RundeOutput(_ratedifference, NUMBERS[j]->Nachkomma);
+            if (abs(_ratedifference) > abs(NUMBERS[j]->MaxRateValue)) {
+                NUMBERS[j]->ErrorMessageText = "Rate too high: Read: " + to_stringWithPrecision(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma) + 
+                                                    ", Pre: " + to_stringWithPrecision(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + 
+                                                    ", Rate: " + to_stringWithPrecision(_ratedifference, NUMBERS[j]->Nachkomma);
                 NUMBERS[j]->Value = NUMBERS[j]->PreValue;
                 NUMBERS[j]->ReturnValue = "";
                 NUMBERS[j]->ReturnRateValue = "";
-                NUMBERS[j]->lastvalue = imagetime;
 
-                string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
+                string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + 
+                                                ", Status: " + NUMBERS[j]->ErrorMessageText;
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _zw);
+
                 WriteDataLog(j);
                 continue;
             }
@@ -923,19 +937,19 @@ bool ClassFlowPostProcessing::doFlow(string zwtime)
            ESP_LOGD(TAG, "After MaxRateCheck: Value %f", NUMBERS[j]->Value);
         #endif
         
-        NUMBERS[j]->ReturnChangeAbsolute = RundeOutput(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
+        NUMBERS[j]->ReturnChangeAbsolute = to_stringWithPrecision(NUMBERS[j]->Value - NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
         NUMBERS[j]->PreValue = NUMBERS[j]->Value;
         NUMBERS[j]->PreValueOkay = true;
-        NUMBERS[j]->lastvalue = imagetime;
 
-        NUMBERS[j]->ReturnValue = RundeOutput(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
-        NUMBERS[j]->ReturnPreValue = RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
+        NUMBERS[j]->ReturnValue = to_stringWithPrecision(NUMBERS[j]->Value, NUMBERS[j]->Nachkomma);
+        NUMBERS[j]->ReturnPreValue = to_stringWithPrecision(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma);
 
         NUMBERS[j]->ErrorMessageText = "no error";
         UpdatePreValueINI = true;
 
         string _zw = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw);
+
         WriteDataLog(j);
     }
 
