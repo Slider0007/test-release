@@ -390,21 +390,21 @@ esp_err_t handler_process_data(httpd_req_t *req)
     else {
         if (cJSON_AddStringToObject(cJSONObject, "api_name", "handler_process_data") == NULL)
             retVal = ESP_FAIL;
-        if (cJSON_AddStringToObject(cJSONObject, "timestamp_processed", "NOT YET SUPPORTED") == NULL) // TODO: Provide data as timestamp
+        if (cJSON_AddStringToObject(cJSONObject, "timestamp_processed", flowctrl.getReadoutAll(READOUT_TYPE_TIMESTAMP_PROCESSED).c_str()) == NULL)
             retVal = ESP_FAIL; 
-        if (cJSON_AddStringToObject(cJSONObject, "timestamp_valid", flowctrl.getReadoutAll(READOUT_TYPE_TIMESTAMP_VALID).c_str()) == NULL)
+        if (cJSON_AddStringToObject(cJSONObject, "timestamp_fallbackvalue", flowctrl.getReadoutAll(READOUT_TYPE_TIMESTAMP_FALLBACKVALUE).c_str()) == NULL)
             retVal = ESP_FAIL;
         if (cJSON_AddStringToObject(cJSONObject, "actual_value", flowctrl.getReadoutAll(READOUT_TYPE_VALUE).c_str()) == NULL)
             retVal = ESP_FAIL;
-        if (cJSON_AddStringToObject(cJSONObject, "pre_value", flowctrl.getReadoutAll(READOUT_TYPE_PREVALUE).c_str()) == NULL)
+        if (cJSON_AddStringToObject(cJSONObject, "fallback_value", flowctrl.getReadoutAll(READOUT_TYPE_FALLBACKVALUE).c_str()) == NULL)
             retVal = ESP_FAIL;
         if (cJSON_AddStringToObject(cJSONObject, "raw_value", flowctrl.getReadoutAll(READOUT_TYPE_RAWVALUE).c_str()) == NULL)
             retVal = ESP_FAIL;
-        if (cJSON_AddStringToObject(cJSONObject, "value_status", flowctrl.getReadoutAll(READOUT_TYPE_ERROR).c_str()) == NULL)
+        if (cJSON_AddStringToObject(cJSONObject, "value_status", flowctrl.getReadoutAll(READOUT_TYPE_VALUE_STATUS).c_str()) == NULL)
             retVal = ESP_FAIL;
         if (cJSON_AddStringToObject(cJSONObject, "rate_per_min", flowctrl.getReadoutAll(READOUT_TYPE_RATE_PER_MIN).c_str()) == NULL)
             retVal = ESP_FAIL;
-        if (cJSON_AddStringToObject(cJSONObject, "rate_per_round", flowctrl.getReadoutAll(READOUT_TYPE_RATE_PER_ROUND).c_str()) == NULL)
+        if (cJSON_AddStringToObject(cJSONObject, "rate_per_processing", flowctrl.getReadoutAll(READOUT_TYPE_RATE_PER_PROCESSING).c_str()) == NULL)
             retVal = ESP_FAIL;
         if (cJSON_AddStringToObject(cJSONObject, "process_state", flowctrl.getActStatusWithTime().c_str()) == NULL)
             retVal = ESP_FAIL;
@@ -459,15 +459,15 @@ esp_err_t handler_value(httpd_req_t *req)
         const std::string RESTUsageInfo = 
             "00: Handler usage:<br>"
             "1. Return data from all number sequences:<br>"
-            " - Value:          /value?all=true&type=value<br>"
+            " - Actual Value:   /value?all=true&type=value<br>"
+            " - Fallback Value: /value?all=true&type=fallback<br>"
             " - Raw Value:      /value?all=true&type=raw<br>"
-            " - Previous Value: /value?all=true&type=prevalue<br>"
-            " - Value Status:   /value?all=true&type=error<br><br>"
+            " - Value Status:   /value?all=true&type=status<br><br>"
             "2. Return data from a specific number sequence with e.g. name \"main\":<br>"
-            " - Value:          /value?all=true&type=value&numbersname=main<br>"
+            " - Actual Value:   /value?all=true&type=value&numbersname=main<br>"
             " - Raw Value:      /value?all=true&type=raw&numbersname=main<br>"
-            " - Previous Value: /value?all=true&type=prevalue&numbersname=main<br>"
-            " - Value Status:   /value?all=true&type=error&numbersname=main<br><br>"
+            " - Fallback Value: /value?all=true&type=fallback&numbersname=main<br>"
+            " - Value Status:   /value?all=true&type=status&numbersname=main<br><br>"
             "3. Retrieve WebUI recognition page content, use /value?full=true<br>";
 
         // Default return error message when no return is programmed
@@ -524,12 +524,12 @@ esp_err_t handler_value(httpd_req_t *req)
             if (!_numberspecific) {
                 if (_type == "value")
                     zw = flowctrl.getReadoutAll(READOUT_TYPE_VALUE);
-                else if (_type == "prevalue")
-                    zw = flowctrl.getReadoutAll(READOUT_TYPE_PREVALUE);
+                else if (_type == "fallback")
+                    zw = flowctrl.getReadoutAll(READOUT_TYPE_FALLBACKVALUE);
                 else if (_type == "raw")
                     zw = flowctrl.getReadoutAll(READOUT_TYPE_RAWVALUE);
-                else if (_type == "error")
-                    zw = flowctrl.getReadoutAll(READOUT_TYPE_ERROR);
+                else if (_type == "status")
+                    zw = flowctrl.getReadoutAll(READOUT_TYPE_VALUE_STATUS);
                 else {
                     sReturnMessage = "E92: Type not found";
                     httpd_resp_send(req, sReturnMessage.c_str(), sReturnMessage.length());
@@ -547,12 +547,12 @@ esp_err_t handler_value(httpd_req_t *req)
 
                 if (_type == "value")
                     zw = flowctrl.getNumbersValue(positon, READOUT_TYPE_VALUE);
-                else if (_type == "prevalue")
-                    zw = flowctrl.getNumbersValue(positon, READOUT_TYPE_PREVALUE);
+                else if (_type == "fallback")
+                    zw = flowctrl.getNumbersValue(positon, READOUT_TYPE_FALLBACKVALUE);
                 else if (_type == "raw")
                     zw = flowctrl.getNumbersValue(positon, READOUT_TYPE_RAWVALUE);
-                else if (_type == "error")
-                    zw = flowctrl.getNumbersValue(positon, READOUT_TYPE_ERROR);
+                else if (_type == "status")
+                    zw = flowctrl.getNumbersValue(positon, READOUT_TYPE_VALUE_STATUS);
                 else {
                     sReturnMessage = "E92: Type not found";
                     httpd_resp_send(req, sReturnMessage.c_str(), sReturnMessage.length());
@@ -595,7 +595,7 @@ esp_err_t handler_value(httpd_req_t *req)
                 txt += "<table style=\"width:500px;border-collapse: collapse;table-layout: fixed;\">";
                 txt += "<tr><td style=\"font-weight: bold;width: 50%; padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\">Number Sequence</td>"
                         "<td style=\"font-weight: bold;width: 25%; padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\">Raw Value</td>"
-                        "<td style=\"font-weight: bold;width: 25%; padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\">Value</td></tr>";
+                        "<td style=\"font-weight: bold;width: 25%; padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\">Actual Value</td></tr>";
                 for (int i = 0; i < flowctrl.getNumbersSize(); ++i) {   
 					txt += "<tr><td style=\"padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\">" + 
 						flowctrl.getNumbersName(i) + "</td><td style=\"padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\">" +
@@ -1029,20 +1029,20 @@ esp_err_t handler_uptime(httpd_req_t *req)
 }
 
 
-esp_err_t handler_prevalue(httpd_req_t *req)
+esp_err_t handler_fallbackvalue(httpd_req_t *req)
 {
     #ifdef DEBUG_DETAIL_ON       
-        LogFile.WriteHeapInfo("handler_prevalue - Start");       
+        LogFile.WriteHeapInfo("handler_fallbackvalue - Start");       
     #endif
 
     // Default usage message when handler gets called without any parameter
     const std::string RESTUsageInfo = 
         "00: Handler usage:<br>"
-        "- To retrieve actual PreValue, please provide only a numbersname, e.g. /setPreValue?numbers=main<br>"
-        "- To set PreValue to a new value, please provide a numbersname and a value, e.g. /setPreValue?numbers=main&value=1234.5678<br>"
+        "- To retrieve actual Fallback Value, please provide only a numbersname, e.g. /set_fallbackvalue?numbers=main<br>"
+        "- To set Fallback Value to a new value, please provide a numbersname and a value, e.g. /set_fallbackvalue?numbers=main&value=1234.5678<br>"
         "NOTE:<br>"
-        "value >= 0.0: Set PreValue to provided value<br>"
-        "value <  0.0: Set PreValue to actual RAW value (as long RAW value is a valid number, without N)";
+        "value >= 0.0: Set Fallback Value to provided value<br>"
+        "value <  0.0: Set Fallback Value to actual RAW value (as long RAW value is a valid number, without N)";
 
     // Default return error message when no return is programmed
     std::string sReturnMessage = "E90: Uninitialized";
@@ -1060,7 +1060,7 @@ esp_err_t handler_prevalue(httpd_req_t *req)
 
         if (httpd_query_key_value(_query, "numbers", _numbersname, 50) != ESP_OK) { // If request is incomplete
             sReturnMessage = "E91: Query parameter incomplete or not valid!<br> "
-                             "Call /setPreValue to show REST API usage info and/or check documentation";
+                             "Call /set_fallbackvalue to show REST API usage info and/or check documentation";
             httpd_resp_send(req, sReturnMessage.c_str(), sReturnMessage.length());
             return ESP_FAIL; 
         }
@@ -1076,8 +1076,8 @@ esp_err_t handler_prevalue(httpd_req_t *req)
         return ESP_OK; 
     }   
 
-    if (strlen(_value) == 0) { // If no value is povided --> return actual PreValue
-        sReturnMessage = flowctrl.GetPrevalue(std::string(_numbersname));
+    if (strlen(_value) == 0) { // If no value is povided --> return actual FallbackValue
+        sReturnMessage = flowctrl.GetFallbackValue(std::string(_numbersname));
 
         if (sReturnMessage.empty()) {
             sReturnMessage = "E92: Numbers name not found";
@@ -1086,17 +1086,17 @@ esp_err_t handler_prevalue(httpd_req_t *req)
         }
     }
     else {
-        // New value is positive: Set PreValue to provided value and return value
-        // New value is negative and actual RAW value is a valid number: Set PreValue to RAW value and return value
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "REST API handler_prevalue called: numbersname: " + std::string(_numbersname) + 
+        // New value is positive: Set FallbackValue to provided value and return value
+        // New value is negative and actual RAW value is a valid number: Set FallbackValue to RAW value and return value
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "REST API handler_fallbackvalue called: numbersname: " + std::string(_numbersname) + 
                                                 ", value: " + std::string(_value));
-        if (!flowctrl.UpdatePrevalue(_value, _numbersname, true)) {
+        if (!flowctrl.UpdateFallbackValue(_value, _numbersname)) {
             sReturnMessage = "E93: Update request rejected. Please check device logs for more details";
             httpd_resp_send(req, sReturnMessage.c_str(), sReturnMessage.length());  
             return ESP_FAIL;
         }
 
-        sReturnMessage = flowctrl.GetPrevalue(std::string(_numbersname));
+        sReturnMessage = flowctrl.GetFallbackValue(std::string(_numbersname));
 
         if (sReturnMessage.empty()) {
             sReturnMessage = "E94: Numbers name not found";
@@ -1108,7 +1108,7 @@ esp_err_t handler_prevalue(httpd_req_t *req)
     httpd_resp_send(req, sReturnMessage.c_str(), sReturnMessage.length());  
 
     #ifdef DEBUG_DETAIL_ON       
-        LogFile.WriteHeapInfo("handler_prevalue - End");       
+        LogFile.WriteHeapInfo("handler_fallbackvalue - End");       
     #endif
 
     return ESP_OK;
@@ -1300,7 +1300,7 @@ void task_autodoFlow(void *pvParameter)
                     // Provide flow error indicator to MQTT interface (error occured 3 times in a row)
                     FlowStateErrorsInRow++;
                     if (FlowStateErrorsInRow >= FLOWSTATE_ERRORS_IN_ROW_LIMIT) {
-                        MQTTPublish(mqttServer_getMainTopic() + "/" + "flowerror", "true", 1, false);
+                        MQTTPublish(mqttServer_getMainTopic() + "/" + "process_error", "true", 1, false);
                     }
                 #endif //ENABLE_MQTT
             
@@ -1309,7 +1309,7 @@ void task_autodoFlow(void *pvParameter)
             else {
                 #ifdef ENABLE_MQTT
                     FlowStateErrorsInRow = 0;
-                    MQTTPublish(mqttServer_getMainTopic() + "/" + "flowerror", "false", 1, false);
+                    MQTTPublish(mqttServer_getMainTopic() + "/" + "process_error", "false", 1, false);
                 #endif //ENABLE_MQTT
             }
 
@@ -1447,12 +1447,12 @@ void register_server_main_flow_task_uri(httpd_handle_t server)
 
     camuri.uri       = "/process_data";
     camuri.handler   = handler_process_data;
-    camuri.user_ctx  = NULL;    
+    camuri.user_ctx  = NULL;
     httpd_register_uri_handler(server, &camuri);
 
-    camuri.uri       = "/setPreValue";
-    camuri.handler   = handler_prevalue;
-    camuri.user_ctx  = NULL;    
+    camuri.uri       = "/set_fallbackvalue";
+    camuri.handler   = handler_fallbackvalue;
+    camuri.user_ctx  = NULL;
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri       = "/flow_start";
@@ -1465,7 +1465,7 @@ void register_server_main_flow_task_uri(httpd_handle_t server)
     camuri.user_ctx  = NULL;
     httpd_register_uri_handler(server, &camuri);
 
-    camuri.uri       = "/flowerror";
+    camuri.uri       = "/process_error";
     camuri.handler   = handler_flowerror;
     camuri.user_ctx  = NULL;
     httpd_register_uri_handler(server, &camuri);
