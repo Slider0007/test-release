@@ -105,24 +105,18 @@ void ClassFlowImage::RemoveOldLogs()
 	if (!isLogImage)
 		return;
 	
-	ESP_LOGD(TAG, "remove old images");
     if (imagesRetention == 0) {
         LogFile.WriteToFile(ESP_LOG_DEBUG, logTag, "RemoveOldLogs: Retention deactivated");
         return;
     }
 
-    time_t rawtime;
-    struct tm* timeinfo;
-    char cmpfilename[30];
+    LogFile.WriteToFile(ESP_LOG_DEBUG, logTag, "Delete images older than retention setting (This might take a while)");
 
+    time_t rawtime;
+    
     time(&rawtime);
     rawtime = addDays(rawtime, -1 * imagesRetention + 1);
-    timeinfo = localtime(&rawtime);
-    //ESP_LOGD(TAG, "ImagefileRetentionInDays: %d", imagesRetention);
-    
-    strftime(cmpfilename, 30, LOGFILE_TIME_FORMAT, timeinfo);
-    //ESP_LOGD(TAG, "file name to compare: %s", cmpfilename);
-	std::string folderName = std::string(cmpfilename).LOGFILE_TIME_FORMAT_DATE_EXTR;
+	std::string folderName = ConvertTimeToString(rawtime, LOGFILE_TIME_FORMAT).LOGFILE_TIME_FORMAT_DATE_EXTR;
 
     DIR* dir = opendir(imagesLocation.c_str());
     if (!dir) {
@@ -145,9 +139,9 @@ void ClassFlowImage::RemoveOldLogs()
             }
 		}
     }
-    
-    LogFile.WriteToFile(ESP_LOG_DEBUG, logTag, "Folder deleted: " + std::to_string(deleted) + ", folder not deleted: " + std::to_string(notDeleted));
     closedir(dir);
+
+    LogFile.WriteToFile(ESP_LOG_DEBUG, logTag, "Folders deleted: " + std::to_string(deleted) + " | Folders kept: " + std::to_string(notDeleted));
 }
 
 
