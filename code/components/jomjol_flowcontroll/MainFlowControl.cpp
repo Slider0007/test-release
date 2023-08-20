@@ -128,12 +128,39 @@ bool doInit(void)
 {
     bool bRetVal = true;
 
-    if (!flowctrl.InitFlow(CONFIG_FILE))
+    // Deinit main flow components before init all ressources again
+    // ********************************************   
+    flowctrl.DeinitFlow();
+    //heap_caps_dump(MALLOC_CAP_SPIRAM);
+
+    // Init cam if init not yet done.
+    // Make sure this is called between deinit and init of flow components (avoid SPIRAM fragmentation)
+    // ********************************************   
+    if (!Camera.getCameraInitSuccessful()) { 
+        Camera.PowerResetCamera();
+        esp_err_t camStatus = Camera.InitCam(); 
+
+        if (camStatus != ESP_OK) // Camera init failed
+            return false;
+        
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Init camera successful");
+        Camera.printCamInfo();
+    }
+
+    //  // Init main flow components
+    // ********************************************   
+    if (!flowctrl.InitFlow(CONFIG_FILE)) {
+        flowctrl.DeinitFlow();
         bRetVal = false;
+    }
     
-    /* GPIO handler has to be initialized before MQTT init to ensure proper topic subscription */
+    // Init GPIO handler
+    // Note: GPIO handler has to be initialized before MQTT init to ensure proper topic subscription
+    // ********************************************   
     gpio_handler_init();
 
+    // Init MQTT service
+    // ********************************************   
     #ifdef ENABLE_MQTT
         flowctrl.StartMQTTService();
     #endif //ENABLE_MQTT
@@ -271,7 +298,8 @@ esp_err_t handler_flow_start(httpd_req_t *req)
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
     if (taskAutoFlowState == FLOW_TASK_STATE_IDLE_NO_AUTOSTART || 
-        taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART) 
+        taskAutoFlowState == FLOW_TASK_STATE_IDLE_AUTOSTART || 
+        flowctrl.getActStatus() == FLOW_INIT_FAILED) // Possibility to manual retrigger a cycle when init is already failed
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Flow start triggered by REST API");
         const std::string zw = "001: Flow start triggered by REST API (" + getCurrentTimeString("%H:%M:%S") + ")";
@@ -375,11 +403,16 @@ esp_err_t handler_json(httpd_req_t *req)
 esp_err_t handler_process_data(httpd_req_t *req)
 {
     esp_err_t retVal = ESP_OK;
-    std::string sReturnMessage = "E90: Uninitialized";      // Default return error message when no return is programmed
+    std::string sReturnMessage = "E90: Flow task not yet created";      // Default return error message when no return is programmed
     
     #ifdef DEBUG_DETAIL_ON       
         LogFile.WriteHeapInfo("handler_process_data - Start");    
     #endif
+
+    if (!bTaskAutoFlowCreated) {
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, sReturnMessage.c_str());
+        return ESP_FAIL;
+    }
 
     cJSON *cJSONObject = cJSON_CreateObject();
     
@@ -932,10 +965,10 @@ esp_err_t handler_statusflow(httpd_req_t *req)
 }
 
 
-esp_err_t handler_flowerror(httpd_req_t *req)
+esp_err_t handler_processerror(httpd_req_t *req)
 {
     #ifdef DEBUG_DETAIL_ON       
-        LogFile.WriteHeapInfo("handler_flowerror - Start");       
+        LogFile.WriteHeapInfo("handler_processerror - Start");       
     #endif
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
@@ -943,24 +976,24 @@ esp_err_t handler_flowerror(httpd_req_t *req)
     if (bTaskAutoFlowCreated) 
     {
         #ifdef DEBUG_DETAIL_ON       
-            ESP_LOGD(TAG, "handler_flowerror: %s", req->uri);
+            ESP_LOGD(TAG, "handler_processerror: %s", req->uri);
         #endif
 
         if (flowctrl.getActFlowError())
             if (FlowStateErrorsInRow < FLOWSTATE_ERRORS_IN_ROW_LIMIT)
-                httpd_resp_send(req, "001: Flowerror: Single error occured", HTTPD_RESP_USE_STRLEN);
+                httpd_resp_send(req, "E90: Process error occured", HTTPD_RESP_USE_STRLEN);
             else
-                httpd_resp_send(req, "002: Flowerror: Multiple errors in row", HTTPD_RESP_USE_STRLEN);
+                httpd_resp_send(req, "E91: Multiple process errors in row", HTTPD_RESP_USE_STRLEN);
         else
-            httpd_resp_send(req, "000: Flowerror: Flow process OK - No error", HTTPD_RESP_USE_STRLEN);
+            httpd_resp_send(req, "000: No process error", HTTPD_RESP_USE_STRLEN);
     }
     else 
     {
-        httpd_resp_send(req, "E90: Flowerror: Request not possible. No flow task running. Check logs.", HTTPD_RESP_USE_STRLEN);  
+        httpd_resp_send(req, "E92: Request not possible. Flow task not running. Check logs.", HTTPD_RESP_USE_STRLEN);  
     }
 
     #ifdef DEBUG_DETAIL_ON       
-        LogFile.WriteHeapInfo("handler_flowerror - Done");       
+        LogFile.WriteHeapInfo("handler_processerror - Done");       
     #endif
 
     return ESP_OK;
@@ -1156,9 +1189,16 @@ void task_autodoFlow(void *pvParameter)
 
                 while (true) {                                      // Waiting for a REQUEST
                     vTaskDelay(1000 / portTICK_PERIOD_MS);
-                    if (reloadConfig) {
+                    if (reloadConfig) { // Possibility to manual retrigger a cycle with parameter reload when init is already failed
                         reloadConfig = false;
+                        manualFlowStart = false; // parameter reload has higher prio
                         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger: Reload configuration");
+                        taskAutoFlowState = FLOW_TASK_STATE_INIT;   // Repeat FLOW INIT
+                        break;
+                    }
+                    else if (manualFlowStart) { // Possibility to manual retrigger a cycle with manual start when init is already failed
+                        manualFlowStart = false;
+                        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger: Start process (manual trigger)");
                         taskAutoFlowState = FLOW_TASK_STATE_INIT;   // Repeat FLOW INIT
                         break;
                     }
@@ -1182,7 +1222,7 @@ void task_autodoFlow(void *pvParameter)
                     MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), 1, false);
                 #endif //ENABLE_MQTT
 
-                //std::string zw_time = getCurrentTimeString(LOGFILE_TIME_FORMAT);
+                //std::string zw_time = getCurrentTimeString(DEFAULT_TIME_FORMAT);
                 //flowctrl.doFlowTakeImageOnly(zw_time);    // Start only ClassFlowTakeImage to capture images
 
                 while (true) {                              // Waiting for a REQUEST
@@ -1237,18 +1277,18 @@ void task_autodoFlow(void *pvParameter)
         // ********************************************     
         else if (taskAutoFlowState == FLOW_TASK_STATE_IMG_PROCESSING) {       
             LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "----------------------------------------------------------------"); // Clear separation between runs
-            std::string _zw = "Round #" + std::to_string(++countRounds) + " started";
-            LogFile.WriteToFile(ESP_LOG_INFO, TAG, _zw); 
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(++countRounds) + " started"); 
             roundStartTime = getUpTime();
             fr_start = esp_timer_get_time();
+
+            flowctrl.setActFlowError(false); // Reset process_error at prcoess start
                    
-            if (flowctrl.doFlowImageEvaluation(getCurrentTimeString(LOGFILE_TIME_FORMAT))) {
+            if (flowctrl.doFlowImageEvaluation(getCurrentTimeString(DEFAULT_TIME_FORMAT))) {
                 LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Image evaluation completed (" + 
                                     std::to_string(getUpTime() - roundStartTime) + "s)");
-                flowctrl.setActFlowError(false);
             }
             else {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Image evaluation failed");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Image evaluation process error occured");
                 flowctrl.setActFlowError(true);
             }
 
@@ -1259,8 +1299,8 @@ void task_autodoFlow(void *pvParameter)
         // ******************************************** 
         else if (taskAutoFlowState == FLOW_TASK_STATE_PUBLISH_DATA) {  
 
-            if (!flowctrl.doFlowPublishData(getCurrentTimeString(LOGFILE_TIME_FORMAT))) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Publish data failed"); 
+            if (!flowctrl.doFlowPublishData(getCurrentTimeString(DEFAULT_TIME_FORMAT))) {
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Publish data process error occured"); 
                 flowctrl.setActFlowError(true);
             }
             taskAutoFlowState = FLOW_TASK_STATE_ADDITIONAL_TASKS;           // Continue with TASKS after FLOW FINISHED
@@ -1270,6 +1310,36 @@ void task_autodoFlow(void *pvParameter)
         // Process further tasks after image is fully processed and results are published
         // ********************************************
         else if (taskAutoFlowState == FLOW_TASK_STATE_ADDITIONAL_TASKS) {
+            // Post process handling (if neccessary)
+            // ********************************************
+            if (flowctrl.FlowStateEventOccured()) {
+
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + std::string(FLOW_POST_EVENT_HANDLING));
+                flowctrl.setActStatus(std::string(FLOW_POST_EVENT_HANDLING));
+                #ifdef ENABLE_MQTT
+                    MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), 1, false);
+                #endif
+
+                #ifdef ENABLE_MQTT
+                    // Provide flow error indicator to MQTT interface (error occured 3 times in a row)
+                    FlowStateErrorsInRow++;
+                    if (FlowStateErrorsInRow >= FLOWSTATE_ERRORS_IN_ROW_LIMIT) {
+                        MQTTPublish(mqttServer_getMainTopic() + "/" + "process_error", "true", 1, false);
+                    }
+                #endif //ENABLE_MQTT
+            
+                flowctrl.PostProcessEventHandler();
+                LogFile.RemoveOldDebugFiles();
+            }
+            else {
+                #ifdef ENABLE_MQTT
+                    FlowStateErrorsInRow = 0;
+                    MQTTPublish(mqttServer_getMainTopic() + "/" + "process_error", "false", 1, false);
+                #endif //ENABLE_MQTT
+            }
+
+            // Additional tasks
+            // ********************************************
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + std::string(FLOW_ADDITIONAL_TASKS));
             flowctrl.setActStatus(std::string(FLOW_ADDITIONAL_TASKS));
             #ifdef ENABLE_MQTT
@@ -1286,32 +1356,6 @@ void task_autodoFlow(void *pvParameter)
             // WIFI Signal Strength (RSSI) -> Logfile
             LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "WIFI Signal (RSSI): " + std::to_string(get_WIFI_RSSI()) + "dBm");
 
-            // Automatic error handling (if neccessary)
-            // ********************************************
-            if (flowctrl.FlowStateErrorsOccured()) {
-
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + std::string(FLOW_AUTO_ERROR_HANDLING));
-                flowctrl.setActStatus(std::string(FLOW_AUTO_ERROR_HANDLING));
-                #ifdef ENABLE_MQTT
-                    MQTTPublish(mqttServer_getMainTopic() + "/" + "status", flowctrl.getActStatus(), 1, false);
-                #endif
-
-                #ifdef ENABLE_MQTT
-                    // Provide flow error indicator to MQTT interface (error occured 3 times in a row)
-                    FlowStateErrorsInRow++;
-                    if (FlowStateErrorsInRow >= FLOWSTATE_ERRORS_IN_ROW_LIMIT) {
-                        MQTTPublish(mqttServer_getMainTopic() + "/" + "process_error", "true", 1, false);
-                    }
-                #endif //ENABLE_MQTT
-            
-                flowctrl.AutomaticFlowErrorHandler(); 
-            }
-            else {
-                #ifdef ENABLE_MQTT
-                    FlowStateErrorsInRow = 0;
-                    MQTTPublish(mqttServer_getMainTopic() + "/" + "process_error", "false", 1, false);
-                #endif //ENABLE_MQTT
-            }
 
             // Round finished -> Logfile
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Round #" + std::to_string(countRounds) + 
@@ -1338,10 +1382,15 @@ void task_autodoFlow(void *pvParameter)
 
             // Check if triggerd reload config or manually triggered single round
             // ********************************************    
-            if (reloadConfig) {
+            if (taskAutoFlowState == FLOW_TASK_STATE_INIT) {
+                reloadConfig = false; // reload by post process event handler has higher prio
+                manualFlowStart = false; // Reload config has higher prio
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "PostProcessEventHandler trigger: Reload configuration");
+            }
+            else if (reloadConfig) {
                 reloadConfig = false;
                 manualFlowStart = false; // Reload config has higher prio
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger: Reload configuration");
+                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Manual trigger: Reload configuration");
                 taskAutoFlowState = FLOW_TASK_STATE_INIT;                   // Return to state "FLOW INIT"
             }
             else if (manualFlowStart) {
@@ -1410,14 +1459,14 @@ void task_autodoFlow(void *pvParameter)
 }
 
 
-void StartMainFlowTask()
+void CreateMainFlowTask()
 {
     #ifdef DEBUG_DETAIL_ON      
             LogFile.WriteHeapInfo("CreateFlowTask: start");
     #endif
 
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + std::string(FLOW_START_FLOW_TASK));
-    flowctrl.setActStatus(std::string(FLOW_START_FLOW_TASK));
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Process state: " + std::string(FLOW_CREATE_FLOW_TASK));
+    flowctrl.setActStatus(std::string(FLOW_CREATE_FLOW_TASK));
 
     BaseType_t xReturned = xTaskCreatePinnedToCore(&task_autodoFlow, "task_autodoFlow", 12 * 1024, NULL, tskIDLE_PRIORITY+2, &xHandletask_autodoFlow, 0);
     if( xReturned != pdPASS ) {
@@ -1466,7 +1515,7 @@ void register_server_main_flow_task_uri(httpd_handle_t server)
     httpd_register_uri_handler(server, &camuri);
 
     camuri.uri       = "/process_error";
-    camuri.handler   = handler_flowerror;
+    camuri.handler   = handler_processerror;
     camuri.user_ctx  = NULL;
     httpd_register_uri_handler(server, &camuri);
 

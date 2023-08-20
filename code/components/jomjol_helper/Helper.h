@@ -30,7 +30,6 @@ std::string getFileFullFileName(std::string filename);
 std::string getDirectory(std::string filename);
 long getFileSize(std::string filename);
 
-
 int mkdir_r(const char *dir, const mode_t mode);
 int removeFolder(const char* folderPath, const char* logTag);
 
@@ -98,5 +97,6 @@ std::string UrlDecode(const std::string& value);
 bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith);
 bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt);
 bool isInString(std::string& s, std::string const& toFind);
+std::string intToHexString(int _valueInt);
 
 #endif //HELPER_H

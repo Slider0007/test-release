@@ -231,7 +231,7 @@ bool MakeDir(std::string path)
 {
 	std::string parent;
 
-	LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Create new folder " + path);
+	//LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Create folder: " + path);
 
 	bool bSuccess = false;
     int nRC = ::mkdir( path.c_str(), 0775 );
@@ -241,7 +241,7 @@ bool MakeDir(std::string path)
             case ENOENT:
                 //parent didn't exist, try to create it
 				parent = path.substr(0, path.find_last_of('/'));
-        		LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Create parent folder first: " + parent);
+        		//LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Create parent folder first: " + parent);
                 if(MakeDir(parent)) {
                     //Now, try to create again.
                     bSuccess = 0 == ::mkdir( path.c_str(), 0775 );
@@ -590,12 +590,14 @@ int removeFolder(const char* folderPath, const char* logTag) {
 			} else {
 				LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to delete file " + path);
 			}
-        } else if (entry->d_type == DT_DIR) {
-			deleted += removeFolder(path.c_str(), logTag);
+        }
+		else if (entry->d_type == DT_DIR) {
+			if (removeFolder(path.c_str(), logTag) > 0)
+				deleted++;
 		}
     }
-    
     closedir(dir);
+	
 	if (rmdir(folderPath) != 0) {
 		LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to delete folder " + std::string(folderPath));
 	}
@@ -839,7 +841,7 @@ void setSystemStatusFlag(SystemStatusFlag_t flag)
 
 	char buf[20];
 	snprintf(buf, sizeof(buf), "0x%08X", getSystemStatus());
-    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "New System Status: " + std::string(buf));
+    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "System status code: " + std::string(buf));
 }
 
 
@@ -849,7 +851,7 @@ void clearSystemStatusFlag(SystemStatusFlag_t flag)
 
 	char buf[20];
 	snprintf(buf, sizeof(buf), "0x%08X", getSystemStatus());
-    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "New System Status: " + std::string(buf));
+    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "System status code: " + std::string(buf));
 }
 
 
@@ -1002,4 +1004,12 @@ bool isInString(std::string& s, std::string const& toFind)
         return false;
     }
     return true;
+}
+
+
+std::string intToHexString(int _valueInt)
+{
+	char valueHex[33];
+	sprintf(valueHex,"0x%02x", _valueInt);
+	return std::string(valueHex);
 }

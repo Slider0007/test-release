@@ -4,6 +4,7 @@
 
 #include "CImageBasis.h"
 #include "ClassControllCamera.h"
+#include "MainFlowControl.h"
 
 #include "esp_wifi.h"
 #include "esp_log.h"
@@ -18,18 +19,22 @@ static const char* TAG = "TAKEIMAGE";
 
 void ClassFlowTakeImage::SetInitialParameter(void)
 {
-    PresetFlowStateHandler(true);
-    waitbeforepicture = 5.0; // Flash duration in s
-    flash_duration = (int)(waitbeforepicture * 1000);   // Flash duration in ms
+    presetFlowStateHandler(true);
+
+    disabled = false;
+    rawImage = NULL;
+    namerawimage = "/sdcard/img_tmp/raw.jpg";
+    waitbeforepicture = 2.0; // Flash duration in s
+    flash_duration = (int)(waitbeforepicture * 1000); // Flash duration in ms
     isImageSize = false;
     ImageSize = FRAMESIZE_VGA;
     TimeImageTaken = 0;
     ImageQuality = 12;
-    SaveAllFiles = false;
-    disabled = false;
+    brightness = 0;
+    contrast = 0;
+    saturation = 0;
     FixedExposure = false;
-    rawImage = NULL;
-    namerawimage = "/sdcard/img_tmp/raw.jpg";
+    SaveAllFiles = false;
 }     
 
 
@@ -43,9 +48,6 @@ ClassFlowTakeImage::ClassFlowTakeImage(std::vector<ClassFlow*>* lfc) : ClassFlow
 bool ClassFlowTakeImage::ReadParameter(FILE* pfile, std::string& aktparamgraph)
 {
     std::vector<std::string> splitted;
-    int _brightness = 0;
-    int _contrast = 0;
-    int _saturation = 0;
     int ledintensity = 50;
 
     aktparamgraph = trim(aktparamgraph);
@@ -88,26 +90,23 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, std::string& aktparamgraph)
         if ((toUpper(splitted[0]) == "LEDINTENSITY") && (splitted.size() > 1))
         {
             ledintensity = stoi(splitted[1]);
-            //checkMinMax(&ledintensity, 0, 100);
-            //ESP_LOGI(TAG, "ledintensity: %d", ledintensity);
             ledintensity = std::min(100, ledintensity);
             ledintensity = std::max(0, ledintensity);
-            //Camera.SetLEDIntensity(ledintensity);
         }
 
         if ((toUpper(splitted[0]) == "BRIGHTNESS") && (splitted.size() > 1))
         {
-            _brightness = stoi(splitted[1]);
+            brightness = stoi(splitted[1]);
         }
 
         if ((toUpper(splitted[0]) == "CONTRAST") && (splitted.size() > 1))
         {
-            _contrast = stoi(splitted[1]);
+            contrast = stoi(splitted[1]);
         }
 
         if ((toUpper(splitted[0]) == "SATURATION") && (splitted.size() > 1))
         {
-            _saturation = stoi(splitted[1]);
+            saturation = stoi(splitted[1]);
         }
 
         if ((toUpper(splitted[0]) == "FIXEDEXPOSURE") && (splitted.size() > 1))
@@ -135,9 +134,9 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, std::string& aktparamgraph)
         }  
     }
 
-    Camera.ledc_init(); // PWM init needs to be repeated after online config update
+    Camera.ledc_init(); // PWM init needs to be done here due to parameter reload (camera class not to be deleted completely)
     Camera.SetLEDIntensity(ledintensity);
-    Camera.SetBrightnessContrastSaturation(_brightness, _contrast, _saturation);
+    Camera.SetBrightnessContrastSaturation(brightness, contrast, saturation);
     Camera.SetQualitySize(ImageQuality, ImageSize);
 
     image_width = Camera.image_width;
@@ -154,8 +153,8 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, std::string& aktparamgraph)
         return false;
     }
 
-    if (FixedExposure && (waitbeforepicture > 0)) {
-//      ESP_LOGD(TAG, "Fixed Exposure enabled");
+    if (FixedExposure && (flash_duration > 0)) {
+        //ESP_LOGD(TAG, "Fixed Exposure enabled");
         Camera.EnableAutoExposure(flash_duration);
     }
 
@@ -165,15 +164,15 @@ bool ClassFlowTakeImage::ReadParameter(FILE* pfile, std::string& aktparamgraph)
 
 bool ClassFlowTakeImage::doFlow(std::string zwtime)
 {
-    PresetFlowStateHandler();
+    presetFlowStateHandler(false, zwtime);
     std::string logPath = CreateLogFolder(zwtime);
  
     #ifdef DEBUG_DETAIL_ON  
         LogFile.WriteHeapInfo("ClassFlowTakeImage::doFlow - Start");
     #endif
 
-    if (takePictureWithFlash(flash_duration)) {
-        FlowStateHandlerSetError(-1);       // Error cluster: -1
+    if (!takePictureWithFlash(flash_duration)) {
+        setFlowStateHandlerEvent(-1); // Set error code for post cycle error handler 'doPostProcessEventHandling' (error level)
         return false;
     }
 
@@ -193,10 +192,16 @@ bool ClassFlowTakeImage::doFlow(std::string zwtime)
 }
 
 
-void ClassFlowTakeImage::doAutoErrorHandling()
+void ClassFlowTakeImage::doPostProcessEventHandling()
 {
-    // Error handling can be included here. Function is called after round is completed.
-    //ESP_LOGI(TAG, "ClassFlowTakeImage::doAutoErrorHandling() - TEST");
+    // Post cycle process handling can be included here. Function is called after processing cycle is completed
+    for (int i = 0; i < getFlowState()->EventCode.size(); i++) {
+        if (getFlowState()->EventCode[i] == -1) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Camera init or framebuffer access failed, reinit camera");
+            Camera.DeinitCam(); // Reinit will be done here: MainFlowControl.cpp -> DoInit()
+            setTaskAutoFlowState(FLOW_TASK_STATE_INIT); // Do fully init process to avoid SPIRAM fragmentation
+        }
+    }
 }
 
 
@@ -211,7 +216,7 @@ esp_err_t ClassFlowTakeImage::camera_capture()
 {
     std::string nm =  namerawimage;
 
-    if (!Camera.CaptureToFile(nm))
+    if (Camera.CaptureToFile(nm) != ESP_OK)
         return ESP_FAIL;
 
     time(&TimeImageTaken);
@@ -232,7 +237,7 @@ bool ClassFlowTakeImage::takePictureWithFlash(int _flash_duration)
     rawImage->height = image_height;
 
     ESP_LOGD(TAG, "flash_duration: %d", _flash_duration);
-    if (!Camera.CaptureToBasisImage(rawImage, _flash_duration))
+    if (Camera.CaptureToBasisImage(rawImage, _flash_duration) != ESP_OK)
         return false;
 
     time(&TimeImageTaken);
@@ -257,7 +262,7 @@ ImageData* ClassFlowTakeImage::SendRawImage()
     CImageBasis *zw = new CImageBasis("SendRawImage", rawImage);
     ImageData *id;
 
-    if (!Camera.CaptureToBasisImage(rawImage, flash_duration))
+    if (Camera.CaptureToBasisImage(rawImage, flash_duration) != ESP_OK)
         return NULL;
 
     time(&TimeImageTaken);
