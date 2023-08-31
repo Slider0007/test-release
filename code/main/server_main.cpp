@@ -91,16 +91,16 @@ esp_err_t info_get_handler(httpd_req_t *req)
     }
     else if (_task.compare("IP") == 0)
     {
-        std::string *zw;
+        std::string zw;
         zw = getIPAddress();
-        httpd_resp_sendstr(req, zw->c_str());
+        httpd_resp_sendstr(req, zw.c_str());
         return ESP_OK;        
     }
     else if (_task.compare("SSID") == 0)
     {
-        std::string *zw;
+        std::string zw;
         zw = getSSID();
-        httpd_resp_sendstr(req, zw->c_str());
+        httpd_resp_sendstr(req, zw.c_str());
         return ESP_OK;        
     }
     else if (_task.compare("Round") == 0)
@@ -350,8 +350,8 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
         "\"gitrevision\": \"" + gitrevision + "\"," +
         "\"html\": \"" + htmlversion + "\"," +
         "\"cputemp\": \"" + cputemp + "\"," +
-        "\"hostname\": \"" + *getHostname() + "\"," +
-        "\"IPv4\": \"" + *getIPAddress() + "\"," +
+        "\"hostname\": \"" + getHostname() + "\"," +
+        "\"IPv4\": \"" + getIPAddress() + "\"," +
         "\"freeHeapMem\": \"" + freeheapmem + "\"" +
         "}]";
 
@@ -412,7 +412,7 @@ httpd_handle_t start_webserver(void)
     httpd_handle_t server = NULL;
     httpd_config_t config = { };
 
-    config.task_priority = tskIDLE_PRIORITY+5; // previously -> 2022-12-11: tskIDLE_PRIORITY+1; 2021-09-24: tskIDLE_PRIORITY+5
+    config.task_priority = tskIDLE_PRIORITY+3; // previously -> 2022-12-11: tskIDLE_PRIORITY+1; 2021-09-24: tskIDLE_PRIORITY+5
     config.stack_size = 10240; // previously -> 2023-01-02: 32768
     config.core_id = 1; // previously -> 2023-01-02: 0, 2022-12-11: tskNO_AFFINITY;
     config.server_port = 80;
