@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - build-workflow
+
 name: release-please
 jobs:
   release-please:
@@ -11,5 +12,8 @@ jobs:
         with:
           release-type: node
           package-name: release-please-action
-          changelog-path: Changelog.md
-          changelog-types: '[{"type":"feat","section":"Features","hidden":false},{"type":"fix","section":"Bug Fixes","hidden":false},{"type":"chore","section":"Other Changes","hidden":false}]'
+          draft-pull-request: true
+          changelog-path: CHANGELOG.md
+          changelog-types: '[{"type":"feat","section":"Features","hidden":false},
+                             {"type":"fix","section":"Bug Fixes","hidden":false},
+                             {"type":"chore","section":"Other Changes","hidden":false}]'

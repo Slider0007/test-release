@@ -1,3 +1,9 @@
+## [15.1.2-SLFORK] - 2023-06-20
+
+### Changes
+
+For a full list of changes see [Full list of changes](https://github.com/Slider0007/AI-on-the-edge-device/compare/v15.1.1...v15.1.2-SLFORK)
+
 ## [15.1.1] - 2023-03-23
 
 ### Update Procedure
