@@ -434,7 +434,7 @@ jobs:
 #      if: startsWith(github.ref, 'refs/tags/') 
 #      with:
 #        changelogPath: Changelog.md
-#        version: ${{ steps.get_version.outputs.version-without-v }}
+#        version: ${{ steps.get_version.outputs.version }}
             
 #    # the release notes will be extracted from changelog 
 #    - name: Extract release notes
