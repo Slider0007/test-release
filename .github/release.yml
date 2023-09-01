@@ -3,7 +3,7 @@ changelog:
     labels:
       - ignore-for-release
     authors:
-      - github-bot
+      - github-actions
   categories:
     - title: Breaking Changes 🛠
       labels:

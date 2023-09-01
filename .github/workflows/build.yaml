@@ -141,7 +141,7 @@ jobs:
     - name: Upload update.zip artifact (Firmware + Web UI + CNN)
       uses: actions/upload-artifact@v3.1.2
       with:
-        name: "AI-on-the-edge-device__update__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "AI-on-the-edge-device__update__SL-Fork__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./update
 
     - if: startsWith(github.ref, 'refs/tags/')
@@ -208,7 +208,7 @@ jobs:
     - name: Upload manual_setup.zip artifact (Firmware + Bootloader + Partitions + Web UI)
       uses: actions/upload-artifact@v3.1.2
       with:
-        name: "AI-on-the-edge-device__manual-setup__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "AI-on-the-edge-device__manual-setup__SL-Fork__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./manual_setup
         
     - if: startsWith(github.ref, 'refs/tags/')
@@ -274,7 +274,7 @@ jobs:
     - name: Upload remote_setup.zip artifact (Firmware + Web UI + Config)
       uses: actions/upload-artifact@v3.1.2
       with:
-        name: "AI-on-the-edge-device__remote-setup__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "AI-on-the-edge-device__remote-setup__SL-Fork__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./remote_setup
 
     - if: startsWith(github.ref, 'refs/tags/')
@@ -334,7 +334,7 @@ jobs:
     - name: Upload debug_files.zip artifact
       uses: actions/upload-artifact@v3.1.2
       with:
-        name: "AI-on-the-edge-device__debug-files__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
+        name: "AI-on-the-edge-device__debug-files__SL-Fork__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./debug
 
     - if: startsWith(github.ref, 'refs/tags/')
@@ -406,22 +406,22 @@ jobs:
 
         # AI-on-the-edge-device__OTA-update__*.zip (e.g. "AI-on-the-edge-device__OTA-update__v16.0.0.zip")
         cd ./update
-        zip -r ../release/AI-on-the-edge-device__OTA-update__${{ steps.vars.outputs.branch }}.zip .
+        zip -r ../release/AI-on-the-edge-device__update__SL-Fork__${{ steps.vars.outputs.branch }}.zip .
         
 
         # AI-on-the-edge-device__manual-setup__*.zip (e.g. "AI-on-the-edge-device__manual-setup__v16.0.0.zip")
         cd ../manual_setup
-        zip -r ../release/AI-on-the-edge-device__manual-setup__${{ steps.vars.outputs.branch }}.zip .
+        zip -r ../release/AI-on-the-edge-device__manual-setup__SL-Fork__${{ steps.vars.outputs.branch }}.zip .
 
 
         # AI-on-the-edge-device__remote-setup__*.zip (e.g. "AI-on-the-edge-device__remote-setup__v16.0.0.zip")
         cd ../remote_setup
-        zip -r ../release/AI-on-the-edge-device__remote-setup__${{ steps.vars.outputs.branch }}.zip .
+        zip -r ../release/AI-on-the-edge-device__remote-setup__SL-Fork__${{ steps.vars.outputs.branch }}.zip .
         
         
         # AI-on-the-edge-device__debug-files__*.zip (e.g. "AI-on-the-edge-device__debug-files__v16.0.0.zip)"
         cd ../debug
-        zip -r ../release/AI-on-the-edge-device__debug-files__${{ steps.vars.outputs.branch }}.zip .
+        zip -r ../release/AI-on-the-edge-device__debug-files__SL-Fork__${{ steps.vars.outputs.branch }}.zip .
 
     # extract the version used in next step
     - id: get_version
@@ -444,8 +444,8 @@ jobs:
 #      with:
 #          changelog_file: Changelog.md
 
-    # Releases should only be created on master by tagging the last commit.
-    # all artifacts in firmware folder pushed to the release
+    # Releases should only be created by tagging the last commit
+    # All artifacts in firmware folder pushed to the release
     - name: Release
       uses: softprops/action-gh-release@v1
       # Note:
@@ -454,7 +454,7 @@ jobs:
       # https://github.com/softprops/action-gh-release/issues/232#issuecomment-1131379440
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        name:  ${{ steps.get_version.outputs.version-without-v }}
+        name:  ${{ steps.get_version.outputs.version }}
         body: ${{ steps.extract-release-notes.outputs.release_notes }}
         files: |
           release/*
