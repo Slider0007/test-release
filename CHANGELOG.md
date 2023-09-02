@@ -4,6 +4,31 @@
 
 For a full list of changes see [Full list of changes](https://github.com/Slider0007/AI-on-the-edge-device/compare/v15.1.1...v15.1.2-SLFORK)
 
+## [16.0.0-SLFORK](https://github.com/Slider0007/test-release/compare/v15.1.2-SLFORK...v16.0.0-SLFORK) (2023-09-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* Test Breaking fearure
+
+### Features
+
+* Test Breaking fearure ([9a01249](https://github.com/Slider0007/test-release/commit/9a0124990c5bc7039d0d170ab7eff4c351aaca4f))
+
+
+### Bug Fixes
+
+* **fileserver:** avoid sending *two* "last-chunk" sequences ([#2532](https://github.com/Slider0007/test-release/issues/2532)) ([#53](https://github.com/Slider0007/test-release/issues/53)) ([db467c0](https://github.com/Slider0007/test-release/commit/db467c0a034a1e9acbe3d02cb892eec15c4272ba))
+* test Fix ([9a01249](https://github.com/Slider0007/test-release/commit/9a0124990c5bc7039d0d170ab7eff4c351aaca4f))
+
+
+### Other Changes
+
+* Update changelog ([7211245](https://github.com/Slider0007/test-release/commit/7211245051e584af516e09ab8c15e8b4adcfbb11))
+* update flow ([a9db990](https://github.com/Slider0007/test-release/commit/a9db99075f7d9e83fd11e4ecbcfc653bda971589))
+* update workflow ([9a01249](https://github.com/Slider0007/test-release/commit/9a0124990c5bc7039d0d170ab7eff4c351aaca4f))
+* **workflow:** Update please release ([a724173](https://github.com/Slider0007/test-release/commit/a72417300b770171fdb3953f92e28274627e33c9))
+
 ## [15.1.1] - 2023-03-23
 
 ### Update Procedure
