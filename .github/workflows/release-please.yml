@@ -13,10 +13,10 @@ jobs:
           release-type: simple
           package-name: release-please-action
           draft-pull-request: true
+          pull-request-header: ':robot: Prepare new release'
           changelog-path: CHANGELOG.md
           changelog-types: '[
                              {"type":"feat","section":"Features","hidden":false},
                              {"type":"fix","section":"Bug Fixes","hidden":false},
                              {"type":"chore","section":"Other Changes","hidden":false}
                             ]'
-                        
