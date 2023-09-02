@@ -12,7 +12,7 @@ jobs:
         with:
           release-type: simple
           package-name: release-please-action
-          draft-pull-request: true
+          draft-pull-request: false
           pull-request-header: ':robot: Prepare new release'
           changelog-path: CHANGELOG.md
           changelog-types: '[
