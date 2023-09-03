@@ -9,14 +9,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: google-github-actions/release-please-action@v3
+        id: release
         with:
           release-type: simple
           package-name: release-please-action
           draft-pull-request: false
-          pull-request-header: ':robot: Prepare new release'
+          pull-request-header: ':robot: Preparation for a new release'
           changelog-path: CHANGELOG.md
           changelog-types: '[
                              {"type":"feat","section":"Features","hidden":false},
                              {"type":"fix","section":"Bug Fixes","hidden":false},
                              {"type":"chore","section":"Other Changes","hidden":false}
                             ]'
+      - name: Upload Release Artifacts
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run:
+          gh release upload ${{ steps.release.outputs.tag_name }} ./artifact/some-build-artifact.zip
