@@ -11,6 +11,7 @@ jobs:
       - uses: google-github-actions/release-please-action@v3
         id: release
         with:
+          command: release-pr
           release-type: simple
           package-name: release-please-action
           draft-pull-request: false
@@ -19,6 +20,7 @@ jobs:
           changelog-types: '[
                              {"type":"feat","section":"Features","hidden":false},
                              {"type":"fix","section":"Bug Fixes","hidden":false},
+                             {"type":"refactor","section":"Refactoring / Style Changes","hidden":false},
                              {"type":"chore","section":"Other Changes","hidden":false}
                             ]'
       - name: Upload Release Artifacts
