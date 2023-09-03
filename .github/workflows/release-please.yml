@@ -23,9 +23,3 @@ jobs:
                              {"type":"refactor","section":"Refactoring / Style Changes","hidden":false},
                              {"type":"chore","section":"Other Changes","hidden":false}
                             ]'
-      - name: Upload Release Artifacts
-        if: ${{ steps.release.outputs.release_created }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run:
-          gh release upload ${{ steps.release.outputs.tag_name }} ./artifact/some-build-artifact.zip
