@@ -321,6 +321,7 @@ jobs:
       release_created: ${{ steps.release.outputs.release_created }}
       upload_url: ${{ steps.release.outputs.upload_url }}
       version: "${{steps.release.outputs.major}}.${{steps.release.outputs.minor}}.${{steps.release.outputs.patch}}"
+      tag_name: ${{ steps.release.outputs.tag_name }} 
     if: github.ref == 'refs/heads/build-workflow' || github.ref == 'refs/heads/develop' # Process only for specific branches
     steps:
       - uses: google-github-actions/release-please-action@v3
@@ -390,12 +391,19 @@ jobs:
         cd ./debug
         zip -r ../release/AI-on-the-edge-device__debug-files__SLFork__${{ steps.vars.outputs.branch }}.zip .
 
-    - name: Upload artifacts
-      uses: Roang-zero1/github-upload-release-artifacts-action@v2
-      with:
-        args: "release/*"
+    - name: Upload release artifacts
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run:
+        gh release upload ${{ needs.prepare-release.outputs.tag_name }} release/*
+    
+    
+    #- name: Upload artifacts
+    #  uses: Roang-zero1/github-upload-release-artifacts-action@v2
+    #  with:
+    #    args: "release/*"
+    #  env:
+    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
     # Releases should only be created by tagging the last commit (Tag commit performed by release-please action)
     # All artifacts in firmware folder pushed to the release
