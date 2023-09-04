@@ -368,33 +368,13 @@ jobs:
       run: |
         rm -rf release
         mkdir -p release
-        mv AI-on-the-edge-device__update__SLFork__*.zip ./release/AI-on-the-edge-device__update__SLFork__${{ needs.prepare-release.outputs.tag_name }}.zip
-        mv AI-on-the-edge-device__manual-setup__SLFork__*.zip ./release/AI-on-the-edge-device__manual-setup__SLFork__${{ needs.prepare-release.outputs.tag_name }}.zip
-        mv AI-on-the-edge-device__remote-setup__SLFork__*.zip ./release/AI-on-the-edge-device__remote-setup__SLFork__${{ needs.prepare-release.outputs.tag_name }}.zip
-        mv AI-on-the-edge-device__debug-files__SLFork__*.zip ./release/AI-on-the-edge-device__debug-files__SLFork__${{ needs.prepare-release.outputs.tag_name }}.zip
+        mv AI-on-the-edge-device__update__SLFork__*.zip ./release/AI-on-the-edge-device__update__SLFork__${{ needs.prepare-release.outputs.version }}.zip
+        mv AI-on-the-edge-device__manual-setup__SLFork__*.zip ./release/AI-on-the-edge-device__manual-setup__SLFork__${{ needs.prepare-release.outputs.version }}.zip
+        mv AI-on-the-edge-device__remote-setup__SLFork__*.zip ./release/AI-on-the-edge-device__remote-setup__SLFork__${{ needs.prepare-release.outputs.version }}.zip
+        mv AI-on-the-edge-device__debug-files__SLFork__*.zip ./release/AI-on-the-edge-device__debug-files__SLFork__${{ needs.prepare-release.outputs.version }}.zip
 
-    - name: Upload release artifacts
+    - name: Upload artifacts
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run:
         gh release upload ${{ needs.prepare-release.outputs.tag_name }} release/*
-    
-    
-    #- name: Upload artifacts
-    #  uses: Roang-zero1/github-upload-release-artifacts-action@v2
-    #  with:
-    #    args: "release/*"
-    #  env:
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    # Releases should only be created by tagging the last commit (Tag commit performed by release-please action)
-    # All artifacts in firmware folder pushed to the release
-    #- name: Create release
-    #  uses: softprops/action-gh-release@v1
-    #  # Note:
-    #  # If you get the error "Resource not accessible by integration",
-    #  # The access rights are not sufficient, see
-    #  # https://github.com/softprops/action-gh-release/issues/232#issuecomment-1131379440
-    #  with:
-    #    files: |
-    #      release/*
