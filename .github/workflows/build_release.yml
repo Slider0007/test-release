@@ -7,6 +7,8 @@ on:
 jobs:
 #########################################################################################
 ## Build Firmware
+#
+# Build firmware and patch HTML files (parameter tooltips)
 #########################################################################################
   build:
     runs-on: ubuntu-latest
@@ -87,7 +89,7 @@ jobs:
 ## Pack for OTA-Update
 # Package to be used with OTA updater on WebUI
 #
-# Package content:
+# Package contents:
 #  - /firmware.bin
 #  - (optional) /html/* (inkl. subfolders)
 #  - (optional) /config/*.tflite
@@ -147,7 +149,7 @@ jobs:
 ## Pack for Full Setup -> Complete fresh install
 # Create a full setup with all binaries and sd-card files to do an full setup by USB
 #
-# Package content:
+# Package contents:
 #  - /firmware.bin
 #  - /partitions.bin
 #  - /bootloader.bin   
@@ -207,7 +209,7 @@ jobs:
 # 1. WebUpdater: Install firmware binary
 # 2. ESP Access Point: Install SD-Card content
 #
-# Package content:
+# Package contents:
 #  - /html/* (inkl. subfolders)
 #  - /config/*
 #########################################################################################
@@ -263,7 +265,7 @@ jobs:
 #########################################################################################
 ## Pack additional files for debugging purpose
 #
-# Package content:
+# Package contents:
 # - firmware.elf
 # - sdkconfig.defaults
 # - sdkconfig.esp32cam
@@ -313,6 +315,9 @@ jobs:
 
 #########################################################################################
 ## Prepare and create release
+#
+# Use of release-please action to create a 'Release PR' which gets maintained automatically
+# After merging of 'Release PR', a new tag and release is getting created and artifacts will gets uploaded.
 #########################################################################################
   prepare-release:
     runs-on: ubuntu-latest
@@ -368,9 +373,9 @@ jobs:
         rm -rf release
         mkdir -p release
         mv AI-on-the-edge-device__update__SLFork__*.zip ./release/AI-on-the-edge-device__update__SLFork__${{ needs.prepare-release.outputs.version }}.zip
-        mv AI-on-the-edge-device__manual-setup__SLFork__*.zip ./release/AI-on-the-edge-device__manual-setup__SLFork__${{ needs.prepare-release.outputs.version }}.zip
-        mv AI-on-the-edge-device__remote-setup__SLFork__*.zip ./release/AI-on-the-edge-device__remote-setup__SLFork__${{ needs.prepare-release.outputs.version }}.zip
-        mv AI-on-the-edge-device__debug-files__SLFork__*.zip ./release/AI-on-the-edge-device__debug-files__SLFork__${{ needs.prepare-release.outputs.version }}.zip
+        mv AI-on-the-edge-device__manual-setup__SLFork__*.zip ./release/AI-on-the-edge-device__manual-setup__SLFork__v${{ needs.prepare-release.outputs.version }}.zip
+        mv AI-on-the-edge-device__remote-setup__SLFork__*.zip ./release/AI-on-the-edge-device__remote-setup__SLFork__v${{ needs.prepare-release.outputs.version }}.zip
+        mv AI-on-the-edge-device__debug-files__SLFork__*.zip ./release/AI-on-the-edge-device__debug-files__SLFork__v${{ needs.prepare-release.outputs.version }}.zip
 
     - name: Upload artifacts
       env:
