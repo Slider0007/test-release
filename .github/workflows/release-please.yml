@@ -1,7 +1,11 @@
 on:
-  push:
+  workflow_run:
     branches:
+      - develop
       - build-workflow
+    workflows: ["Build and Pack"]
+    types:
+      - completed
 
 name: release-please
 jobs:
@@ -21,4 +25,125 @@ jobs:
                              {"type":"refactor","section":"Refactoring / Style Changes","hidden":false},
                              {"type":"chore","section":"Other Changes","hidden":false}
                             ]'
-          skip-github-release: true
+          skip-github-release: false
+
+  create_release:
+    runs-on: ubuntu-latest
+    needs: [release-please]
+    if: ${{ needs.release-please.outputs.release_created }}
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: dev
+        token: ${{secrets.GH_TOKEN}}
+    - name: Download changelog
+      uses: actions/download-artifact@v3
+      with:
+        name: changelog
+        path: ../changelog
+    - uses: ncipollo/release-action@v1
+      name: Create release
+      with:
+        bodyFile: ../changelog/changelog.md
+        draft: true
+        name: ${{ needs.release-please.outputs.version }}
+        tag: ${{ needs.release-please.outputs.version }}
+
+
+#########################################################################################
+## Prepare and create release
+#########################################################################################
+  release: 
+    runs-on: ubuntu-latest
+    needs: [release-please]
+    if: ${{ needs.release-please.outputs.release_created }}
+
+    # Sets permissions of the GITHUB_TOKEN to allow updating the branches
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
+    steps:
+    - uses: actions/checkout@v3.53
+
+    - name: Load OTA-update files
+      uses: actions/cache/restore@v3.3.1
+      with:
+        path: update
+        key: update_files-${{github.event.inputs.id}}
+        restore-keys: update_files # This matches above key as it is only used as a prefix. It restores the nearest cache
+    
+    - name: Load manual_setup files
+      uses: actions/cache/restore@v3.3.1
+      
+      with:
+        path: manual_setup
+        key: manual_setup-${{github.event.inputs.id}}
+        restore-keys: manual_setup # This matches above key as it is only used as a prefix. It restores the nearest cache
+
+    - name: Load remote_setup files
+      uses: actions/cache/restore@v3.3.1
+      with:
+        path: remote_setup
+        key: remote_setup-${{github.event.inputs.id}}
+        restore-keys: remote_setup # This matches above key as it is only used as a prefix. It restores the nearest cache
+    
+    - name: Load debug files
+      uses: actions/cache/restore@v3.3.1
+      with:
+        path: debug
+        key: debug_files-${{github.event.inputs.id}}
+        restore-keys: debug_files # This matches above key as it is only used as a prefix. It restores the nearest cache
+
+    - name: Set variables
+      id: vars
+      run: |
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
+
+    - name: Prepare artifacts for release
+      run: |
+        rm -rf release
+        mkdir -p release
+
+        # AI-on-the-edge-device__OTA-update__*.zip (e.g. "AI-on-the-edge-device__OTA-update__v16.0.0.zip")
+        cd ./update
+        zip -r ../release/AI-on-the-edge-device__update__SLFork__${{ steps.vars.outputs.branch }}.zip .
+        
+
+        # AI-on-the-edge-device__manual-setup__*.zip (e.g. "AI-on-the-edge-device__manual-setup__v16.0.0.zip")
+        cd ../manual_setup
+        zip -r ../release/AI-on-the-edge-device__manual-setup__SLFork__${{ steps.vars.outputs.branch }}.zip .
+
+
+        # AI-on-the-edge-device__remote-setup__*.zip (e.g. "AI-on-the-edge-device__remote-setup__v16.0.0.zip")
+        cd ../remote_setup
+        zip -r ../release/AI-on-the-edge-device__remote-setup__SLFork__${{ steps.vars.outputs.branch }}.zip .
+        
+        
+        # AI-on-the-edge-device__debug-files__*.zip (e.g. "AI-on-the-edge-device__debug-files__v16.0.0.zip)"
+        cd ../debug
+        zip -r ../release/AI-on-the-edge-device__debug-files__SLFork__${{ steps.vars.outputs.branch }}.zip .
+           
+    # Release notes will be extracted from changelog (Release notes updated by release-please action)
+    - name: Extract release notes
+      id: extract-release-notes
+      uses: ffurrer2/extract-release-notes@v1
+      with:
+          changelog_file: CHANGELOG.md
+
+    # Releases should only be created by tagging the last commit (Tag commit performed by release-please action)
+    # All artifacts in firmware folder pushed to the release
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      # Note:
+      # If you get the error "Resource not accessible by integration",
+      # The access rights are not sufficient, see
+      # https://github.com/softprops/action-gh-release/issues/232#issuecomment-1131379440
+      with:
+        name: ${{ needs.release-please.outputs.version }}
+        tag: ${{ needs.release-please.outputs.version }}
+        body: ${{ steps.extract-release-notes.outputs.release_notes }}
+        files: |
+          release/*
