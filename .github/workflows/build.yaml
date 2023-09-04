@@ -2,13 +2,7 @@ name: Build and Pack
 
 on: 
   push:
-    branches-ignore:
-      - develop
-      - build-workflow
   pull_request:
-    branches-ignore:
-      - develop
-      - build-workflow
 
 
 jobs:
