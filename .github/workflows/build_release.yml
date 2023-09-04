@@ -320,7 +320,7 @@ jobs:
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       version: "${{steps.release.outputs.major}}.${{steps.release.outputs.minor}}.${{steps.release.outputs.patch}}"
-    if: github.ref == 'refs/heads/build-workflow' || github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/build-workflow' || github.ref == 'refs/heads/develop' # Process only for specific branches
     steps:
       - uses: google-github-actions/release-please-action@v3
         id: release
@@ -352,7 +352,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3.53
 
-    - name: Download all artifacts
+    - name: Download all uploaded artifacts
       id: download-artifact
       uses: dawidd6/action-download-artifact@v2
       with:
@@ -367,7 +367,7 @@ jobs:
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
-    - name: Prepare artifacts for release
+    - name: Prepare Artifacts For Release
       run: |
         rm -rf release
         mkdir -p release
@@ -400,7 +400,7 @@ jobs:
 
     # Releases should only be created by tagging the last commit (Tag commit performed by release-please action)
     # All artifacts in firmware folder pushed to the release
-    - name: Release
+    - name: Create release
       uses: softprops/action-gh-release@v1
       # Note:
       # If you get the error "Resource not accessible by integration",
