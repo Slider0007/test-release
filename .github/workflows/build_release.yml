@@ -360,36 +360,18 @@ jobs:
         # Required, if the artifact is from a different repo
         # Required, if the repo is private a Personal Access Token with `repo` scope is needed or GitHub token in a job where the permissions `action` scope set to `read`
         github_token: ${{secrets.GITHUB_TOKEN}}
-
-    - name: Set variables
-      id: vars
-      run: |
-        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
+        # Optional, choose to skip unpacking the downloaded artifact(s)
+        # default false
+        skip_unpack: true
 
     - name: Prepare artifacts
       run: |
         rm -rf release
         mkdir -p release
-
-        # AI-on-the-edge-device__OTA-update__*.zip (e.g. "AI-on-the-edge-device__OTA-update__v16.0.0.zip")
-        cd ./update
-        zip -r ../release/AI-on-the-edge-device__update__SLFork__${{ steps.vars.outputs.branch }}.zip .
-        
-
-        # AI-on-the-edge-device__manual-setup__*.zip (e.g. "AI-on-the-edge-device__manual-setup__v16.0.0.zip")
-        cd ./manual_setup
-        zip -r ../release/AI-on-the-edge-device__manual-setup__SLFork__${{ steps.vars.outputs.branch }}.zip .
-
-
-        # AI-on-the-edge-device__remote-setup__*.zip (e.g. "AI-on-the-edge-device__remote-setup__v16.0.0.zip")
-        cd ./remote_setup
-        zip -r ../release/AI-on-the-edge-device__remote-setup__SLFork__${{ steps.vars.outputs.branch }}.zip .
-        
-        
-        # AI-on-the-edge-device__debug-files__*.zip (e.g. "AI-on-the-edge-device__debug-files__v16.0.0.zip)"
-        cd ./debug
-        zip -r ../release/AI-on-the-edge-device__debug-files__SLFork__${{ steps.vars.outputs.branch }}.zip .
+        mv AI-on-the-edge-device__update__SLFork__*.zip ./release/AI-on-the-edge-device__update__SLFork__${{ needs.prepare-release.outputs.tag_name }}.zip
+        mv AI-on-the-edge-device__manual-setup__SLFork__*.zip ./release/AI-on-the-edge-device__manual-setup__SLFork__${{ needs.prepare-release.outputs.tag_name }}.zip
+        mv AI-on-the-edge-device__remote-setup__SLFork__*.zip ./release/AI-on-the-edge-device__remote-setup__SLFork__${{ needs.prepare-release.outputs.tag_name }}.zip
+        mv AI-on-the-edge-device__debug-files__SLFork__*.zip ./release/AI-on-the-edge-device__debug-files__SLFork__${{ needs.prepare-release.outputs.tag_name }}.zip
 
     - name: Upload release artifacts
       env:
