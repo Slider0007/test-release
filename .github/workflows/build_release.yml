@@ -346,9 +346,7 @@ jobs:
 
     # Sets permissions of the GITHUB_TOKEN to allow updating the branches
     permissions:
-      contents: write
-      pages: write
-      id-token: write
+      actions: read
 
     steps:
     - uses: actions/checkout@v4
