@@ -392,12 +392,12 @@ jobs:
         zip -r ../release/AI-on-the-edge-device__debug-files__SLFork__${{ steps.vars.outputs.branch }}.zip .
 
 
-      - name: Upload release artifacts
-        uses: Roang-zero1/github-upload-release-artifacts-action@v2
-        with:
-          args: "release/*"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload release artifacts
+      uses: Roang-zero1/github-upload-release-artifacts-action@v2
+      with:
+        args: "release/*"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
     # Releases should only be created by tagging the last commit (Tag commit performed by release-please action)
     # All artifacts in firmware folder pushed to the release
