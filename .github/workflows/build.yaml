@@ -142,14 +142,6 @@ jobs:
         name: "AI-on-the-edge-device__update__SLFork__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./update
 
-    - if: startsWith(github.ref, 'refs/tags/')
-      name: Save OTA-update package for release creation
-      uses: actions/cache/save@v3.3.1
-      with:
-        path: update
-        key: update_files-${{ github.run_id }}
-        restore-keys: update_files # This matches above key as it is only used as a prefix. It restores the nearest cache
-
 
 
 #########################################################################################
@@ -208,14 +200,6 @@ jobs:
       with:
         name: "AI-on-the-edge-device__manual-setup__SLFork__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./manual_setup
-        
-    - if: startsWith(github.ref, 'refs/tags/')
-      name: Save manual_setup package for release creation
-      uses: actions/cache/save@v3.3.1
-      with:
-        path: manual_setup
-        key: manual_setup-${{ github.run_id }}
-        restore-keys: manual_setup # This matches above key as it is only used as a prefix. It restores the nearest cache
 
 
 
@@ -275,14 +259,6 @@ jobs:
         name: "AI-on-the-edge-device__remote-setup__SLFork__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./remote_setup
 
-    - if: startsWith(github.ref, 'refs/tags/')
-      name: Save remote_setup package for release creation
-      uses: actions/cache/save@v3.3.1
-      with:
-        path: remote_setup
-        key: remote_setup-${{ github.run_id }}
-        restore-keys: remote_setup # This matches above key as it is only used as a prefix. It restores the nearest cache
-
 
 
 #########################################################################################
@@ -334,11 +310,3 @@ jobs:
       with:
         name: "AI-on-the-edge-device__debug-files__SLFork__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
         path: ./debug
-
-    - if: startsWith(github.ref, 'refs/tags/')
-      name: Save debug package for release creation
-      uses: actions/cache/save@v3.3.1
-      with:
-        path: debug
-        key: debug_files-${{ github.run_id }}
-        restore-keys: debug_files # This matches above key as it is only used as a prefix. It restores the nearest cache
