@@ -344,9 +344,10 @@ jobs:
     needs: [prepare-release]
     if: ${{ needs.prepare-release.outputs.release_created }}
 
-    # Sets permissions of the GITHUB_TOKEN to allow updating the branches
+    # Sets permissions of the GITHUB_TOKEN to allow downloading artifacts
     permissions:
       actions: read
+      contents: write
 
     steps:
     - uses: actions/checkout@v4
