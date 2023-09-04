@@ -1,11 +1,8 @@
 on:
-  workflow_run:
+  push:
     branches:
       - develop
       - build-workflow
-    workflows: ["Build and Pack"]
-    types:
-      - completed
 
 name: release-please
 jobs:
@@ -67,34 +64,17 @@ jobs:
     steps:
     - uses: actions/checkout@v3.53
 
-    - name: Load OTA-update files
-      uses: actions/cache/restore@v3.3.1
+    - name: Download artifact
+      id: download-artifact
+      uses: dawidd6/action-download-artifact@v2
       with:
-        path: update
-        key: update_files-${{github.event.inputs.id}}
-        restore-keys: update_files # This matches above key as it is only used as a prefix. It restores the nearest cache
-    
-    - name: Load manual_setup files
-      uses: actions/cache/restore@v3.3.1
-      
-      with:
-        path: manual_setup
-        key: manual_setup-${{github.event.inputs.id}}
-        restore-keys: manual_setup # This matches above key as it is only used as a prefix. It restores the nearest cache
-
-    - name: Load remote_setup files
-      uses: actions/cache/restore@v3.3.1
-      with:
-        path: remote_setup
-        key: remote_setup-${{github.event.inputs.id}}
-        restore-keys: remote_setup # This matches above key as it is only used as a prefix. It restores the nearest cache
-    
-    - name: Load debug files
-      uses: actions/cache/restore@v3.3.1
-      with:
-        path: debug
-        key: debug_files-${{github.event.inputs.id}}
-        restore-keys: debug_files # This matches above key as it is only used as a prefix. It restores the nearest cache
+        # Optional, GitHub token, a Personal Access Token with `public_repo` scope if needed
+        # Required, if the artifact is from a different repo
+        # Required, if the repo is private a Personal Access Token with `repo` scope is needed or GitHub token in a job where the permissions `action` scope set to `read`
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        # Optional, workflow file name or ID
+        # If not specified, will be inferred from run_id (if run_id is specified), or will be the current workflow
+        workflow: build.yaml
 
     - name: Set variables
       id: vars
@@ -113,17 +93,17 @@ jobs:
         
 
         # AI-on-the-edge-device__manual-setup__*.zip (e.g. "AI-on-the-edge-device__manual-setup__v16.0.0.zip")
-        cd ../manual_setup
+        cd ./manual_setup
         zip -r ../release/AI-on-the-edge-device__manual-setup__SLFork__${{ steps.vars.outputs.branch }}.zip .
 
 
         # AI-on-the-edge-device__remote-setup__*.zip (e.g. "AI-on-the-edge-device__remote-setup__v16.0.0.zip")
-        cd ../remote_setup
+        cd ./remote_setup
         zip -r ../release/AI-on-the-edge-device__remote-setup__SLFork__${{ steps.vars.outputs.branch }}.zip .
         
         
         # AI-on-the-edge-device__debug-files__*.zip (e.g. "AI-on-the-edge-device__debug-files__v16.0.0.zip)"
-        cd ../debug
+        cd ./debug
         zip -r ../release/AI-on-the-edge-device__debug-files__SLFork__${{ steps.vars.outputs.branch }}.zip .
            
     # Release notes will be extracted from changelog (Release notes updated by release-please action)
