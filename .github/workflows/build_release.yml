@@ -353,7 +353,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3.53
 
-    - name: Download all uploaded artifacts
+    - name: Download artifacts
       uses: dawidd6/action-download-artifact@v2
       with:
         # Optional, GitHub token, a Personal Access Token with `public_repo` scope if needed
@@ -367,7 +367,7 @@ jobs:
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
-    - name: Prepare Artifacts For Release
+    - name: Prepare artifacts
       run: |
         rm -rf release
         mkdir -p release
@@ -392,14 +392,13 @@ jobs:
         zip -r ../release/AI-on-the-edge-device__debug-files__SLFork__${{ steps.vars.outputs.branch }}.zip .
 
 
-    - name: Add artifacts to release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload release artifacts
+        uses: Roang-zero1/github-upload-release-artifacts-action@v2
         with:
-          upload_url: ${{ needs.release-please.outputs.upload_url }}
-          asset_path: release/*
-
+          args: "release/*"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
     # Releases should only be created by tagging the last commit (Tag commit performed by release-please action)
     # All artifacts in firmware folder pushed to the release
     #- name: Create release
