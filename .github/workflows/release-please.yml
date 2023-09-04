@@ -1,8 +1,6 @@
 on:
   push:
-    branches:
-      - develop
-      - build-workflow
+  pull_request:
 
 name: release-please
 jobs:
@@ -35,7 +33,6 @@ jobs:
 #########################################################################################
   build:
     runs-on: ubuntu-latest
-    if: ${{ needs.release-please.outputs.release_created }}
 
     steps:    
     - uses: actions/checkout@v3.5.3
@@ -120,7 +117,7 @@ jobs:
 #########################################################################################
   pack-for-OTA-update:
     runs-on: ubuntu-latest
-    needs: [release-please, build]
+    needs: [build]
 
     steps:
     - uses: actions/checkout@v3.5.3
@@ -182,7 +179,7 @@ jobs:
 #########################################################################################
   pack-for-manual_setup:
     runs-on: ubuntu-latest
-    needs: [release-please, build]
+    needs: [build]
 
     steps:
     - uses: actions/checkout@v3.5.3
@@ -239,7 +236,7 @@ jobs:
 #########################################################################################
   pack-for-remote_setup:
     runs-on: ubuntu-latest
-    needs: [release-please, build]
+    needs: [build]
 
     steps:
     - uses: actions/checkout@v3.5.3
@@ -296,7 +293,7 @@ jobs:
 #########################################################################################
   pack-for-debugging:
     runs-on: ubuntu-latest
-    needs: [release-please, build]
+    needs: [build]
 
     steps:
     - uses: actions/checkout@v3.5.3
@@ -343,6 +340,7 @@ jobs:
   create-release: 
     runs-on: ubuntu-latest
     needs: [release-please, build, pack-for-OTA-update, pack-for-manual_setup, pack-for-remote_setup, pack-for-debugging]
+    if: ${{ needs.release-please.outputs.release_created }}
 
     # Sets permissions of the GITHUB_TOKEN to allow updating the branches
     permissions:
