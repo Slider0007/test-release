@@ -8,14 +8,14 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: google-github-actions/release-please-action@v3
-        id: release
+      -name : Create Release PR
+        uses: google-github-actions/release-please-action@v3
         with:
           command: release-pr
           release-type: simple
           package-name: release-please-action
           draft-pull-request: false
-          pull-request-header: ':robot: Preparation for a new release'
+          pull-request-header: ':robot: Gather changes for upcomming release'
           changelog-path: CHANGELOG.md
           changelog-types: '[
                              {"type":"feat","section":"Features","hidden":false},
@@ -23,3 +23,4 @@ jobs:
                              {"type":"refactor","section":"Refactoring / Style Changes","hidden":false},
                              {"type":"chore","section":"Other Changes","hidden":false}
                             ]'
+          skip-github-release: true
