@@ -340,7 +340,7 @@ jobs:
   
   create-release: 
     runs-on: ubuntu-latest
-    needs: [prepare-release, build, pack-for-OTA-update, pack-for-manual_setup, pack-for-remote_setup, pack-for-debugging]
+    needs: [prepare-release]
     if: ${{ needs.release-please.outputs.release_created }}
 
     # Sets permissions of the GITHUB_TOKEN to allow updating the branches
