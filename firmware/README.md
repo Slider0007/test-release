@@ -1,5 +1,5 @@
 # Firmware
-The firmware got moved to the [Release page](https://github.com/jomjol/AI-on-the-edge-device/releases).
+The firmware got moved to the [Release page](https://github.com/Slider0007/AI-on-the-edge-device/releases).
 
 # Installation Guide
 
