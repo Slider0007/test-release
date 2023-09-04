@@ -4,14 +4,12 @@ on:
   push:
     branches-ignore:
       - develop
-      - master
+    tags:
+      - '*'
   pull_request:
     branches-ignore:
       - develop
-      - master
-  push:
-    tags:
-      - '*'
+
 
 jobs:
 #########################################################################################
