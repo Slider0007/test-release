@@ -317,12 +317,12 @@ jobs:
   prepare-release:
     runs-on: ubuntu-latest
     needs: [build, pack-for-OTA-update, pack-for-manual_setup, pack-for-remote_setup, pack-for-debugging]
+    if: github.ref == 'refs/heads/build-workflow' || github.ref == 'refs/heads/develop' # Process only for specific branches
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       upload_url: ${{ steps.release.outputs.upload_url }}
       version: "${{steps.release.outputs.major}}.${{steps.release.outputs.minor}}.${{steps.release.outputs.patch}}"
       tag_name: ${{ steps.release.outputs.tag_name }} 
-    if: github.ref == 'refs/heads/build-workflow' || github.ref == 'refs/heads/develop' # Process only for specific branches
     steps:
       - uses: google-github-actions/release-please-action@v3
         id: release
@@ -338,7 +338,6 @@ jobs:
                              {"type":"refactor","section":"Refactoring / Style Changes"},
                              {"type":"chore","section":"Other Changes"}
                             ]'
-          skip-github-release: false # Skip internal release creation (Prepare artifacts first before create new release)
   
   upload-release-artifacts:
     runs-on: ubuntu-latest
@@ -364,7 +363,7 @@ jobs:
         # default false
         skip_unpack: true
 
-    - name: Prepare artifacts
+    - name: Rename artifacts
       run: |
         rm -rf release
         mkdir -p release
