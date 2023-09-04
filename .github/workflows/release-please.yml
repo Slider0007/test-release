@@ -8,6 +8,10 @@ name: release-please
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      version: "${{steps.release.outputs.major}}.${{steps.release.outputs.minor}}.${{steps.release.outputs.patch}}"
+    if: github.ref == 'refs/heads/build-workflow'
     steps:
       - uses: google-github-actions/release-please-action@v3
         with:
