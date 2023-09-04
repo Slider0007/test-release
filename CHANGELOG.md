@@ -1,5 +1,46 @@
 # Changelog
 
+## [16.0.0-SLFORK](https://github.com/Slider0007/test-release/compare/v15.1.2-SLFORK...v16.0.0-SLFORK) (2023-09-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* Test Breaking fearure
+
+### Features
+
+* Test Breaking fearure ([9a01249](https://github.com/Slider0007/test-release/commit/9a0124990c5bc7039d0d170ab7eff4c351aaca4f))
+
+
+### Bug Fixes
+
+* **fileserver:** avoid sending *two* "last-chunk" sequences ([#2532](https://github.com/Slider0007/test-release/issues/2532)) ([#53](https://github.com/Slider0007/test-release/issues/53)) ([db467c0](https://github.com/Slider0007/test-release/commit/db467c0a034a1e9acbe3d02cb892eec15c4272ba))
+* test Fix ([9a01249](https://github.com/Slider0007/test-release/commit/9a0124990c5bc7039d0d170ab7eff4c351aaca4f))
+
+
+### Refactoring / Style Changes
+
+* delete not used files ([514ddca](https://github.com/Slider0007/test-release/commit/514ddca21b104d63755d56325bec7b1ed422090c))
+
+
+### Other Changes
+
+* add manifest file ([514ddca](https://github.com/Slider0007/test-release/commit/514ddca21b104d63755d56325bec7b1ed422090c))
+* **build-workflow:** release 16.0.0-SLFORK ([9c16b1f](https://github.com/Slider0007/test-release/commit/9c16b1feaa47e8563d008254bb6f3aaf300702ca))
+* **build-workflow:** release 16.0.0-SLFORK ([055949c](https://github.com/Slider0007/test-release/commit/055949ce9b57117a64815f48b382d839b5cb9eb6))
+* **build-workflow:** release 16.0.0-SLFORK ([c983493](https://github.com/Slider0007/test-release/commit/c9834930eae38bdb50e417fab3a38322501d2802))
+* **build-workflow:** release 16.0.0-SLFORK ([7d50b56](https://github.com/Slider0007/test-release/commit/7d50b5613743aff3834d003efd4fee77e9061ad8))
+* **build-workflow:** release 16.0.0-SLFORK ([54502c2](https://github.com/Slider0007/test-release/commit/54502c2084c4fc971b3fbb1f1513656fa44f288e))
+* **build-workflow:** release 16.0.0-SLFORK ([54502c2](https://github.com/Slider0007/test-release/commit/54502c2084c4fc971b3fbb1f1513656fa44f288e))
+* **build-workflow:** release 16.0.0-SLFORK ([2d4eefe](https://github.com/Slider0007/test-release/commit/2d4eefe52017833ffafc1ee399bca8e120821f2a))
+* chnage to release-pr ([e268139](https://github.com/Slider0007/test-release/commit/e268139a3d10624cdac248487abb2dfe9a2e587e))
+* update build workflow ([776de2e](https://github.com/Slider0007/test-release/commit/776de2e7fb2359f3ba7e8db5ee8d2131e198ab3b))
+* Update changelog ([7211245](https://github.com/Slider0007/test-release/commit/7211245051e584af516e09ab8c15e8b4adcfbb11))
+* update flow ([a9db990](https://github.com/Slider0007/test-release/commit/a9db99075f7d9e83fd11e4ecbcfc653bda971589))
+* update workflow ([27f1b5b](https://github.com/Slider0007/test-release/commit/27f1b5b3b12684c4cfb2e9979f19711795579c60))
+* update workflow ([9a01249](https://github.com/Slider0007/test-release/commit/9a0124990c5bc7039d0d170ab7eff4c351aaca4f))
+* **workflow:** Update please release ([a724173](https://github.com/Slider0007/test-release/commit/a72417300b770171fdb3953f92e28274627e33c9))
+
 ## [15.1.2-SLFork] - 2023-06-20
 
 ### Changes
