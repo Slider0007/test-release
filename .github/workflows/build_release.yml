@@ -363,14 +363,15 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - uses: actions/download-artifact@v3
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
     
     - name: Rename artifacts
       run: |
-        zip -r ./release/AI-on-the-edge-device__update__SLFork__${{ needs.prepare-release.outputs.version }}.zip ./update
-        zip -r ./release/AI-on-the-edge-device__manual-setup__SLFork__v${{ needs.prepare-release.outputs.version }}.zip ./manual_setup
-        zip -r ./release/AI-on-the-edge-device__remote-setup__SLFork__v${{ needs.prepare-release.outputs.version }}.zip ./remote_setup
-        zip -r ./release/AI-on-the-edge-device__debug-files__SLFork__v${{ needs.prepare-release.outputs.version }}.zip ./debug
+        zip -r ./release/AI-on-the-edge-device__update__SLFork__${{ needs.prepare-release.outputs.version }}.zip /AI-on-the-edge-device__update__SLFork__${{ needs.prepare-release.outputs.version }}
+        zip -r ./release/AI-on-the-edge-device__manual-setup__SLFork__v${{ needs.prepare-release.outputs.version }}.zip /AI-on-the-edge-device__manual-setup__SLFork__v${{ needs.prepare-release.outputs.version }}
+        zip -r ./release/AI-on-the-edge-device__remote-setup__SLFork__v${{ needs.prepare-release.outputs.version }}.zip /AI-on-the-edge-device__remote-setup__SLFork__v${{ needs.prepare-release.outputs.version }}
+        zip -r ./release/AI-on-the-edge-device__debug-files__SLFork__v${{ needs.prepare-release.outputs.version }}.zip /AI-on-the-edge-device__debug-files__SLFork__v${{ needs.prepare-release.outputs.version }}
 
     - name: Upload artifacts
       env:
