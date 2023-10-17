@@ -371,6 +371,7 @@ jobs:
         # Required, if the repo is private a Personal Access Token with `repo` scope is needed or GitHub token in a job where the permissions `action` scope set to `read`
         github_token: ${{secrets.GITHUB_TOKEN}}
         run_id: ${{ github.event.workflow_run.id }}
+        check_artifacts: true
         # Optional, choose to skip unpacking the downloaded artifact(s)
         # default false
         skip_unpack: true
