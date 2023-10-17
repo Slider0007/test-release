@@ -1,5 +1,13 @@
 # Changelog
 
+## [16.0.22-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.21-SLFORK...v16.0.22-SLFORK) (2023-10-17)
+
+
+### Other Changes
+
+* Update build_release.yml ([dbacd09](https://github.com/Slider0007/test-release/commit/dbacd0912c83f34f0e37b3e4440f9f19ae03435d))
+* Update CMakeLists.txt ([0bc9101](https://github.com/Slider0007/test-release/commit/0bc910110cc01f048579ecf57d651d54e84084ab))
+
 ## [16.0.21-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.20-SLFORK...v16.0.21-SLFORK) (2023-10-17)
 
 
