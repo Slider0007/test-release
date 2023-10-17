@@ -6,12 +6,43 @@ on:
 
 jobs:
 #########################################################################################
+## Prepare and create release
+#
+# Use of release-please action to create a 'Release PR' which gets maintained automatically
+# After merging of 'Release PR', a new tag and release is getting created and artifacts will gets uploaded.
+#########################################################################################
+  prepare-release:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/build-workflow' || github.ref == 'refs/heads/develop' # Process only for specific branches
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      upload_url: ${{ steps.release.outputs.upload_url }}
+      version: "${{steps.release.outputs.major}}.${{steps.release.outputs.minor}}.${{steps.release.outputs.patch}}"
+      tag_name: ${{ steps.release.outputs.tag_name }} 
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          release-type: simple
+          package-name: release-please-action
+          draft-pull-request: false
+          pull-request-header: ':robot: Gather changes for upcoming release'
+          changelog-path: CHANGELOG.md
+          changelog-types: '[
+                             {"type":"feat","section":"Features"},
+                             {"type":"fix","section":"Bug Fixes"},
+                             {"type":"refactor","section":"Refactoring / Style Changes"},
+                             {"type":"chore","section":"Other Changes"}
+                            ]'
+
+#########################################################################################
 ## Build Firmware
 #
 # Build firmware and patch HTML files (parameter tooltips)
 #########################################################################################
   build:
     runs-on: ubuntu-latest
+    needs: [prepare-release]
 
     steps:    
     - uses: actions/checkout@v4
@@ -318,35 +349,10 @@ jobs:
 #
 # Use of release-please action to create a 'Release PR' which gets maintained automatically
 # After merging of 'Release PR', a new tag and release is getting created and artifacts will gets uploaded.
-#########################################################################################
-  prepare-release:
-    runs-on: ubuntu-latest
-    needs: [build, pack-for-OTA-update, pack-for-manual_setup, pack-for-remote_setup, pack-for-debugging]
-    if: github.ref == 'refs/heads/build-workflow' || github.ref == 'refs/heads/develop' # Process only for specific branches
-    outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      upload_url: ${{ steps.release.outputs.upload_url }}
-      version: "${{steps.release.outputs.major}}.${{steps.release.outputs.minor}}.${{steps.release.outputs.patch}}"
-      tag_name: ${{ steps.release.outputs.tag_name }} 
-    steps:
-      - uses: google-github-actions/release-please-action@v3
-        id: release
-        with:
-          release-type: simple
-          package-name: release-please-action
-          draft-pull-request: false
-          pull-request-header: ':robot: Gather changes for upcoming release'
-          changelog-path: CHANGELOG.md
-          changelog-types: '[
-                             {"type":"feat","section":"Features"},
-                             {"type":"fix","section":"Bug Fixes"},
-                             {"type":"refactor","section":"Refactoring / Style Changes"},
-                             {"type":"chore","section":"Other Changes"}
-                            ]'
-  
+#########################################################################################  
   upload-release-artifacts:
     runs-on: ubuntu-latest
-    needs: [prepare-release]
+    needs: [prepare-release, build, pack-for-OTA-update, pack-for-manual_setup, pack-for-remote_setup, pack-for-debugging]
     if: ${{ needs.prepare-release.outputs.release_created }}
 
     # Sets permissions of the GITHUB_TOKEN to allow downloading artifacts
@@ -364,6 +370,7 @@ jobs:
         # Required, if the artifact is from a different repo
         # Required, if the repo is private a Personal Access Token with `repo` scope is needed or GitHub token in a job where the permissions `action` scope set to `read`
         github_token: ${{secrets.GITHUB_TOKEN}}
+        run_id: ${{ github.event.workflow_run.id }}
         # Optional, choose to skip unpacking the downloaded artifact(s)
         # default false
         skip_unpack: true
