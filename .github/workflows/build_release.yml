@@ -55,7 +55,7 @@ jobs:
       if: ${{ needs.prepare-release.outputs.release_created }}
       uses: actions/checkout@v4
       with:
-        ref: ${{ needs.prepare-release.outputs.version }}
+        ref: ${{ needs.prepare-release.outputs.tag_name }}
         submodules: recursive
 
     - name: Set variables
