@@ -9,7 +9,7 @@ jobs:
 ## Prepare and create release
 #
 # Use of release-please action to create a 'Release PR' which gets maintained automatically
-# After merging of 'Release PR', a new tag and release is getting created and artifacts will gets uploaded.
+# After merging of 'Release PR', a new tag and release is getting created.
 #########################################################################################
   prepare-release:
     runs-on: ubuntu-latest
@@ -345,10 +345,9 @@ jobs:
 
 
 #########################################################################################
-## Prepare and create release
+## Prepare and create release - Upload artifacts
 #
-# Use of release-please action to create a 'Release PR' which gets maintained automatically
-# After merging of 'Release PR', a new tag and release is getting created and artifacts will gets uploaded.
+# Artifacts will gets uploaded to newly created tag.
 #########################################################################################  
   upload-release-artifacts:
     runs-on: ubuntu-latest
