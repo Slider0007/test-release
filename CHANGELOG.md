@@ -1,5 +1,12 @@
 # Changelog
 
+## [16.0.24-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.23-SLFORK...v16.0.24-SLFORK) (2023-10-17)
+
+
+### Other Changes
+
+* Update build_release.yml ([05f49e1](https://github.com/Slider0007/test-release/commit/05f49e16d02ff80929b48250c81cdb20727b2e4d))
+
 ## [16.0.23-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.22-SLFORK...v16.0.23-SLFORK) (2023-10-17)
 
 
