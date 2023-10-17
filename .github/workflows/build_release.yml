@@ -92,7 +92,7 @@ jobs:
         pip install --upgrade platformio
 
     - name: Build firmware
-      run: echo "Testing... ${{ github.ref/tags }}, ${{ github.ref }}, ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}, ${{ steps.vars.outputs.branch }}"
+      run: echo "Testing... ${{ github.ref }}, ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}, ${{ steps.vars.outputs.branch }}"
       #> ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
       #run: cd code; platformio run --environment esp32cam
 
