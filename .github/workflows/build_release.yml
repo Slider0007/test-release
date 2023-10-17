@@ -68,7 +68,7 @@ jobs:
         restore-keys: platformio # This matches above key as it is only used as a prefix. It restores the nearest cache
           
     - name: Cache PIO build files
-      if: ${{ needs.prepare-release.outputs.release_created }}
+      if: ${{ ! needs.prepare-release.outputs.release_created }}
       uses: actions/cache@v3
       with:
         path: ./code/.pio/
@@ -351,9 +351,9 @@ jobs:
 
 
 #########################################################################################
-## Prepare and create release - Upload artifacts
+## Release - Upload artifacts
 #
-# Artifacts will gets uploaded to newly created tag.
+# Artifacts will gets uploaded to newly created release.
 #########################################################################################  
   upload-release-artifacts:
     runs-on: ubuntu-latest
