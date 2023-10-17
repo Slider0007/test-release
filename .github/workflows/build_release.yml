@@ -53,6 +53,7 @@ jobs:
       id: vars
       run: |
         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
     - name: Cache pip & platformIO cache files
       uses: actions/cache@v3
@@ -82,7 +83,8 @@ jobs:
         pip install --upgrade platformio
 
     - name: Build firmware
-      #run: echo "Testing... ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
+      run: echo "Testing... ${{ github.ref }}, ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}, ${{ steps.vars.outputs.branch }}"
+      #> ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
       run: cd code; platformio run --environment esp32cam
 
     - name: Prepare WebUI (Generate parameter tooltips + Update hash)
@@ -365,7 +367,13 @@ jobs:
 
     - name: Download all artifacts
       uses: actions/download-artifact@v3
-    
+      
+    - name: Set variables
+      id: vars
+      run: |
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
+        
     - name: Rename artifacts
       run: |
         zip -r ./release/AI-on-the-edge-device__update__SLFork__${{ needs.prepare-release.outputs.version }}.zip . -i /AI-on-the-edge-device__update__SLFork__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})
