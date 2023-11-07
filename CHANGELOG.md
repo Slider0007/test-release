@@ -1,5 +1,12 @@
 # Changelog
 
+## [16.0.31-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.30-SLFORK...v16.0.31-SLFORK) (2023-11-07)
+
+
+### Other Changes
+
+* **build:** Create HTML version.txt ([d8f53d3](https://github.com/Slider0007/test-release/commit/d8f53d3b24f1470ba479d48c780e4370a469c9ed))
+
 ## [16.0.30-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.29-SLFORK...v16.0.30-SLFORK) (2023-11-07)
 
 
