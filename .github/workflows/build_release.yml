@@ -27,6 +27,7 @@ jobs:
           package-name: release-please-action
           draft-pull-request: false
           pull-request-header: ':robot: Gather changes for upcoming release'
+          pull-request-footer: 'Testing this development build: Download latest successfully generated build of develop branch: [LINK](https://github.com/Slider0007/AI-on-the-edge-device/actions?query=branch%3Adevelop)' 
           changelog-path: CHANGELOG.md
           changelog-types: '[
                              {"type":"feat","section":"Features"},
