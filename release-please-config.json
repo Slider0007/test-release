@@ -1,0 +1,11 @@
+{
+  "release-type": "simple",
+  "changelog-path": "CHANGELOG.md",
+  "changelog-sections":  [{"type":"feat","section":"Features"},
+                          {"type":"fix","section":"Bug Fixes"},
+                          {"type":"refactor","section":"Refactoring / Style Changes"},
+                          {"type":"chore","section":"Other Changes"}],
+  "draft": true,
+  "pull-request-header": ":robot: Gather changes for upcoming release"
+  "pull-request-footer": "Testing this development build: Download latest successfully generated build of develop branch: [LINK](https://github.com/Slider0007/AI-on-the-edge-device/actions?query=branch%3Adevelop)"
+}
