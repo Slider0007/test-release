@@ -12,5 +12,5 @@
   "changelog-sections":  [{"type":"feat","section":"Features"},
                           {"type":"fix","section":"Bug Fixes"},
                           {"type":"refactor","section":"Refactoring / Style Changes"},
-                          {"type":"chore","section":"Other Changes"}],
+                          {"type":"chore","section":"Other Changes"}]
 }
