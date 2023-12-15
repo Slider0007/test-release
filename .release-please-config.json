@@ -5,6 +5,7 @@
     }
   },
   "release-type": "simple",
+  "manifest-file": ".release-please-config.json",
   "changelog-path": "CHANGELOG.md",
   "changelog-sections":  [{"type":"feat","section":"Features"},
                           {"type":"fix","section":"Bug Fixes"},
