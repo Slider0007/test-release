@@ -23,7 +23,7 @@ jobs:
       - uses: google-github-actions/release-please-action@v4
         id: release
         with:
-           manifest-file: .release-please-config.json
+           manifest-file: ".release-please-config.json"
 
 #########################################################################################
 ## Build Firmware
