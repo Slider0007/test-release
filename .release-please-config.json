@@ -1,8 +1,6 @@
 {
   "packages": {
-    ".": {
-      "component": ""
-    }
+    ".": {}
   },
   "release-type": "simple",
   "changelog-path": "CHANGELOG.md",
