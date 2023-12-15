@@ -1,7 +1,7 @@
 {
   "packages": {
     ".": {
-      "component": "main"
+      "component": ""
     }
   },
   "release-type": "simple",
