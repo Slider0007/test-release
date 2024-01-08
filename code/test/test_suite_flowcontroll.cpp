@@ -1,4 +1,12 @@
 #include <unity.h>
+
+// Use isnan and isinf from <cmath> instead of a internal unity definition
+#ifdef isnan
+    #undef isnan
+#endif
+#ifdef isinf
+    #undef isinf
+#endif
 #include <cmath>
 
 #include "components/jomjol_fileserver_ota/server_ota.h"
