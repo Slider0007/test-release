@@ -21,7 +21,6 @@ All you need is an [ESP32 board with a supported camera](https://jomjol.github.i
 - Support for Influx DB 1
 - MQTT
 - REST API
-- 
 
 ## Workflow
 The device takes a photo of your meter at a defined interval. It then extracts the Regions of Interest (ROI's) out of it and runs them through an artificial inteligence. As a result, you get the digitalized value of your meter.
