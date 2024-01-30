@@ -97,11 +97,11 @@ jobs:
         echo "Replacing variables..."
         cd html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
 
-  - name: Auto Minify
-    uses: nizarmah/auto-minify@v2.1.1
-    with:
-      overwrite: true
-      directory: './sd-card/html'
+    - name: Auto Minify
+      uses: nizarmah/auto-minify@v2.1.1
+      with:
+        overwrite: true
+        directory: './sd-card/html'
         
     - name: Save generated files
       uses: actions/cache/save@v4
