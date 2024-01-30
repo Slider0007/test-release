@@ -98,6 +98,7 @@ jobs:
       uses: docker://devatherock/minify-js:3.0.0
       with:
         directory: './html'
+        add_suffix: false
         
     - name: Save generated files
       uses: actions/cache/save@v4
