@@ -85,12 +85,9 @@ jobs:
       run: |
         rm -rf ./html
         mkdir ./html
-      #cp -r ./sd-card/html/* ./html/
 
-      #cd tools/parameter-tooltip-generator
         python -m pip install markdown
         python ./tools/parameter-tooltip-generator/generate-param-doc-tooltips.py
-      #cd ../..
 
         cp -r ./sd-card/html/* ./html/
 
