@@ -69,7 +69,7 @@ jobs:
     - name: Setup python environment
       uses: actions/setup-python@v5
       with:
-        python-version: '3.10'
+        python-version: '3.12'
 
     - name: Install PlatformIO environment
       run: |
@@ -96,6 +96,9 @@ jobs:
 
         echo "Replacing variables..."
         cd html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
+
+    - name: Minify files
+      uses: anthonyftwang/minify-action@v1.0.1
         
     - name: Save generated files
       uses: actions/cache/save@v4
