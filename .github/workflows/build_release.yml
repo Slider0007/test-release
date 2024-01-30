@@ -94,12 +94,6 @@ jobs:
         echo "Replacing variables..."
         cd ./html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
 
-    - name: HTML/CSS/JS Minifier
-      uses: docker://devatherock/minify-js:3.0.0
-      with:
-        directory: './html'
-        add_suffix: false
-        
     - name: Save generated files
       uses: actions/cache/save@v4
       with:
