@@ -6,8 +6,8 @@ import glob
 import markdown
 
 
-parameterDocsFolder = "/docs/Configuration/Parameter"
-docsMainFolder = "/sd-card/html"
+parameterDocsFolder = "./docs/Configuration/Parameter"
+docsMainFolder = "./sd-card/html"
 configPage = "edit_config_param.html"
 
 htmlTooltipPrefix = """
