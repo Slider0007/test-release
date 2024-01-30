@@ -6,7 +6,7 @@ import glob
 import markdown
 
 
-parameterDocsFolder = "docs/Configuration/Parameter"
+parameterDocsFolder = "../../docs/Configuration/Parameter"
 docsMainFolder = "../../sd-card/html"
 configPage = "edit_config_param.html"
 
