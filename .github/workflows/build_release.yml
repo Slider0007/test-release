@@ -84,18 +84,18 @@ jobs:
     - name: Prepare WebUI (Generate parameter tooltips + Update hash)
       run: |
         rm -rf ./html
-        mkdir html
-        cp -r ./sd-card/html/* ./html/
+        mkdir ./html
+      #cp -r ./sd-card/html/* ./html/
 
+      #cd tools/parameter-tooltip-generator
         python -m pip install markdown
-        cd tools/parameter-tooltip-generator
-        python generate-param-doc-tooltips.py
-        cd ../..
+        python ./tools/parameter-tooltip-generator/generate-param-doc-tooltips.py
+      #cd ../..
 
         cp -r ./sd-card/html/* ./html/
 
         echo "Replacing variables..."
-        cd html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
+        cd ./html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
 
     - name: Auto Minify
       uses: nizarmah/auto-minify@v2.1.1
