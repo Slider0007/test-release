@@ -101,7 +101,7 @@ jobs:
       uses: nizarmah/auto-minify@v2.1.1
       with:
         overwrite: true
-        directory: './sd-card/html'
+        directory: './html'
         
     - name: Save generated files
       uses: actions/cache/save@v4
