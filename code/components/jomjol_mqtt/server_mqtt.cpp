@@ -1,3 +1,5 @@
+#include "server_mqtt.h"
+
 #ifdef ENABLE_MQTT
 #include <string>
 #include <sstream>
@@ -5,18 +7,17 @@
 #include <vector>
 
 #include "esp_log.h"
+
 #include "ClassLogFile.h"
 #include "connect_wlan.h"
 #include "read_wlanini.h"
-#include "server_mqtt.h"
 #include "interface_mqtt.h"
 #include "time_sntp.h"
 #include "Helper.h"
-#include "../../include/defines.h"
+#include "system.h"
 
 
-static const char *TAG = "MQTT SERVER";
-
+static const char *TAG = "MQTT_SERVER";
 
 extern const char* libfive_git_version(void);
 extern const char* libfive_git_revision(void);
@@ -28,7 +29,7 @@ std::string meterType = "";
 std::string valueUnit = "";
 std::string timeUnit = "";
 std::string rateUnit = "Unit/Minute";
-float roundInterval; // Minutes
+float processingInterval; // Minutes
 int keepAlive = 0; // Seconds
 bool retainFlag;
 static std::string maintopic;
@@ -36,11 +37,11 @@ static bool sendingOf_DiscoveryAndStaticTopics_scheduled;
 
 
 
-void mqttServer_setParameter(std::vector<NumberPost*>* _NUMBERS, int _keepAlive, float _roundInterval)
+void mqttServer_setParameter(std::vector<NumberPost*>* _NUMBERS, int _keepAlive, float _processingInterval)
 {
     NUMBERS = _NUMBERS;
     keepAlive = _keepAlive;
-    roundInterval = _roundInterval; 
+    processingInterval = _processingInterval; 
 }
 
 
@@ -134,7 +135,7 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field, std::
         "\"model\": \"Meter Digitizer\","  +
         "\"manufacturer\": \"AI on the Edge Device\","  +
         "\"sw_version\": \"" + version + "\","  +
-        "\"configuration_url\": \"http://" + *getIPAddress() + "\""  +
+        "\"configuration_url\": \"http://" + getIPAddress() + "\""  +
     "}"  +
     "}";
 
@@ -218,7 +219,7 @@ bool publishSystemData(int qos)
     sprintf(tmp_char, "%ld", (long)getUpTime());
     allSendsSuccessed |= MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), qos, retainFlag);
     
-    sprintf(tmp_char, "%lu", (long) getESPHeapSize());
+    sprintf(tmp_char, "%lu", (long) getESPHeapSizeTotal());
     allSendsSuccessed |= MQTTPublish(maintopic + "/" + "freeMem", std::string(tmp_char), qos, retainFlag);
 
     sprintf(tmp_char, "%d", get_WIFI_RSSI());
@@ -254,11 +255,11 @@ bool publishStaticData(int qos)
 	//int aFreeInternalHeapSizeBefore = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
 
     allSendsSuccessed |= MQTTPublish(maintopic + "/" + "MAC", getMac(), qos, retainFlag);
-    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "IP", *getIPAddress(), qos, retainFlag);
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "IP", getIPAddress(), qos, retainFlag);
     allSendsSuccessed |= MQTTPublish(maintopic + "/" + "hostname", wlan_config.hostname, qos, retainFlag);
 
     std::stringstream stream;
-    stream << std::fixed << std::setprecision(1) << roundInterval; // minutes
+    stream << std::fixed << std::setprecision(1) << processingInterval; // minutes
     allSendsSuccessed |= MQTTPublish(maintopic + "/" + "interval", stream.str(), qos, retainFlag);
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Successfully published static topics");
@@ -274,10 +275,14 @@ bool publishStaticData(int qos)
 }
 
 
-esp_err_t scheduleSendingDiscovery_and_static_Topics(httpd_req_t *req)
+esp_err_t handler_scheduleSendingDiscoveryAndStaticTopics(httpd_req_t *req)
 {
     sendingOf_DiscoveryAndStaticTopics_scheduled = true;
     char msg[] = "Publishing of HA Discovery and static topics scheduled";
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_set_type(req, "text/plain");
+    
     httpd_resp_send(req, msg, strlen(msg));  
     return ESP_OK;
 }
@@ -322,7 +327,7 @@ void register_server_mqtt_uri(httpd_handle_t server)
     uri.method    = HTTP_GET;
 
     uri.uri       = "/mqtt_publish_discovery";
-    uri.handler   = scheduleSendingDiscovery_and_static_Topics;
+    uri.handler   = handler_scheduleSendingDiscoveryAndStaticTopics;
     uri.user_ctx  = NULL;    
     httpd_register_uri_handler(server, &uri); 
 }

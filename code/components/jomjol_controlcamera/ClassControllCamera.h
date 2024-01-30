@@ -1,17 +1,13 @@
-#pragma once
-
 #ifndef CLASSCONTROLLCAMERA_H
 #define CLASSCONTROLLCAMERA_H
 
 #include <string>
 #include <vector>
-//#include "freertos/FreeRTOS.h"
-//#include "freertos/task.h"
 
-#include "esp_camera.h"
 #include <esp_http_server.h>
+#include "esp_camera.h"
+
 #include "CImageBasis.h"
-#include "../../include/defines.h"
 
 
 typedef struct {
@@ -20,7 +16,8 @@ typedef struct {
 } jpg_chunking_t;
 
 
-class CCamera {
+class CCamera
+{
     protected:
         uint8_t *demoImage; // Buffer holding the demo image in bytes
         int ActualQuality;
@@ -55,9 +52,10 @@ class CCamera {
         esp_err_t CaptureToStream(httpd_req_t *req, bool FlashlightOn);
 
         void ledc_init(void);
+        void SetCameraFrequency(int _frequency);
         void SetQualitySize(int qual, framesize_t resol);
-        framesize_t TextToFramesize(const char * text);
         bool SetBrightnessContrastSaturation(int _brightness, int _contrast, int _saturation);
+        framesize_t TextToFramesize(const char * text);
         void GetCameraParameter(httpd_req_t *req, int &qual, framesize_t &resol);
         void SetLEDIntensity(int _intrel);
 

@@ -1,106 +1,135 @@
-var config_gesamt = "";
-var config_split = [];
-var param = [];
-var category;
-var ref = new Array(2);
-var NUMBERS = new Array(0);
-var REFERENCES = new Array(0);
-var tflite_list = "";
+let config_gesamt = "";  // Parsed config.ini as string
+let config_split = [];   // Config.ini splitted by lines
+var param = {};          // Configuration parameter object
+var category = {};       // Configuration category obejct
+var NUMBERS = [];        // Number sequences
+let REFERENCES = [];     // Alignment marker
+let tflite_list = "";    // TFLite model files as tab separated list
 
 
-function getNUMBERSList() {
-	_domainname = getDomainname(); 
-     var namenumberslist = "";
+async function getNUMBERSList()    // Legacy: Not in use anymore (was only used for graph.html)
+{
+    return new Promise(function (resolve, reject) {
+        var url = getDomainname() + '/editflow?task=namenumbers';
 
-	var xhttp = new XMLHttpRequest();
-	xhttp.addEventListener('load', function(event) {
-          if (xhttp.status >= 200 && xhttp.status < 300) {
-               namenumberslist = xhttp.responseText;
-          } else {
-               console.warn(request.statusText, request.responseText);
-          }
-     });
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4) {
+            if (this.status >= 200 && this.status < 300) {
+                        var namenumberslist = xhttp.responseText;
+                        namenumberslist = namenumberslist.split("\t");
+                        return resolve(namenumberslist);
 
-     try {
-          url = _domainname + '/editflow?task=namenumbers';     
-          xhttp.open("GET", url, false);
-          xhttp.send();
-     }
-     catch (error)
-     {
-//               alert("Loading Hostname failed");
-     }
+                }
+                else {
+                        firework.launch("Sequence names request failed (Response status: " + this.status + 
+                                    "). Repeat action or check logs.", 'danger', 30000);
+                        console.error("Sequence names request failed. Response status: " + this.status);
+                        return reject("Sequence names request failed");
+                }
+            }
+        };
 
-     namenumberslist = namenumberslist.split("\t");
-//      namenumberslist.pop();
-
-     return namenumberslist;
+        xhttp.timeout = 10000; // 10 seconds
+        xhttp.open("GET", url, true);
+        xhttp.send();
+    });
 }
 
 
-function getDATAList() {
-	_domainname = getDomainname(); 
-     datalist = "";
+async function getDataFileList()
+{
+    return new Promise(function (resolve, reject) {
+        var url = getDomainname() + '/editflow?task=data';     
 
-	var xhttp = new XMLHttpRequest();
-	xhttp.addEventListener('load', function(event) {
-          if (xhttp.status >= 200 && xhttp.status < 300) {
-               datalist = xhttp.responseText;
-          } else {
-               console.warn(request.statusText, request.responseText);
-          }
-     });
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                    if (this.status >= 200 && this.status < 300) {
+                        var datalist = xhttp.responseText;
+                        datalist = datalist.split("\t");
+                        datalist.pop();
+                        datalist.sort();
+                        return resolve(datalist);
+                    }
+                    else {
+                        firework.launch("Data files request failed (Response status: " + this.status + 
+                                "). Repeat action or check logs.", 'danger', 30000);
+                        console.error("Data files request failed. Response status: " + this.status);
+                        return reject("Data files request failed");
+                    }
+            }
+        };
 
-     try {
-          url = _domainname + '/editflow?task=data';     
-          xhttp.open("GET", url, false);
-          xhttp.send();
-     }
-     catch (error)
-     {
-//               alert("Loading Hostname failed");
-     }
-
-     datalist = datalist.split("\t");
-     datalist.pop();
-     datalist.sort();
-
-     return datalist;
+        xhttp.timeout = 10000; // 10 seconds
+        xhttp.open("GET", url, true);
+        xhttp.send();
+    });
 }
 
 
-function fetchTFLITEList() {
-	_domainname = getDomainname(); 
-     var response = "";
+async function fetchTFLITEList()
+{
+    return new Promise(function (resolve, reject) {
+        var url = getDomainname() + '/editflow?task=tflite';
 
-	var xhttp = new XMLHttpRequest();
-	xhttp.addEventListener('load', function(event) {
-          if (xhttp.status >= 200 && xhttp.status < 300) {
-               response = xhttp.responseText;
-          } else {
-               console.warn(request.statusText, request.responseText);
-          }
-     });
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                if (this.status >= 200 && this.status < 300) {
+                        var response = xhttp.responseText;
+                        response = response.split("\t").filter(element => element); // Split at tab position and remove empty elements
+                        response.sort();  // Sort elements by name
+                        tflite_list = response;  // Save to global variable
+                        return resolve(tflite_list);
+                }
+                else {
+                        firework.launch("TFLite files request failed (Response status: " + this.status + 
+                                "). Repeat action or check logs.", 'danger', 30000);
+                        console.error("TFLite files request failed. Response status: " + this.status);
+                        return reject("TFLite files request failed");
+                }
+            }
+        };
 
-     try {
-          url = _domainname + '/editflow?task=tflite';
-          xhttp.open("GET", url, false);
-          xhttp.send();
-     }
-     catch (error)
-     {
-//               alert("Loading Hostname failed");
-     }
-
-     response = response.split("\t").filter(element => element); // Split at tab position and remove empty elements
-     response.sort();  // Sort elements by name
-
-     tflite_list = response;
+        xhttp.timeout = 10000; // 10 seconds
+        xhttp.open("GET", url, true);
+        xhttp.send();
+    });
 }
 
 
-function getTFLITEList() {
-     return tflite_list;
+async function loadConfig()
+{
+     return new Promise(function (resolve, reject) {
+          var url = getDomainname() + '/fileserver/config/config.ini';
+
+          var xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function() {
+               if (this.readyState == 4) {
+                    if (this.status >= 200 && this.status < 300) {
+                         config_gesamt = xhttp.responseText;
+                         return resolve(config_gesamt);
+                    }
+                    else {
+                         firework.launch("Loading config.ini failed (Response status: " + this.status + 
+                                        "). Repeat action or check logs.", 'danger', 30000);
+                         console.error("Loading config.ini failed. Response status: " + this.status);
+                         return reject("Loading config.ini failed");
+                    }
+               }
+          };
+
+          xhttp.timeout = 10000;  // 10 seconds
+          xhttp.open("GET", url, true);
+          xhttp.send();
+     });
+}
+
+
+function getConfig()
+{
+     return config_gesamt;
 }
 
 
@@ -108,8 +137,8 @@ function ParseConfig() {
      config_split = config_gesamt.split("\n");
      var aktline = 0;
 
-     param = new Object();
-     category = new Object(); 
+     //param = new Object();
+     //category = new Object(); 
 
      var catname = "TakeImage";
      category[catname] = new Object(); 
@@ -119,6 +148,7 @@ function ParseConfig() {
      ParamAddSingleValueWithPreset(param, catname, "RawImagesLocation", false, "/log/source");
      ParamAddSingleValueWithPreset(param, catname, "RawImagesRetention", false, "5");
      ParamAddSingleValueWithPreset(param, catname, "WaitBeforeTakingPicture", true, "2.0");
+     ParamAddSingleValueWithPreset(param, catname, "CameraFrequency", true, "20");
      ParamAddSingleValueWithPreset(param, catname, "ImageQuality", true, "12");
      ParamAddSingleValueWithPreset(param, catname, "ImageSize", true, "VGA");
      ParamAddSingleValueWithPreset(param, catname, "LEDIntensity", true, "50");
@@ -187,6 +217,10 @@ function ParseConfig() {
      ParamAddSingleValueWithPreset(param, catname, "ClientID", true, "watermeter");
      ParamAddSingleValueWithPreset(param, catname, "user", false, "undefined");
      ParamAddSingleValueWithPreset(param, catname, "password", false, "undefined");
+     ParamAddSingleValueWithPreset(param, catname, "TLSEncryption", false, "false");
+     ParamAddSingleValueWithPreset(param, catname, "TLSCACert", true, "/config/certs/ca.crt");
+     ParamAddSingleValueWithPreset(param, catname, "TLSClientCert", true, "/config/certs/client.crt");
+     ParamAddSingleValueWithPreset(param, catname, "TLSClientKey", true, "/config/certs/client.key");
      ParamAddSingleValueWithPreset(param, catname, "RetainMessages", true, "false");
      ParamAddSingleValueWithPreset(param, catname, "HomeassistantDiscovery", true, "false");
      ParamAddSingleValueWithPreset(param, catname, "MeterType", true, "other");
@@ -200,6 +234,10 @@ function ParseConfig() {
      ParamAddSingleValueWithPreset(param, catname, "Database", true, "undefined");
      ParamAddSingleValueWithPreset(param, catname, "user", false, "undefined");
      ParamAddSingleValueWithPreset(param, catname, "password", false, "undefined");
+     ParamAddSingleValueWithPreset(param, catname, "TLSEncryption", false, "false");
+     ParamAddSingleValueWithPreset(param, catname, "TLSCACert", true, "/config/certs/ca.crt");
+     ParamAddSingleValueWithPreset(param, catname, "TLSClientCert", true, "/config/certs/client.crt");
+     ParamAddSingleValueWithPreset(param, catname, "TLSClientKey", true, "/config/certs/client.key");
      ParamAddValue(param, catname, "Measurement", 1, true, "undefined");
      ParamAddValue(param, catname, "Field", 1, true, "undefined");
 
@@ -209,9 +247,13 @@ function ParseConfig() {
      category[catname]["found"] = true;
      param[catname] = new Object();
      ParamAddSingleValueWithPreset(param, catname, "Uri", true, "http://IP-ADDRESS:PORT");
-     ParamAddSingleValueWithPreset(param, catname, "Database", true, "undefined");
+     ParamAddSingleValueWithPreset(param, catname, "Bucket", true, "undefined");
      ParamAddSingleValueWithPreset(param, catname, "Org", false, "undefined");
      ParamAddSingleValueWithPreset(param, catname, "Token", false, "undefined");
+     ParamAddSingleValueWithPreset(param, catname, "TLSEncryption", false, "false");
+     ParamAddSingleValueWithPreset(param, catname, "TLSCACert", true, "/config/certs/ca.crt");
+     ParamAddSingleValueWithPreset(param, catname, "TLSClientCert", true, "/config/certs/client.crt");
+     ParamAddSingleValueWithPreset(param, catname, "TLSClientKey", true, "/config/certs/client.key");
      ParamAddValue(param, catname, "Measurement", 1, true, "undefined");
      ParamAddValue(param, catname, "Field", 1, true, "undefined");
 
@@ -268,14 +310,30 @@ function ParseConfig() {
      ParamAddSingleValueWithPreset(param, catname, "Hostname", true, "watermeter");   
      ParamAddSingleValueWithPreset(param, catname, "RSSIThreshold", false, "-75");   
      ParamAddSingleValueWithPreset(param, catname, "CPUFrequency", true, "160");
-     ParamAddSingleValueWithPreset(param, catname, "SetupMode", true, "true"); 
+     ParamAddSingleValueWithPreset(param, catname, "SetupMode", true, "true");
+
+     var catname = "WebUI";
+     category[catname] = new Object(); 
+     category[catname]["enabled"] = true;
+     category[catname]["found"] = true;
+     param[catname] = new Object();
+     ParamAddSingleValueWithPreset(param, catname, "OverviewAutoRefresh", true, "true");
+     ParamAddSingleValueWithPreset(param, catname, "OverviewAutoRefreshTime", true, "10");
+     ParamAddSingleValueWithPreset(param, catname, "DataGraphAutoRefresh", true, "false");
+     ParamAddSingleValueWithPreset(param, catname, "DataGraphAutoRefreshTime", true, "60");
      
-     
-     while (aktline < config_split.length){
+
+     while (aktline < config_split.length) {
           for (var cat in category) {
+               if (typeof config_split[aktline] === 'undefined') {
+                    aktline++;
+                    continue;
+               }
+
                zw = cat.toUpperCase();
                zw1 = "[" + zw + "]";
                zw2 = ";[" + zw + "]";
+               
                if ((config_split[aktline].trim().toUpperCase() == zw1) || (config_split[aktline].trim().toUpperCase() == zw2)) {
                     if (config_split[aktline].trim().toUpperCase() == zw1) {
                          category[cat]["enabled"] = true;
@@ -286,6 +344,7 @@ function ParseConfig() {
                     continue;
                }
           }
+          
           aktline++;
      }
 
@@ -338,11 +397,28 @@ function ParseConfigReduced() {
      param[catname] = new Object();
      ParamAddSingleValueWithPreset(param, catname, "HomeassistantDiscovery", true, "false");
 
+     var catname = "WebUI";
+     category[catname] = new Object(); 
+     category[catname]["enabled"] = true;
+     category[catname]["found"] = false;
+     param[catname] = new Object();
+     ParamAddSingleValueWithPreset(param, catname, "OverviewAutoRefresh", true, "true");
+     ParamAddSingleValueWithPreset(param, catname, "OverviewAutoRefreshTime", true, "10");
+     ParamAddSingleValueWithPreset(param, catname, "DataGraphAutoRefresh", true, "false");
+     ParamAddSingleValueWithPreset(param, catname, "DataGraphAutoRefreshTime", true, "60");
+
+
      while (aktline < config_split.length) {
           for (var cat in category) {
+               if (typeof config_split[aktline] === 'undefined') {
+                    aktline++;
+                    continue;
+               }
+               
                zw = cat.toUpperCase();
                zw1 = "[" + zw + "]";
                zw2 = ";[" + zw + "]";
+
                if ((config_split[aktline].trim().toUpperCase() == zw1) || (config_split[aktline].trim().toUpperCase() == zw2)) {
                     if (config_split[aktline].trim().toUpperCase() == zw1) {
                          category[cat]["enabled"] = true;
@@ -385,7 +461,6 @@ function ParamAddSingleValueWithPreset(param, _cat, _param, _enabled, _value)
           param[_cat][_param]["Numbers"] = false;
           param[_cat][_param].checkRegExList = null;
      }
-
 }
 
 
@@ -393,13 +468,12 @@ function ParamAddSingleValueWithPreset(param, _cat, _param, _enabled, _value)
 function ParamAddModelWithPreset(param, _cat, _param, _enabled)
 {
      if (param[_cat][_param] == null) {
-    
           param[_cat][_param] = new Object();
           param[_cat][_param]["found"] = true;
           param[_cat][_param]["enabled"] = _enabled;
           param[_cat][_param]["line"] = -1; 
           param[_cat][_param]["anzParam"] = 1;
-          param[_cat][_param]["defaultValue"] = "";   // Parameter only used for numbers sequences
+          param[_cat][_param]["defaultValue"] = "";   // Parameter only used for number sequences
           param[_cat][_param]["Numbers"] = false;
           param[_cat][_param].checkRegExList = null;
 
@@ -408,12 +482,12 @@ function ParamAddModelWithPreset(param, _cat, _param, _enabled)
           else if (_cat == "Analog")
                filter = "/ana";
           
-          list_tflite = getTFLITEList();
-          for (var i = 0; i < list_tflite.length; ++i) {
-               if (list_tflite[i].includes(filter)) {
-                    param[_cat][_param]["value1"] = list_tflite[i]; // Set first occurence as default value to ensure at least one is set
+
+          for (var i = 0; i < tflite_list.length; ++i) {
+               if (tflite_list[i].includes(filter)) {
+                    param[_cat][_param]["value1"] = tflite_list[i]; // Set first occurence as default value to ensure at least one is set
                     break;
-               }   
+               }
           }
      }
      else if (param[_cat][_param]["value1"] == "") { // If value empty, ensure at least one model is selected to avoid crashes
@@ -421,12 +495,12 @@ function ParamAddModelWithPreset(param, _cat, _param, _enabled)
                filter = "/dig";
           else if (_cat == "Analog")
                filter = "/ana";
-          list_tflite = getTFLITEList();
-          for (var i = 0; i < list_tflite.length; ++i) {
-               if (list_tflite[i].includes(filter)) {
-                    param[_cat][_param]["value1"] = list_tflite[i]; // Set first occurence as default value to ensure at least one is set
+
+          for (var i = 0; i < tflite_list.length; ++i) {
+               if (tflite_list[i].includes(filter)) {
+                    param[_cat][_param]["value1"] = tflite_list[i]; // Set first occurence as default value to ensure at least one is set
                     break;
-               }   
+               }
           }
      }
 }
@@ -654,7 +728,7 @@ function isCommented(input)
      }    
 
 
-     function getConfigCategory() {
+function getConfigCategory() {
      return category;
 }
 
@@ -662,7 +736,6 @@ function isCommented(input)
 function getConfigParameters() {
      return param;
 }
-
 
 
 function ExtractROIs(_aktline, _type){
@@ -739,85 +812,21 @@ function getNUMBERS(_name, _type, _create = true)
 
 }
 
- 
 
-function CopyReferenceToImgTmp(_domainname)
-{
-     for (index = 0; index < 2; ++index)
-     {
-          _filenamevon = REFERENCES[index]["name"];
-          _filenamenach = _filenamevon.replace("/config/", "/img_tmp/");
-          FileDeleteOnServer(_filenamenach, _domainname);
-          FileCopyOnServer(_filenamevon, _filenamenach, _domainname);
-     }
-}
-
-function GetReferencesInfo(){
+function getAlignmentMarker(){
      return REFERENCES;
 }
 
 
-function UpdateConfigReference(_domainname){
-     for (var index = 0; index < 2; ++index)
-     {
-          _filenamenach = REFERENCES[index]["name"];
-          _filenamevon = _filenamenach.replace("/config/", "/img_tmp/");
-          FileDeleteOnServer(_filenamenach, _domainname);
-          FileCopyOnServer(_filenamevon, _filenamenach, _domainname);
-     }
-}
-
-
-function getNUMBERInfo(){
+function getNumberSequences(){
      return NUMBERS;
 }
 
-function RenameNUMBER(_alt, _neu){
-     if ((_neu.indexOf(".") >= 0) || (_neu.indexOf(",") >= 0) || 
-         (_neu.indexOf(" ") >= 0) || (_neu.indexOf("\"") >= 0))
-     {
-          return "Number sequence name must not contain , . \" or a space";
-     }
 
-     index = -1;
+function CreateNumberSequence(_sequence_name){
      found = false;
      for (i = 0; i < NUMBERS.length; ++i) {
-          if (NUMBERS[i]["name"] == _alt)
-               index = i;
-          if (NUMBERS[i]["name"] == _neu)
-               found = true;
-     }
-
-     if (found)
-          return "Number sequence name is already existing, please choose another name";
-
-     NUMBERS[index]["name"] = _neu;
-     
-     return "";
-}
-
-function DeleteNUMBER(_delete){
-     if (NUMBERS.length == 1)
-          return "One number sequence is mandatory. Therefore this cannot be deleted"
-     
-
-     index = -1;
-     for (i = 0; i < NUMBERS.length; ++i) {
-          if (NUMBERS[i]["name"] == _delete)
-               index = i;
-     }
-
-     if (index > -1) {
-          NUMBERS.splice(index, 1);
-     }
-
-     return "";
-}
-
-function CreateNUMBER(_numbernew){
-     found = false;
-     for (i = 0; i < NUMBERS.length; ++i) {
-          if (NUMBERS[i]["name"] == _numbernew)
+          if (NUMBERS[i]["name"] == _sequence_name)
                found = true;
      }
 
@@ -825,7 +834,7 @@ function CreateNUMBER(_numbernew){
           return "Number sequence name is already existing, please choose another name";
 
      _ret = new Object();
-     _ret["name"] = _numbernew;
+     _ret["name"] = _sequence_name;
      _ret['digit'] = new Array();
      _ret['analog'] = new Array();
 
@@ -859,6 +868,50 @@ function CreateNUMBER(_numbernew){
 }
 
 
+function RenameNumberSequence(_sequence_name_old, _sequence_name_new){
+     if ((_sequence_name_new.indexOf(".") >= 0) || (_sequence_name_new.indexOf(",") >= 0) || 
+         (_sequence_name_new.indexOf(" ") >= 0) || (_sequence_name_new.indexOf("\"") >= 0))
+     {
+          return "Number sequence name must not contain , . \" or a space";
+     }
+
+     index = -1;
+     found = false;
+     for (i = 0; i < NUMBERS.length; ++i) {
+          if (NUMBERS[i]["name"] == _sequence_name_old)
+               index = i;
+          if (NUMBERS[i]["name"] == _sequence_name_new)
+               found = true;
+     }
+
+     if (found)
+          return "Number sequence name is already existing, please choose another name";
+
+     NUMBERS[index]["name"] = _sequence_name_new;
+     
+     return "";
+}
+
+
+function DeleteNumberSequence(_sequence_name){
+     if (NUMBERS.length == 1)
+          return "One number sequence is mandatory. Therefore this cannot be deleted"
+     
+
+     index = -1;
+     for (i = 0; i < NUMBERS.length; ++i) {
+          if (NUMBERS[i]["name"] == _sequence_name)
+               index = i;
+     }
+
+     if (index > -1) {
+          NUMBERS.splice(index, 1);
+     }
+
+     return "";
+}
+
+
 function getROIInfo(_typeROI, _number){
      index = -1;
      for (var i = 0; i < NUMBERS.length; ++i)
@@ -872,62 +925,10 @@ function getROIInfo(_typeROI, _number){
 }
 
 
-function RenameROI(_number, _type, _alt, _neu){
-     if ((_neu.includes("=")) || (_neu.includes(".")) || (_neu.includes(":")) ||
-         (_neu.includes(",")) || (_neu.includes(";")) || (_neu.includes(" ")) || 
-         (_neu.includes("\""))) 
-     {
-          return "ROI name must not contain . : , ; = \" or space";
-     }
-
-     index = -1;
-     found = false;
+function CreateROI(_sequence_name, _type, _pos, _roinew, _x, _y, _dx, _dy, _CCW){
      _indexnumber = -1;
      for (j = 0; j < NUMBERS.length; ++j)
-          if (NUMBERS[j]["name"] == _number)
-               _indexnumber = j;
-
-     if (_indexnumber == -1)
-          return "Number sequence not existing. ROI cannot be renamed"  
-
-     for (i = 0; i < NUMBERS[_indexnumber][_type].length; ++i) {
-          if (NUMBERS[_indexnumber][_type][i]["name"] == _alt)
-               index = i;
-          if (NUMBERS[_indexnumber][_type][i]["name"] == _neu)
-               found = true;
-     }
-
-     if (found)
-          return "ROI name is already existing, please choose another name";
-
-     NUMBERS[_indexnumber][_type][index]["name"] = _neu;
-     
-     return "";
-}
-
-
-function DeleteNUMBER(_delte){
-     if (NUMBERS.length == 1)
-          return "The last number cannot be deleted"
-     
-     index = -1;
-     for (i = 0; i < NUMBERS.length; ++i) {
-          if (NUMBERS[i]["name"] == _delte)
-               index = i;
-     }
-
-     if (index > -1) {
-          NUMBERS.splice(index, 1);
-     }
-
-     return "";
-}
-
-
-function CreateROI(_number, _type, _pos, _roinew, _x, _y, _dx, _dy, _CCW){
-     _indexnumber = -1;
-     for (j = 0; j < NUMBERS.length; ++j)
-          if (NUMBERS[j]["name"] == _number)
+          if (NUMBERS[j]["name"] == _sequence_name)
                _indexnumber = j;
 
      if (_indexnumber == -1)
@@ -940,7 +941,7 @@ function CreateROI(_number, _type, _pos, _roinew, _x, _y, _dx, _dy, _CCW){
      }
 
      if (found)
-          return "ROI name is already existing, please choose another name";
+          return "ROI name is already existing";
 
      _ret = new Object();
      _ret["name"] = _roinew;
@@ -953,5 +954,39 @@ function CreateROI(_number, _type, _pos, _roinew, _x, _y, _dx, _dy, _CCW){
 
      NUMBERS[_indexnumber][_type].splice(_pos+1, 0, _ret);
 
+     return "";
+}
+
+
+function RenameROI(_sequence_name, _type, _roi_name_old, _roi_name_new){
+     if ((_roi_name_new.includes("=")) || (_roi_name_new.includes(".")) || (_roi_name_new.includes(":")) ||
+         (_roi_name_new.includes(",")) || (_roi_name_new.includes(";")) || (_roi_name_new.includes(" ")) || 
+         (_roi_name_new.includes("\""))) 
+     {
+          return "ROI name must not contain . : , ; = \" or space";
+     }
+
+     index = -1;
+     found = false;
+     _indexnumber = -1;
+     for (j = 0; j < NUMBERS.length; ++j)
+          if (NUMBERS[j]["name"] == _sequence_name)
+               _indexnumber = j;
+
+     if (_indexnumber == -1)
+          return "Number sequence not existing. ROI cannot be renamed"  
+
+     for (i = 0; i < NUMBERS[_indexnumber][_type].length; ++i) {
+          if (NUMBERS[_indexnumber][_type][i]["name"] == _roi_name_old)
+               index = i;
+          if (NUMBERS[_indexnumber][_type][i]["name"] == _roi_name_new)
+               found = true;
+     }
+
+     if (found)
+          return "ROI name is already existing";
+
+     NUMBERS[_indexnumber][_type][index]["name"] = _roi_name_new;
+     
      return "";
 }

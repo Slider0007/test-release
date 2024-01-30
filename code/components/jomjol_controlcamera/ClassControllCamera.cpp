@@ -1,51 +1,34 @@
 #include "ClassControllCamera.h"
-#include "ClassLogFile.h"
-
-#include <stdio.h>
-#include "driver/gpio.h"
-#include "esp_timer.h"
-#include "esp_log.h"
-#include "psram.h"
-
-#include "Helper.h"
-#include "statusled.h"
-#include "CImageBasis.h"
-
-#include "server_ota.h"
-#include "server_GPIO.h"
-
 #include "../../include/defines.h"
 
-#include <esp_event.h>
-#include <esp_log.h>
-#include <esp_system.h>
-#include <nvs_flash.h>
-#include <sys/param.h>
+#include <stdio.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#include <nvs_flash.h>
+#include <sys/param.h>
+#include "driver/ledc.h"
+#include "driver/gpio.h"
+#include "esp_rom_gpio.h"
+#include <esp_event.h>
+#include <esp_log.h>
+#include <esp_system.h>
+#include "esp_timer.h"
+#include "esp_log.h"
 #include "esp_camera.h"
 
-#include "driver/ledc.h"
+#include "psram.h"
+#include "Helper.h"
+#include "statusled.h"
+#include "CImageBasis.h"
+#include "ClassLogFile.h"
+#include "server_ota.h"
+#include "server_GPIO.h"
 #include "MainFlowControl.h"
 
-#if (ESP_IDF_VERSION_MAJOR >= 5)
-#include "soc/periph_defs.h"
-#include "esp_private/periph_ctrl.h"
-#include "soc/gpio_sig_map.h"
-#include "soc/gpio_periph.h"
-#include "soc/io_mux_reg.h"
-#include "esp_rom_gpio.h"
-#define gpio_pad_select_gpio esp_rom_gpio_pad_select_gpio
-#define gpio_matrix_in(a,b,c) esp_rom_gpio_connect_in_signal(a,b,c)
-#define gpio_matrix_out(a,b,c,d) esp_rom_gpio_connect_out_signal(a,b,c,d)
-#define ets_delay_us(a) esp_rom_delay_us(a)
-#endif
 
-
-static const char *TAG = "CAM"; 
-
+static const char *TAG = "CAM_CTRL"; 
 
 CCamera Camera;
 
@@ -57,37 +40,34 @@ static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %
 
 
 static camera_config_t camera_config = {
-    .pin_pwdn = CAM_PIN_PWDN,
-    .pin_reset = CAM_PIN_RESET,
-    .pin_xclk = CAM_PIN_XCLK,
-    .pin_sscb_sda = CAM_PIN_SIOD,
-    .pin_sscb_scl = CAM_PIN_SIOC,
+    .pin_pwdn       = PWDN_GPIO_NUM,
+    .pin_reset      = RESET_GPIO_NUM,
+    .pin_xclk       = XCLK_GPIO_NUM,
+    .pin_sccb_sda   = SIOD_GPIO_NUM,
+    .pin_sccb_scl   = SIOC_GPIO_NUM,
+    .pin_d7         = Y9_GPIO_NUM,
+    .pin_d6         = Y8_GPIO_NUM,
+    .pin_d5         = Y7_GPIO_NUM,
+    .pin_d4         = Y6_GPIO_NUM,
+    .pin_d3         = Y5_GPIO_NUM,
+    .pin_d2         = Y4_GPIO_NUM,
+    .pin_d1         = Y3_GPIO_NUM,
+    .pin_d0         = Y2_GPIO_NUM,
+    .pin_vsync      = VSYNC_GPIO_NUM,
+    .pin_href       = HREF_GPIO_NUM,
+    .pin_pclk       = PCLK_GPIO_NUM,
 
-    .pin_d7 = CAM_PIN_D7,
-    .pin_d6 = CAM_PIN_D6,
-    .pin_d5 = CAM_PIN_D5,
-    .pin_d4 = CAM_PIN_D4,
-    .pin_d3 = CAM_PIN_D3,
-    .pin_d2 = CAM_PIN_D2,
-    .pin_d1 = CAM_PIN_D1,
-    .pin_d0 = CAM_PIN_D0,
-    .pin_vsync = CAM_PIN_VSYNC,
-    .pin_href = CAM_PIN_HREF,
-    .pin_pclk = CAM_PIN_PCLK,
-
-    //XCLK 20MHz or 10MHz for OV2640 double FPS (Experimental)
-    .xclk_freq_hz = 20000000,             // Orginal value
-//    .xclk_freq_hz =    5000000,         // Test to get rid of the image errors !!!! Hangs in version 9.2 !!!!
+    .xclk_freq_hz = 20000000,           // Frequency (20Mhz)
+    
     .ledc_timer = LEDC_TIMER_0,
     .ledc_channel = LEDC_CHANNEL_0,
 
-    .pixel_format = PIXFORMAT_JPEG, //YUV422,GRAYSCALE,RGB565,JPEG
-    .frame_size = FRAMESIZE_VGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
-//    .frame_size = FRAMESIZE_UXGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
-    .jpeg_quality = 12, //0-63 lower number means higher quality
-    .fb_count = 1,       //if more than one, i2s runs in continuous mode. Use only with JPEG
-    .fb_location = CAMERA_FB_IN_PSRAM, /*!< The location where the frame buffer will be allocated */
-    .grab_mode = CAMERA_GRAB_LATEST,      // only from new esp32cam version
+    .pixel_format = PIXFORMAT_JPEG,     // YUV422, GRAYSCALE, RGB565, JPEG
+    .frame_size = FRAMESIZE_VGA,        // QQVGA-UXGA Do not use sizes above QVGA when not JPEG
+    .jpeg_quality = 12,                 // 0-63 lower number means higher quality
+    .fb_count = 1,                      // if more than one, i2s runs in continuous mode. Use only with JPEG
+    .fb_location = CAMERA_FB_IN_PSRAM,  // The location where the frame buffer will be allocated */
+    .grab_mode = CAMERA_GRAB_LATEST     // only from new esp32cam version
 };
 
 
@@ -134,7 +114,7 @@ CCamera::CCamera()
     demoMode = false;
     CameraInitSuccessful = false;
 
-    #ifdef USE_PWM_LEDFLASH
+    #ifdef GPIO_FLASHLIGHT_DEFAULT_USE_LEDC
         ledc_init();   
     #endif
 }
@@ -142,21 +122,26 @@ CCamera::CCamera()
 
 void CCamera::PowerResetCamera()
 {
-
-        ESP_LOGD(TAG, "Resetting camera by power down line");
+    #if PWDN_GPIO_NUM != GPIO_NUM_NC
+        ESP_LOGD(TAG, "Resetting camera by power cycling");
         gpio_config_t conf;
         conf.intr_type = GPIO_INTR_DISABLE;
-        conf.pin_bit_mask = 1LL << GPIO_NUM_32;
+        conf.pin_bit_mask = 1LL << PWDN_GPIO_NUM;
         conf.mode = GPIO_MODE_OUTPUT;
         conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
         conf.pull_up_en = GPIO_PULLUP_DISABLE;
         gpio_config(&conf);
 
         // carefull, logic is inverted compared to reset pin
-        gpio_set_level(GPIO_NUM_32, 1);
+        gpio_set_level(PWDN_GPIO_NUM, 1);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
-        gpio_set_level(GPIO_NUM_32, 0);
+        gpio_set_level(PWDN_GPIO_NUM, 0);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
+        return;
+    #else
+        ESP_LOGD(TAG, "Power pin not defined. Software power reset not available"); 
+        return;
+    #endif
 }
 
 
@@ -216,10 +201,60 @@ void CCamera::printCamInfo(void)
 {
     // Print camera infos
     // ********************************************
-    char caminfo[50];
+    char caminfo[64];
     sensor_t * s = esp_camera_sensor_get();
-    sprintf(caminfo, "PID: 0x%02x, VER: 0x%02x, MIDL: 0x%02x, MIDH: 0x%02x", s->id.PID, s->id.VER, s->id.MIDH, s->id.MIDL);
+    sprintf(caminfo, "PID: 0x%02x, VER: 0x%02x, MIDL: 0x%02x, MIDH: 0x%02x, FREQ: %dMhz", s->id.PID, 
+                s->id.VER, s->id.MIDH, s->id.MIDL, s->xclk_freq_hz/1000000);
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Camera info: " + std::string(caminfo));
+}
+
+
+void CCamera::SetCameraFrequency(int _frequency)
+{
+    if (camera_config.xclk_freq_hz == (_frequency * 1000000)) // If frequency is matching, return without any action
+        return;
+    
+    if (_frequency >= 8 && _frequency <= 20)
+        camera_config.xclk_freq_hz = _frequency * 1000000;
+    else
+        camera_config.xclk_freq_hz = 2000000;
+
+    InitCam();
+    printCamInfo();
+    
+    ESP_LOGD(TAG, "Set camera frequency: %d", camera_config.xclk_freq_hz);
+}
+
+
+void CCamera::SetQualitySize(int qual, framesize_t resol)
+{
+    if (!getCameraInitSuccessful())
+        return;
+    
+    qual = std::min(63, std::max(8, qual)); // Limit quality from 8..63 (values lower than 8 tent to be unstable)
+    
+    sensor_t * s = esp_camera_sensor_get();
+    if (s) {
+        s->set_quality(s, qual);    
+        s->set_framesize(s, resol);
+    }
+    else {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SetQualitySize: Failed to get control structure");
+    }
+
+    ActualResolution = resol;
+    ActualQuality = qual;
+
+    if (resol == FRAMESIZE_QVGA)
+    {
+        image_height = 240;
+        image_width = 320;             
+    }
+    else if (resol == FRAMESIZE_VGA)
+    {
+        image_height = 480;
+        image_width = 640;             
+    }
 }
 
 
@@ -283,38 +318,6 @@ bool CCamera::SetBrightnessContrastSaturation(int _brightness, int _contrast, in
     ESP_LOGD(TAG, "brightness %d, contrast: %d, saturation %d", brightness, contrast, saturation);
 
     return true;
-}
-
-
-void CCamera::SetQualitySize(int qual, framesize_t resol)
-{
-    if (!getCameraInitSuccessful())
-        return;
-    
-    qual = std::min(63, std::max(8, qual)); // Limit quality from 8..63 (values lower than 8 tent to be unstable)
-    
-    sensor_t * s = esp_camera_sensor_get();
-    if (s) {
-        s->set_quality(s, qual);    
-        s->set_framesize(s, resol);
-    }
-    else {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SetQualitySize: Failed to get control structure");
-    }
-
-    ActualResolution = resol;
-    ActualQuality = qual;
-
-    if (resol == FRAMESIZE_QVGA)
-    {
-        image_height = 240;
-        image_width = 320;             
-    }
-    else if (resol == FRAMESIZE_VGA)
-    {
-        image_height = 480;
-        image_width = 640;             
-    }
 }
 
 
@@ -681,32 +684,32 @@ void CCamera::LightOnOff(bool status)
 {
     GpioHandler* gpioHandler = gpio_handler_get();
     if ((gpioHandler != NULL) && (gpioHandler->isEnabled())) {
-        ESP_LOGD(TAG, "Use gpioHandler to trigger flashlight");
+        ESP_LOGD(TAG, "GPIO handler enabled: Trigger flashlight by GPIO handler");
         gpioHandler->flashLightEnable(status);
-    }  
+    }
     else {
-    #ifdef USE_PWM_LEDFLASH
+    #ifdef GPIO_FLASHLIGHT_DEFAULT_USE_LEDC
         if (status) {
-            ESP_LOGD(TAG, "Internal Flash-LED turn on with PWM %d", led_intensity);
+            ESP_LOGD(TAG, "Default flashlight turn on with PWM %d", led_intensity);
             ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, led_intensity));
             // Update duty to apply the new value
             ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
         }
         else {
-            ESP_LOGD(TAG, "Internal Flash-LED turn off PWM");
+            ESP_LOGD(TAG, "Default flashlight turn off PWM");
             ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, 0));
             ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
         }
     #else
         // Init the GPIO
-        gpio_pad_select_gpio(FLASH_GPIO);
+        esp_rom_gpio_pad_select_gpio(FLASH_GPIO);
         // Set the GPIO as a push/pull output 
-        gpio_set_direction(FLASH_GPIO, GPIO_MODE_OUTPUT);  
+        gpio_set_direction(GPIO_FLASHLIGHT_DEFAULT, GPIO_MODE_OUTPUT);  
 
         if (status)  
-            gpio_set_level(FLASH_GPIO, 1);
+            gpio_set_level(GPIO_FLASHLIGHT_DEFAULT, 1);
         else
-            gpio_set_level(FLASH_GPIO, 0);
+            gpio_set_level(GPIO_FLASHLIGHT_DEFAULT, 0);
     #endif
     }
 }
@@ -716,14 +719,14 @@ void CCamera::LEDOnOff(bool status)
 {
 	if (xHandle_task_StatusLED == NULL) {
         // Init the GPIO
-        gpio_pad_select_gpio(BLINK_GPIO);
+        esp_rom_gpio_pad_select_gpio(GPIO_STATUS_LED_ONBOARD);
         /* Set the GPIO as a push/pull output */
-        gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);  
+        gpio_set_direction(GPIO_STATUS_LED_ONBOARD, GPIO_MODE_OUTPUT);  
 
         if (!status)  
-            gpio_set_level(BLINK_GPIO, 1);
+            gpio_set_level(GPIO_STATUS_LED_ONBOARD, 1);
         else
-            gpio_set_level(BLINK_GPIO, 0);   
+            gpio_set_level(GPIO_STATUS_LED_ONBOARD, 0);   
     }
 }
 
@@ -842,7 +845,7 @@ bool CCamera::loadNextDemoImage(camera_fb_t *fb) {
     char filename[50];
     long fileSize;
 
-    snprintf(filename, sizeof(filename), "/sdcard/demo/%s", demoFiles[getCountFlowRounds() % demoFiles.size()].c_str());
+    snprintf(filename, sizeof(filename), "/sdcard/demo/%s", demoFiles[getFlowCycleCounter() % demoFiles.size()].c_str());
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Using " + std::string(filename) + " as demo image");
 

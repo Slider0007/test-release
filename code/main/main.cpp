@@ -1,71 +1,18 @@
+#include "../../include/defines.h"
+
 #include <iostream>
 #include <string>
 #include <vector>
 #include <regex>
 
-//#include "freertos/FreeRTOS.h"
-//#include "freertos/task.h"
-//#include "freertos/event_groups.h"
-
-//#include "driver/gpio.h"
-//#include "sdkconfig.h"
+#include "nvs_flash.h"
 #include "esp_psram.h"
-#include "esp_pm.h"
-#include "esp_chip_info.h"
-
-
-// SD-Card ////////////////////
-//#include "nvs_flash.h"
 #include "esp_vfs_fat.h"
-//#include "sdmmc_cmd.h"
 #include "driver/sdmmc_host.h"
-//#include "driver/sdmmc_defs.h"
-///////////////////////////////
-
-
-#include "ClassLogFile.h"
-
-#include "connect_wlan.h"
-#include "read_wlanini.h"
-
-#include "server_main.h"
-#include "MainFlowControl.h"
-#include "server_file.h"
-#include "server_ota.h"
-#include "time_sntp.h"
-#include "configFile.h"
-//#include "ClassControllCamera.h"
-#include "server_main.h"
-#include "server_camera.h"
-#ifdef ENABLE_MQTT
-    #include "server_mqtt.h"
-#endif //ENABLE_MQTT
-#include "Helper.h"
-#include "statusled.h"
-#include "sdcard_check.h"
-
-#include "../../include/defines.h"
-//#include "server_GPIO.h"
-
-#ifdef ENABLE_SOFTAP
-    #include "softAP.h"
-#endif //ENABLE_SOFTAP
 
 #ifdef DISABLE_BROWNOUT_DETECTOR
     #include "soc/soc.h" 
     #include "soc/rtc_cntl_reg.h" 
-#endif
-
-#ifdef DEBUG_ENABLE_SYSINFO
-#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL( 4, 0, 0 )
-    #include "esp_sys.h"
-#endif
-#endif //DEBUG_ENABLE_SYSINFO
-
-// define `gpio_pad_select_gpip` for newer versions of IDF
-#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 3, 0))
-#include "esp_rom_gpio.h"
-#define gpio_pad_select_gpio esp_rom_gpio_pad_select_gpio
 #endif
 
 #ifdef USE_HIMEM_IF_AVAILABLE
@@ -82,6 +29,34 @@
     static heap_trace_record_t trace_record[NUM_RECORDS]; // This buffer must be in internal RAM
 #endif
 
+#include "ClassLogFile.h"
+#include "connect_wlan.h"
+#include "read_wlanini.h"
+#include "server_main.h"
+#include "MainFlowControl.h"
+#include "server_file.h"
+#include "server_ota.h"
+#include "time_sntp.h"
+#include "configFile.h"
+#include "server_GPIO.h"
+#include "server_camera.h"
+
+#ifdef ENABLE_MQTT
+#include "server_mqtt.h"
+#endif //ENABLE_MQTT
+
+#include "Helper.h"
+#include "system.h"
+#include "statusled.h"
+#include "sdcard_check.h"
+
+#ifdef ENABLE_SOFTAP
+    #include "softAP.h"
+#endif //ENABLE_SOFTAP
+
+
+static const char *TAG = "MAIN";
+
 extern const char* GIT_TAG;
 extern const char* GIT_REV;
 extern const char* GIT_BRANCH;
@@ -91,80 +66,9 @@ extern std::string getFwVersion(void);
 extern std::string getHTMLversion(void);
 extern std::string getHTMLcommit(void);
 
-std::vector<std::string> splitString(const std::string& str);
-void migrateConfiguration(void);
-bool setCpuFrequency(void);
-
-static const char *TAG = "MAIN";
-
-
-bool Init_NVS_SDCard()
-{
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
-    }
-
-    ESP_LOGD(TAG, "Using SDMMC peripheral");
-    sdmmc_host_t host = SDMMC_HOST_DEFAULT();
-
-    // This initializes the slot without card detect (CD) and write protect (WP) signals.
-    // Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
-    sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
-
-    // To use 1-line SD mode, uncomment the following line:
-    #ifdef __SD_USE_ONE_LINE_MODE__
-        slot_config.width = 1;
-    #endif
-
-    // GPIOs 15, 2, 4, 12, 13 should have external 10k pull-ups.
-    // Internal pull-ups are not sufficient. However, enabling internal pull-ups
-    // does make a difference some boards, so we do that here.
-    gpio_set_pull_mode(GPIO_NUM_15, GPIO_PULLUP_ONLY);   // CMD, needed in 4- and 1- line modes
-    gpio_set_pull_mode(GPIO_NUM_2, GPIO_PULLUP_ONLY);    // D0, needed in 4- and 1-line modes
-    #ifndef __SD_USE_ONE_LINE_MODE__
-        gpio_set_pull_mode(GPIO_NUM_4, GPIO_PULLUP_ONLY);    // D1, needed in 4-line mode only
-        gpio_set_pull_mode(GPIO_NUM_12, GPIO_PULLUP_ONLY);   // D2, needed in 4-line mode only
-    #endif
-    gpio_set_pull_mode(GPIO_NUM_13, GPIO_PULLUP_ONLY);   // D3, needed in 4- and 1-line modes
-
-    // Options for mounting the filesystem.
-    // If format_if_mount_failed is set to true, SD card will be partitioned and
-    // formatted in case when mounting fails.
-    esp_vfs_fat_sdmmc_mount_config_t mount_config = {
-        .format_if_mount_failed = false,
-        .max_files = 12,                         // previously -> 2022-09-21: 5, 2023-01-02: 7 
-        .allocation_unit_size = 16 * 1024
-    };
-
-    sdmmc_card_t* card;
-    // Use settings defined above to initialize SD card and mount FAT filesystem.
-    // Note: esp_vfs_fat_sdmmc_mount is an all-in-one convenience function.
-    // Please check its source code and implement error recovery when developing
-    // production applications.
-    ret = esp_vfs_fat_sdmmc_mount("/sdcard", &host, &slot_config, &mount_config, &card);
-
-    if (ret != ESP_OK) {
-        if (ret == ESP_FAIL) {
-            ESP_LOGE(TAG, "Failed to mount FAT filesystem on SD card. Check SD card filesystem (only FAT supported) or try another card");
-            StatusLED(SDCARD_INIT, 1, true);
-        } 
-        else if (ret == 263) { // Error code: 0x107 --> usually: SD not found
-            ESP_LOGE(TAG, "SD card init failed. Check if SD card is properly inserted into SD card slot or try another card");
-            StatusLED(SDCARD_INIT, 2, true);
-        }
-        else {
-            ESP_LOGE(TAG, "SD card init failed. Check error code or try another card");
-            StatusLED(SDCARD_INIT, 3, true);
-        }
-        return false;
-    }
-
-    //sdmmc_card_print_info(stdout, card);  // With activated CONFIG_NEWLIB_NANO_FORMAT --> capacity not printed correctly anymore
-    SaveSDCardInfo(card);
-    return true;
-}
+esp_err_t initNVSFlash();
+esp_err_t initSDCard();
+void migrateConfiguration();
 
 
 extern "C" void app_main(void)
@@ -188,14 +92,20 @@ extern "C" void app_main(void)
     // ********************************************
     // Highlight start of app_main 
     // ********************************************
-    ESP_LOGI(TAG, "\n\n\n\n================ Start app_main =================");
+    ESP_LOGI(TAG, "================ Start app_main =================");
     
+    // Init NVS flash
+    // ********************************************
+    if (ESP_OK != initNVSFlash()) {
+        ESP_LOGE(TAG, "Device init aborted");
+        return; // Stop here, NVS is needed for proper operation
+    }
+
     // Init SD card
     // ********************************************
-    if (!Init_NVS_SDCard())
-    {
+    if (ESP_OK != initSDCard()) {
         ESP_LOGE(TAG, "Device init aborted");
-        return; // No way to continue without working SD card!
+        return; // Stop here, SD card is needed for proper operation
     }
 
     // SD card: Create log directories (if not already existing)
@@ -232,23 +142,27 @@ extern "C" void app_main(void)
 
     // Init time (as early as possible, but SD card needs to be initialized)
     // ********************************************
-    setupTime();    // NTP time service: Status of time synchronization will be checked after every round (server_tflite.cpp)
+    setupTime();    // NTP time service: Status of time synchronization will be checked after every cycle (server_tflite.cpp)
 
-    // Set CPU Frequency
+    // Set CPU Frequency (default: 160Mhz)
     // ********************************************
-    setCpuFrequency();
+    setCPUFrequency();
 
     // SD card: Create further mandatory directories (if not already existing)
     // Correct creation of these folders will be checked with function "SDCardCheckFolderFilePresence"
     // ********************************************
     MakeDir("/sdcard/firmware");         // mandatory for OTA firmware update
-    MakeDir("/sdcard/img_tmp");          // mandatory for setting up alignment marks
+    MakeDir("/sdcard/img_tmp");          // mandatory for setting up alignment marker
     MakeDir("/sdcard/demo");             // mandatory for demo mode
+    MakeDir("/sdcard/config/certs");     // mandatory for TLS encryption
 
     // Check for updates
+    // Note: OTA status check only necessary if OTA rollback feature is enabled
     // ********************************************
+    #ifdef CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE
+    CheckOTAPartitionState();
+    #endif
     CheckOTAUpdate();
-    CheckUpdate();
 
     // Start SoftAP for initial remote setup
     // Note: Start AP if no wlan.ini and/or config.ini available, e.g. SD card empty; function does not exit anymore until reboot
@@ -269,7 +183,7 @@ extern "C" void app_main(void)
     std::string versionFormated = getFwVersion() + ", Date/Time: " + std::string(BUILD_TIME) + \
         ", Web UI: " + getHTMLversion();
 
-    if (std::string(GIT_TAG) != "") { // We are on a tag, add it as prefix
+     if (std::string(GIT_TAG) != "" && std::string(GIT_TAG) != "N/A") { // We are on a tag, add it as prefix
         versionFormated = "Tag: '" + std::string(GIT_TAG) + "', " + versionFormated;
     }
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, versionFormated);
@@ -372,7 +286,7 @@ extern "C" void app_main(void)
             StatusLED(PSRAM_INIT, 2, true);
         }
         else { // PSRAM size OK --> continue to check heap size
-            size_t _hsize = getESPHeapSize();
+            size_t _hsize = getESPHeapSizeTotal();
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Total heap: " + std::to_string(_hsize) + " byte");
 
             // Check heap memory
@@ -403,18 +317,7 @@ extern "C" void app_main(void)
 
     // Print Device info
     // ********************************************
-    #ifdef DEBUG_ENABLE_SYSINFO
-        #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL( 4, 0, 0 )
-            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Device Info : " + get_device_info() );
-            ESP_LOGD(TAG, "Device infos %s", get_device_info().c_str());
-        #endif
-    #else 
-        esp_chip_info_t chipInfo;
-        esp_chip_info(&chipInfo);
-        
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Device info: CPU cores: " + std::to_string(chipInfo.cores) + 
-                                            ", Chip revision: " + std::to_string(chipInfo.revision/100));
-    #endif //DEBUG_ENABLE_SYSINFO
+    printDeviceInfo();
     
     // Print SD-Card info
     // ********************************************
@@ -453,7 +356,96 @@ extern "C" void app_main(void)
 }
 
 
-void migrateConfiguration(void) {
+esp_err_t initNVSFlash()
+{
+    ESP_LOGI(TAG, "Initializing NVS flash");
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
+    }
+    return ret;
+}
+
+
+esp_err_t initSDCard()
+{
+    esp_err_t ret = ESP_OK;
+
+    ESP_LOGI(TAG,"Initializing SD card: Using SDMMC peripheral");
+    sdmmc_host_t host = SDMMC_HOST_DEFAULT();
+
+    // Pullup SD card D3 pin to ensure SD init using MMC mode
+    // Additionally, an external pullup is needed
+    gpio_set_pull_mode(GPIO_SDCARD_D3, GPIO_PULLUP_ONLY);
+
+    // This initializes the slot without card detect (CD) and write protect (WP) signals.
+    // Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
+    sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
+
+    #ifdef SOC_SDMMC_USE_GPIO_MATRIX
+        slot_config.clk = GPIO_SDCARD_CLK;
+        slot_config.cmd = GPIO_SDCARD_CMD;
+        slot_config.d0 = GPIO_SDCARD_D0;
+    #endif
+
+    #ifdef BOARD_SDCARD_SDMMC_BUS_WIDTH_1
+        slot_config.width = 1;
+    #else
+        #ifdef SOC_SDMMC_USE_GPIO_MATRIX
+            slot_config.d1 = GPIO_SDCARD_D1;
+            slot_config.d2 = GPIO_SDCARD_D2;
+            slot_config.d3 = GPIO_SDCARD_D3;
+        #endif
+        slot_config.width = 4;
+    #endif
+
+    // Enable internal pullups on enabled pins. The internal pullups
+    // are insufficient however, please make sure 10k external pullups are
+    // connected on the bus. This is for debug / example purpose only.
+    slot_config.flags |= SDMMC_SLOT_FLAG_INTERNAL_PULLUP;
+
+    // Options for mounting the filesystem.
+    // If format_if_mount_failed is set to true, SD card will be partitioned and
+    // formatted in case when mounting fails.
+    esp_vfs_fat_sdmmc_mount_config_t mount_config = {
+        .format_if_mount_failed = false,
+        .max_files = 12,                         // previously -> 2022-09-21: 5, 2023-01-02: 7 
+        .allocation_unit_size = 16 * 1024,
+        .disk_status_check_enable = 0
+    };
+
+    sdmmc_card_t* card;
+
+    // Use settings defined above to initialize SD card and mount FAT filesystem.
+    // Note: esp_vfs_fat_sdmmc_mount is an all-in-one convenience function.
+    // Please check its source code and implement error recovery when developing
+    // production applications.
+    ret = esp_vfs_fat_sdmmc_mount("/sdcard", &host, &slot_config, &mount_config, &card);
+
+    if (ret != ESP_OK) {
+        if (ret == ESP_FAIL) {
+            ESP_LOGE(TAG, "Failed to mount FAT filesystem on SD card. Check SD card filesystem (only FAT supported) or try another card");
+            StatusLED(SDCARD_INIT, 1, true);
+        } 
+        else if (ret == 263) { // Error code: 0x107 --> usually: SD not found
+            ESP_LOGE(TAG, "SD card init failed. Check if SD card is properly inserted into SD card slot or try another card");
+            StatusLED(SDCARD_INIT, 2, true);
+        }
+        else {
+            ESP_LOGE(TAG, "SD card init failed. Check error code or try another card");
+            StatusLED(SDCARD_INIT, 3, true);
+        }
+        return ret;
+    }
+
+    SaveSDCardInfo(card);
+    return ret;
+}
+
+
+void migrateConfiguration(void)
+{
     bool migrated = false;
 
     if (!FileExists(CONFIG_FILE)) {
@@ -560,10 +552,18 @@ void migrateConfiguration(void) {
             }
 
             /* MaxRateType has a <NUMBER> as prefix! */
-            if (isInString(configLines[i], "MaxRateType") && isInString(configLines[i], ";")) { // It is the parameter "MaxRateType" and it is commented out
-                migrated = migrated | replaceString(configLines[i], "Off", "AbsoluteChange"); // Set it to its default value and enable it
-                migrated = migrated | replaceString(configLines[i], "RateChange", "AbsoluteChange"); // Set it to its default value and enable it
-                migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
+            if (isInString(configLines[i], "MaxRateType")) { // It is the parameter "MaxRateType"
+                if (isInString(configLines[i], ";")) { // if disabled
+                    migrated = migrated | replaceString(configLines[i], "= Off", "= RatePerMin"); // Convert it to its default value
+                    migrated = migrated | replaceString(configLines[i], "= RateChange", "= RatePerMin"); // Convert it to its default value
+                    migrated = migrated | replaceString(configLines[i], "= AbsoluteChange", "= RatePerMin"); // Convert it to its default value
+                    migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
+                }
+                else {
+                    migrated = migrated | replaceString(configLines[i], "= Off", "= RateOff"); // Convert it to its new name
+                    migrated = migrated | replaceString(configLines[i], "= RateChange", "= RatePerMin"); // Convert it to its new name
+                    migrated = migrated | replaceString(configLines[i], "= AbsoluteChange", "= RatePerProcessing"); // Convert it to its new name
+                }
             }
 
             if (isInString(configLines[i], "MaxRateValue") && isInString(configLines[i], ";")) { // It is the parameter "MaxRateValue" and it is commented out
@@ -587,6 +587,21 @@ void migrateConfiguration(void) {
             migrated = migrated | replaceString(configLines[i], ";Uri", "Uri"); // Enable it
             migrated = migrated | replaceString(configLines[i], ";MainTopic", "MainTopic"); // Enable it
             migrated = migrated | replaceString(configLines[i], ";ClientID", "ClientID"); // Enable it
+
+            if (isInString(configLines[i], "CACert") && !isInString(configLines[i], "TLSCACert")) {
+                migrated = migrated | replaceString(configLines[i], "CACert =", "TLSCACert ="); // Rename it
+                migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
+            }
+
+            if (isInString(configLines[i], "ClientCert") && !isInString(configLines[i], "TLSClientCert")) {
+                migrated = migrated | replaceString(configLines[i], "ClientCert =", "TLSClientCert ="); // Rename it
+                migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
+            }
+
+            if (isInString(configLines[i], "ClientKey") && !isInString(configLines[i], "TLSClientKey")) {
+                migrated = migrated | replaceString(configLines[i], "ClientKey =", "TLSClientKey ="); // Rename it
+                migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
+            }
 
             migrated = migrated | replaceString(configLines[i], "SetRetainFlag", "RetainMessages"); // First rename it, enable it with its default value
             migrated = migrated | replaceString(configLines[i], ";RetainMessages = true", ";RetainMessages = false"); // Set it to its default value
@@ -639,7 +654,10 @@ void migrateConfiguration(void) {
             if (isInString(configLines[i], "Database") && isInString(configLines[i], ";")) { // It is the parameter "Database" and it is commented out
                 migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
             }
-
+            if (isInString(configLines[i], "Database")) { // It is the parameter "Database"
+                migrated = migrated | replaceString(configLines[i], "Database", "Bucket"); // Rename it to Bucket
+            }
+            
             /* Measurement has a <NUMBER> as prefix! */
             if (isInString(configLines[i], "Measurement") && isInString(configLines[i], ";")) { // It is the parameter "Measurement" and is it disabled
                 migrated = migrated | replaceString(configLines[i], ";", ""); // Enable it
@@ -730,113 +748,4 @@ void migrateConfiguration(void) {
         fclose(pfile);
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Config file migrated. Saved backup to " + std::string(CONFIG_FILE_BACKUP));
     }
-}
-
-
-std::vector<std::string> splitString(const std::string& str) {
-    std::vector<std::string> tokens;
- 
-    std::stringstream ss(str);
-    std::string token;
-
-    while (std::getline(ss, token, '\n')) {
-        tokens.push_back(token);
-    }
- 
-    return tokens;
-}
-
-
-/*bool replace_all(std::string& s, std::string const& toReplace, std::string const& replaceWith) {
-    std::string buf;
-    std::size_t pos = 0;
-    std::size_t prevPos;
-    bool found = false;
-
-    // Reserves rough estimate of final size of string.
-    buf.reserve(s.size());
-
-    while (true) {
-        prevPos = pos;
-        pos = s.find(toReplace, pos);
-        if (pos == std::string::npos) {
-            break;
-        }
-        found = true;
-        buf.append(s, prevPos, pos - prevPos);
-        buf += replaceWith;
-        pos += toReplace.size();
-    }
-
-    buf.append(s, prevPos, s.size() - prevPos);
-    s.swap(buf);
-
-    return found;
-}*/
-
-
-bool setCpuFrequency(void) {
-    ConfigFile configFile = ConfigFile(CONFIG_FILE); 
-    std::string cpuFrequency = "160";
-    esp_pm_config_esp32_t  pm_config; 
-
-    if (!configFile.ConfigFileExists()){
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "No config file - exit setCpuFrequency");
-        return false;
-    }
-
-    std::vector<std::string> splitted;
-    std::string line = "";
-    bool disabledLine = false;
-    bool eof = false;
-
-
-    /* Load config from config file */
-    while ((!configFile.GetNextParagraph(line, disabledLine, eof) || 
-            (line.compare("[System]") != 0)) && !eof) {}
-    if (eof) {
-        return false;
-    }
-
-    if (disabledLine) {
-        return false;
-    }
-
-    while (configFile.getNextLine(&line, disabledLine, eof) && 
-            !configFile.isNewParagraph(line)) {
-        splitted = ZerlegeZeile(line);
-
-        if (toUpper(splitted[0]) == "CPUFREQUENCY") {
-            cpuFrequency = splitted[1];
-            break;
-        }
-    }
-
-    if (esp_pm_get_configuration(&pm_config) != ESP_OK) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to read CPU Frequency");
-        return false;
-    }
-
-    if (cpuFrequency == "160") { // 160 is the default
-        // No change needed
-    }
-    else if (cpuFrequency == "240") {
-        pm_config.max_freq_mhz = 240;
-        pm_config.min_freq_mhz = pm_config.max_freq_mhz;
-        if (esp_pm_configure(&pm_config) != ESP_OK) {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to set new CPU frequency");
-            return false;
-        }
-    }
-    else {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Unknown CPU frequency: " + cpuFrequency + 
-                "It must be 160 or 240");
-        return false;
-    }
-
-    if (esp_pm_get_configuration(&pm_config) == ESP_OK) {
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, std::string("CPU frequency: ") + std::to_string(pm_config.max_freq_mhz) + " MHz");
-    }
-
-    return true;
 }

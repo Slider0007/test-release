@@ -1,18 +1,10 @@
-/* HTTP File Server Example
-
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
-
-
 #include "server_file.h"
-
+#include "../../include/defines.h"
 
 #include <stdio.h>
 #include <cstring>
+#include <iostream>
+#include <sys/types.h>
 #include <sys/param.h>
 #include <sys/unistd.h>
 #include <sys/stat.h>
@@ -32,19 +24,15 @@ extern "C" {
 #include <esp_spiffs.h>
 #include "esp_http_server.h"
 
-#include "../../include/defines.h"
 #include "ClassLogFile.h"
-
 #include "MainFlowControl.h"
-
 #include "server_help.h"
-#ifdef ENABLE_MQTT
-    #include "interface_mqtt.h"
-#endif //ENABLE_MQTT
 #include "server_GPIO.h"
-
 #include "Helper.h"
-#include "miniz.h"
+
+#ifdef ENABLE_MQTT
+#include "interface_mqtt.h"
+#endif //ENABLE_MQTT
 
 
 static const char *TAG = "SERVER_FILE";
@@ -58,22 +46,9 @@ struct file_server_data {
 };
 
 
-#include <iostream>
-#include <sys/types.h>
-#include <dirent.h>
-
-std::string SUFFIX_ZW = "_0xge";
-
-
-static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file);
-static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file);
-
-
 esp_err_t get_numbers_file_handler(httpd_req_t *req)
 {
     std::string ret = flowctrl.getNumbersName();
-
-//    ESP_LOGI(TAG, "Result get_numbers_file_handler: %s", ret.c_str());
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_set_type(req, "text/plain");
@@ -93,7 +68,6 @@ esp_err_t get_data_file_handler(httpd_req_t *req)
     size_t pos = 0;
     
     const char verz_name[] = "/sdcard/log/data";
-    ESP_LOGD(TAG, "Suche data files in /sdcard/log/data");
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_set_type(req, "text/plain");
@@ -137,7 +111,6 @@ esp_err_t get_tflite_file_handler(httpd_req_t *req)
     size_t pos = 0;
     
     const char verz_name[] = "/sdcard/config";
-    ESP_LOGD(TAG, "Suche TFLITE in /sdcard/config/");
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_set_type(req, "text/plain");
@@ -212,7 +185,7 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
     /* Send HTML file header */
-    httpd_resp_sendstr_chunk(req, "<!DOCTYPE html><html><body>");
+    //httpd_resp_sendstr_chunk(req, "<!DOCTYPE html><html><body>"); --> This is already part of 'file_server.html' file
 
     /////////////////////////////////////////////////
     if (!readonly) {
@@ -226,11 +199,16 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
         size_t chunksize;
         do {
             chunksize = fread(chunk, 1, SERVER_FILER_SCRATCH_BUFSIZE, fd);
-            //        ESP_LOGD(TAG, "Chunksize %d", chunksize);
+            //ESP_LOGD(TAG, "Chunksize %d", chunksize);
             if (chunksize > 0){
                 if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
                     fclose(fd);
-                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "http_resp_dir_html: File sending failed -> directory table");
+                    std::string msg_txt = "http_resp_dir_html: File sending failed: /sdcard/html/file_server.html";
+                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, msg_txt);
+                    /* Abort sending file */
+                    httpd_resp_sendstr_chunk(req, NULL);
+                    /* Respond with 500 Internal Server Error */
+                    httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, msg_txt.c_str());
                     return ESP_FAIL;
                 }
             }
@@ -248,7 +226,7 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
     /* Send file-list table definition and column labels */
     httpd_resp_sendstr_chunk(req,
         "<table id=\"files_table\">"
-        "<col width=\"800px\" /><col width=\"300px\" /><col width=\"300px\" /><col width=\"100px\" />"
+        "<col style=\"width:800px\"><col style=\"width:300px\"><col style=\"width:300px\"><col style=\"width:100px\">"
         "<thead><tr><th>Name</th><th>Type</th><th>Size</th>");
     if (!readonly) {
         httpd_resp_sendstr_chunk(req, "<th>"
@@ -269,7 +247,8 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
             strlcpy(entrypath + dirpath_len, entry->d_name, sizeof(entrypath) - dirpath_len);
             ESP_LOGD(TAG, "Entrypath: %s", entrypath);
             if (stat(entrypath, &entry_stat) == -1) {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "http_resp_dir_html: Failed to read " + std::string(entrytype) + ": " + std::string(entry->d_name));
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "http_resp_dir_html: Failed to read " + 
+                                    std::string(entrytype) + ": " + std::string(entry->d_name));
                 continue;
             }
 
@@ -323,10 +302,179 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath, const
     httpd_resp_sendstr_chunk(req, NULL);
     return ESP_OK;
 }
-/*
-#define IS_FILE_EXT(filename, ext) \
-    (strcasecmp(&filename[strlen(filename) - sizeof(ext) + 1], ext) == 0)
-*/
+
+
+static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
+{
+    FILE *fd = NULL;
+    std::string currentfilename = LogFile.GetCurrentFileNameData();
+
+    //ESP_LOGD(TAG, "uri: %s, filepath: %s", req->uri, currentfilename.c_str());
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_set_type(req, "text/plain");
+
+    fd = fopen(currentfilename.c_str(), "r");
+    if (fd == NULL) {
+        //LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "send_datafile: Failed to read file: " + currentfilename); // It's not a fault if no file is available
+        httpd_resp_send(req, "No recent data entries", HTTPD_RESP_USE_STRLEN); // Respond with a positive feedback, no data available from today
+        return ESP_OK;
+    }
+
+    /* Related to article: https://blog.drorgluska.com/2022/06/esp32-sd-card-optimization.html */
+    // Set buffer to SD card allocation size of 512 byte (newlib default: 128 byte) -> reduce system read/write calls
+    setvbuf(fd, NULL, _IOFBF, 512);
+
+    if (!send_full_file) { // Send only last part of file
+        ESP_LOGD(TAG, "Sending last %d bytes of the actual datafile", LOGFILE_LAST_PART_BYTES);
+        long pos = 0;
+
+        /* Adapted from https://www.geeksforgeeks.org/implement-your-own-tail-read-last-n-lines-of-a-huge-file/ */
+        if (fseek(fd, 0, SEEK_END)) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "send_datafile: Failed to get to end of file");
+            return ESP_FAIL;
+        }
+        else {
+            pos = ftell(fd); // Number of bytes in the file
+            ESP_LOGD(TAG, "File contains %ld bytes", pos);
+
+            // Calc start position -> either beginning of LAST PART (EOF - LAST_PART_BYTES) or beginning of file (pos = 0)
+            pos = pos - std::min((long)LOGFILE_LAST_PART_BYTES, pos); 
+
+            if (fseek(fd, pos, SEEK_SET)) { // Go to start position
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "send_datafile: Failed to go back " + 
+                                    std::to_string(std::min((long)LOGFILE_LAST_PART_BYTES, pos)) + " bytes within the file");
+                return ESP_FAIL;
+            }
+        }
+
+        /* Find end of line */
+        while (pos > 0) { // Only search end of line if pos is pointing to "beginning of LAST PART" 
+                          // (skip if start is from beginning of file to ensure first line is included)
+            if (fgetc(fd) == '\n') {
+                break;
+            }
+        }
+    }
+
+    /* Retrieve the pointer to scratch buffer for temporary storage */
+    char *chunk = ((struct file_server_data *)req->user_ctx)->scratch;
+    size_t chunksize;
+    do {
+        /* Read file in chunks into the scratch buffer */
+        chunksize = fread(chunk, 1, SERVER_FILER_SCRATCH_BUFSIZE, fd);
+
+        /* Send the buffer contents as HTTP response chunk */
+        if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
+            fclose(fd);
+            std::string msg_txt = "send_datafile: File sending failed: " + currentfilename;
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, msg_txt);
+            /* Abort sending file */
+            httpd_resp_sendstr_chunk(req, NULL);
+            /* Respond with 500 Internal Server Error */
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, msg_txt.c_str());
+            return ESP_FAIL;
+        }
+
+        /* Keep looping till the whole file is sent */
+    } while (chunksize != 0);
+
+    /* Close file after sending complete */
+    fclose(fd);
+    ESP_LOGD(TAG, "File sending complete");
+
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_send_chunk(req, NULL, 0);
+    return ESP_OK;
+}
+
+
+static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
+{
+    FILE *fd = NULL;
+    std::string currentfilename = LogFile.GetCurrentFileName();
+
+    //ESP_LOGD(TAG, "uri: %s, filepath: %s", req->uri, currentfilename.c_str());
+
+    // !!! Do not close actual logfile to avoid software exception !!!
+    //LogFile.CloseLogFileAppendHandle();
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_set_type(req, "text/plain");
+
+    fd = fopen(currentfilename.c_str(), "r");
+    if (fd == NULL) {
+        //LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "send_logfile: Failed to read file: " + currentfilename); // It's not a fault if no file is available
+        httpd_resp_send(req, "No recent log entries", HTTPD_RESP_USE_STRLEN); // Respond with a positive feedback, no logs available from today
+        return ESP_OK;
+    }
+
+    /* Related to article: https://blog.drorgluska.com/2022/06/esp32-sd-card-optimization.html */
+    // Set buffer to SD card allocation size of 512 byte (newlib default: 128 byte) -> reduce system read/write calls
+    setvbuf(fd, NULL, _IOFBF, 512);
+
+    if (!send_full_file) { // Send only last part of file
+        ESP_LOGD(TAG, "Sending last %d bytes of the actual logfile", LOGFILE_LAST_PART_BYTES);
+        long pos = 0;
+        
+        /* Adapted from https://www.geeksforgeeks.org/implement-your-own-tail-read-last-n-lines-of-a-huge-file/ */
+        if (fseek(fd, 0, SEEK_END)) {
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "send_logfile: Failed to get to end of file");
+            return ESP_FAIL;
+        }
+        else {
+            pos = ftell(fd); // Number of bytes in the file
+            ESP_LOGD(TAG, "File contains %ld bytes", pos);
+
+            // Calc start position -> either beginning of LAST PART (EOF - LAST_PART_BYTES) or beginning of file (pos = 0)
+            pos = pos - std::min((long)LOGFILE_LAST_PART_BYTES, pos); 
+
+            if (fseek(fd, pos, SEEK_SET)) { // Go to start position
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "send_logfile: Failed to go back " + 
+                                    std::to_string(std::min((long)LOGFILE_LAST_PART_BYTES, pos)) + " bytes within the file");
+                return ESP_FAIL;
+            }
+        }
+
+        /* Find end of line */
+        while (pos > 0) { // Only search end of line if pos is pointing to "beginning of LAST PART"
+                          // (skip if start is from beginning of file to ensure first line is included)
+            if (fgetc(fd) == '\n') {
+                break;
+            }
+        }
+    }
+
+    /* Retrieve the pointer to scratch buffer for temporary storage */
+    char *chunk = ((struct file_server_data *)req->user_ctx)->scratch;
+    size_t chunksize;
+    do {
+        /* Read file in chunks into the scratch buffer */
+        chunksize = fread(chunk, 1, SERVER_FILER_SCRATCH_BUFSIZE, fd);
+
+        /* Send the buffer contents as HTTP response chunk */
+        if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
+            fclose(fd);
+            std::string msg_txt = "send_logfile: File sending failed: " + currentfilename;
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, msg_txt);
+            /* Abort sending file */
+            httpd_resp_sendstr_chunk(req, NULL);
+            /* Respond with 500 Internal Server Error */
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, msg_txt.c_str());
+            return ESP_FAIL;
+        }
+
+        /* Keep looping till the whole file is sent */
+    } while (chunksize != 0);
+
+    /* Close file after sending complete */
+    fclose(fd);
+    ESP_LOGD(TAG, "File sending complete");
+
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_send_chunk(req, NULL, 0);
+    return ESP_OK;
+}
 
 
 static esp_err_t logfileact_get_full_handler(httpd_req_t *req) {
@@ -349,191 +497,10 @@ static esp_err_t datafileact_get_last_part_handler(httpd_req_t *req) {
 }
 
 
-static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
-{
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "send_datafile: data_get_last_part_handler");
-    FILE *fd = NULL;
-    //struct stat file_stat;
-    ESP_LOGD(TAG, "uri: %s", req->uri);
-
-    std::string currentfilename = LogFile.GetCurrentFileNameData();
-
-    ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, currentfilename.c_str(), currentfilename.c_str());
-
-    fd = fopen(currentfilename.c_str(), "r");
-    if (!fd) {
-        //LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "send_datafile: Failed to read file: " + currentfilename);
-        httpd_resp_send(req, "No recent data entries", HTTPD_RESP_USE_STRLEN); // Respond with a positive feedback, no data available from today
-        return ESP_OK;
-    }
-
-    /* Related to article: https://blog.drorgluska.com/2022/06/esp32-sd-card-optimization.html */
-    // Set buffer to SD card allocation size of 512 byte (newlib default: 128 byte) -> reduce system read/write calls
-    setvbuf(fd, NULL, _IOFBF, 512);
-
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-
-    //    ESP_LOGI(TAG, "Sending file: %s (%ld bytes)", &filename, file_stat.st_size);
-    set_content_type_from_file(req, currentfilename.c_str());
-
-    if (!send_full_file) { // Send only last part of file
-        ESP_LOGD(TAG, "Sending last %d bytes of the actual datafile", LOGFILE_LAST_PART_BYTES);
-        long pos = 0;
-
-        /* Adapted from https://www.geeksforgeeks.org/implement-your-own-tail-read-last-n-lines-of-a-huge-file/ */
-        if (fseek(fd, 0, SEEK_END)) {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "send_datafile: Failed to get to end of file");
-            return ESP_FAIL;
-        }
-        else {
-            pos = ftell(fd); // Number of bytes in the file
-            ESP_LOGD(TAG, "File contains %ld bytes", pos);
-
-            // Calc start position -> either beginning of LAST PART (EOF - LAST_PART_BYTES) or beginning of file (pos = 0)
-            pos = pos - std::min((long)LOGFILE_LAST_PART_BYTES, pos); 
-
-            if (fseek(fd, pos, SEEK_SET)) { // Go to start position
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "send_datafile: Failed to go back " + std::to_string(std::min((long)LOGFILE_LAST_PART_BYTES, pos)) + " bytes within the file");
-                return ESP_FAIL;
-            }
-        }
-
-        /* Find end of line */
-        while (pos > 0) { // Only search end of line if pos is pointing to "beginning of LAST PART" (skip if start is from beginning of file to ensure first line is included)
-            if (fgetc(fd) == '\n') {
-                break;
-            }
-        }
-    }
-
-    /* Retrieve the pointer to scratch buffer for temporary storage */
-    char *chunk = ((struct file_server_data *)req->user_ctx)->scratch;
-    size_t chunksize;
-    do {
-        /* Read file in chunks into the scratch buffer */
-        chunksize = fread(chunk, 1, SERVER_FILER_SCRATCH_BUFSIZE, fd);
-
-        /* Send the buffer contents as HTTP response chunk */
-        if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
-            fclose(fd);
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "send_datafile: File sending failed");
-            /* Abort sending file */
-            httpd_resp_sendstr_chunk(req, NULL);
-            /* Respond with 500 Internal Server Error */
-            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "send_datafile: File sending failed");
-            return ESP_FAIL;
-        }
-
-        /* Keep looping till the whole file is sent */
-    } while (chunksize != 0);
-
-    /* Close file after sending complete */
-    fclose(fd);
-    ESP_LOGD(TAG, "File sending complete");
-
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);
-    return ESP_OK;
-}
-
-
-static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
-{
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "send_logfile: log_get_last_part_handler");
-    FILE *fd = NULL;
-    //struct stat file_stat;
-    ESP_LOGI(TAG, "uri: %s", req->uri);
-
-    const char* filename = ""; 
-
-    std::string currentfilename = LogFile.GetCurrentFileName();
-
-    ESP_LOGD(TAG, "uri: %s, filename: %s, filepath: %s", req->uri, filename, currentfilename.c_str());
-
-    // Since the log file is still could open for writing, we need to close it first
-    LogFile.CloseLogFileAppendHandle();
-
-    fd = fopen(currentfilename.c_str(), "r");
-    if (!fd) {
-        //LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "send_logfile: Failed to read file: " + currentfilename);
-        httpd_resp_send(req, "No recent log entries", HTTPD_RESP_USE_STRLEN); // Respond with a positive feedback, no logs available from today
-        return ESP_OK;
-    }
-
-    /* Related to article: https://blog.drorgluska.com/2022/06/esp32-sd-card-optimization.html */
-    // Set buffer to SD card allocation size of 512 byte (newlib default: 128 byte) -> reduce system read/write calls
-    setvbuf(fd, NULL, _IOFBF, 512);
-
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-
-    //    ESP_LOGI(TAG, "Sending file: %s (%ld bytes)", &filename, file_stat.st_size);
-    set_content_type_from_file(req, filename);
-
-    if (!send_full_file) { // Send only last part of file
-        ESP_LOGD(TAG, "Sending last %d bytes of the actual logfile", LOGFILE_LAST_PART_BYTES);
-        long pos = 0;
-        
-        /* Adapted from https://www.geeksforgeeks.org/implement-your-own-tail-read-last-n-lines-of-a-huge-file/ */
-        if (fseek(fd, 0, SEEK_END)) {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "send_logfile: Failed to get to end of file");
-            return ESP_FAIL;
-        }
-        else {
-            pos = ftell(fd); // Number of bytes in the file
-            ESP_LOGD(TAG, "File contains %ld bytes", pos);
-
-            // Calc start position -> either beginning of LAST PART (EOF - LAST_PART_BYTES) or beginning of file (pos = 0)
-            pos = pos - std::min((long)LOGFILE_LAST_PART_BYTES, pos); 
-
-            if (fseek(fd, pos, SEEK_SET)) { // Go to start position
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "send_logfile: Failed to go back " + std::to_string(std::min((long)LOGFILE_LAST_PART_BYTES, pos)) + " bytes within the file");
-                return ESP_FAIL;
-            }
-        }
-
-        /* Find end of line */
-        while (pos > 0) { // Only search end of line if pos is pointing to "beginning of LAST PART" (skip if start is from beginning of file to ensure first line is included)
-            if (fgetc(fd) == '\n') {
-                break;
-            }
-        }
-    }
-
-    /* Retrieve the pointer to scratch buffer for temporary storage */
-    char *chunk = ((struct file_server_data *)req->user_ctx)->scratch;
-    size_t chunksize;
-    do {
-        /* Read file in chunks into the scratch buffer */
-        chunksize = fread(chunk, 1, SERVER_FILER_SCRATCH_BUFSIZE, fd);
-
-        /* Send the buffer contents as HTTP response chunk */
-        if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
-            fclose(fd);
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "send_logfile: File sending failed");
-            /* Abort sending file */
-            httpd_resp_sendstr_chunk(req, NULL);
-            /* Respond with 500 Internal Server Error */
-            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "send_logfile: Failed to send file");
-            return ESP_FAIL;
-        }
-
-        /* Keep looping till the whole file is sent */
-    } while (chunksize != 0);
-
-    /* Close file after sending complete */
-    fclose(fd);
-    ESP_LOGD(TAG, "File sending complete");
-
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);
-    return ESP_OK;
-}
-
-
 /* Handler to download a file kept on the server */
 static esp_err_t download_get_handler(httpd_req_t *req)
 {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "download_get_handler");
+    //LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "download_get_handler");
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     struct stat file_stat;
@@ -617,11 +584,12 @@ static esp_err_t download_get_handler(httpd_req_t *req)
          * See RFC 2616, section 3.6.1 for details on Chunked Transfer Encoding. */
         if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK) {
             fclose(fd);
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "download_get_handler: File sending failed");
+            std::string msg_txt = "download_get_handler: File sending failed: " + std::string(filepath);
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, msg_txt);
             /* Abort sending file */
             httpd_resp_sendstr_chunk(req, NULL);
             /* Respond with 500 Internal Server Error */
-            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "download_get_handler: Failed to send file");
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, msg_txt.c_str());
             return ESP_FAIL;
         }
 
@@ -639,7 +607,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
 /* Handler to upload a file onto the server */
 static esp_err_t upload_post_handler(httpd_req_t *req)
 {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "upload_post_handler");
+    //LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "upload_post_handler");
     char filepath[FILE_PATH_MAX];
     FILE *fd = NULL;
     struct stat file_stat;
@@ -664,13 +632,6 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         return ESP_FAIL;
     }
 
-    if (stat(filepath, &file_stat) == 0) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "upload_post_handler: File already exists: " + std::string(filepath));
-        /* Respond with 400 Bad Request */
-        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "upload_post_handler: File already exists");
-        return ESP_FAIL;
-    }
-
     /* File cannot be larger than a limit */
     if (req->content_len > MAX_FILE_SIZE) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "upload_post_handler: File too large: " + std::to_string(req->content_len) + " bytes");
@@ -678,6 +639,20 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "upload_post_handler: File size must be less than " MAX_FILE_SIZE_STR);
         /* Return failure to close underlying connection else the
          * incoming file content will keep the socket busy */
+        return ESP_FAIL;
+    }
+
+    // +++++++++++++++++++++++
+    // Special case config.ini: Use config.tmp to save posted chunked web server data. 
+    // Update config.ini only if data reception is successful -> Reduce data loss risk (e.g. network interruption during transfer)
+    if (strcmp(filename, "/config/config.tmp") == 0 && stat(filepath, &file_stat) == 0) // Delete config.tmp if existing
+        unlink(filepath);
+    // +++++++++++++++++++++++
+
+    if (stat(filepath, &file_stat) == 0) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "upload_post_handler: File already exists: " + std::string(filepath));
+        /* Respond with 400 Bad Request */
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "upload_post_handler: File already exists");
         return ESP_FAIL;
     }
 
@@ -747,6 +722,15 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "upload_post_handler: File saved: " + std::string(filename));
     ESP_LOGI(TAG, "File reception completed");
 
+    // +++++++++++++++++++++++
+    // Special case config.ini: Use config.tmp to save posted chunked web server data. 
+    // Update config.ini only if data reception is successful -> Reduce data loss risk (e.g. network interruption during transfer)
+    if (strcmp(filename, "/config/config.tmp") == 0) {
+        unlink(CONFIG_FILE); // Delete config.ini
+        RenameFile("/sdcard/config/config.tmp", CONFIG_FILE); // Promote config.tmp file to new config.ini file
+    }
+    // +++++++++++++++++++++++
+
     std::string directory = std::string(filepath);
 	size_t zw = directory.find("/");
 	size_t found = zw;
@@ -765,6 +749,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
 
     /* Redirect onto root to see the updated file list */
     if (strcmp(filename, "/config/config.ini") == 0 ||
+        strcmp(filename, "/config/config.tmp") == 0 ||
         strcmp(filename, "/config/ref0.jpg") == 0 ||
         strcmp(filename, "/config/ref1.jpg") == 0 ||
         strcmp(filename, "/config/reference.jpg") == 0 ||
@@ -788,7 +773,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
 /* Handler to delete a file from the server */
 static esp_err_t delete_post_handler(httpd_req_t *req)
 {
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "delete_post_handler");
+    //LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "delete_post_handler");
     char filepath[FILE_PATH_MAX];
     struct stat file_stat;
 
@@ -831,7 +816,7 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
         zw = "/sdcard" + zw;
         ESP_LOGD(TAG, "Directory to delete: %s", zw.c_str());
 
-        delete_all_in_directory(zw);
+        deleteAllFilesInDirectory(zw);
        //        directory = std::string(filepath);
         //        directory = "/fileserver" + directory;
         ESP_LOGD(TAG, "Location after delete directory content: %s", directory.c_str());
@@ -902,246 +887,6 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
     httpd_resp_set_hdr(req, "Location", directory.c_str()); // If 303 -> Redirect onto root to see the updated file list (only for fileserver action)
     httpd_resp_sendstr(req, "File successfully deleted");
     return ESP_OK;
-}
-
-
-void delete_all_in_directory(std::string _directory)
-{
-    struct dirent *entry;
-    DIR *dir = opendir(_directory.c_str());
-    std::string filename;
-
-    if (!dir) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "delete_all_in_directory: Failed to open directory: " + _directory);
-        return;
-    }
-
-    /* Iterate over all files / folders and fetch their names and sizes */
-    while ((entry = readdir(dir)) != NULL) {
-        if (!(entry->d_type == DT_DIR)){
-            if (strcmp("wlan.ini", entry->d_name) != 0){                    // auf wlan.ini soll nicht zugegriffen werden !!!
-                filename = _directory + "/" + std::string(entry->d_name);
-                LogFile.WriteToFile(ESP_LOG_INFO, TAG, "delete_all_in_directory: Deleting file: " + filename);
-                /* Delete file */
-                unlink(filename.c_str());    
-            }
-        };
-    }
-    closedir(dir);
-}
-
-
-std::string unzip_new(std::string _in_zip_file, std::string _target_zip, std::string _target_bin, std::string _main, bool _initial_setup)
-{
-    int i, sort_iter;
-    mz_bool status;
-    size_t uncomp_size;
-    mz_zip_archive zip_archive;
-    void* p;
-    char archive_filename[64];
-    std::string zw, ret = "";
-    std::string directory = "";
-
-    ESP_LOGD(TAG, "miniz.c version: %s", MZ_VERSION);
-    ESP_LOGD(TAG, "Zipfile: %s", _in_zip_file.c_str());
-
-    // Now try to open the archive.
-    memset(&zip_archive, 0, sizeof(zip_archive));
-    status = mz_zip_reader_init_file(&zip_archive, _in_zip_file.c_str(), 0);
-    if (!status)
-    {
-        ESP_LOGD(TAG, "mz_zip_reader_init_file() failed");
-        return ret;
-    }
-
-    // Get and print information about each file in the archive.
-    int numberoffiles = (int)mz_zip_reader_get_num_files(&zip_archive);
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Files to be extracted: " + std::to_string(numberoffiles));
-
-    sort_iter = 0;
-    {
-        memset(&zip_archive, 0, sizeof(zip_archive));
-        status = mz_zip_reader_init_file(&zip_archive, _in_zip_file.c_str(), sort_iter ? MZ_ZIP_FLAG_DO_NOT_SORT_CENTRAL_DIRECTORY : 0);
-        if (!status)
-        {
-            ESP_LOGD(TAG, "mz_zip_reader_init_file() failed");
-            return ret;
-        }
-
-        for (i = 0; i < numberoffiles; i++)
-        {
-            mz_zip_archive_file_stat file_stat;
-            mz_zip_reader_file_stat(&zip_archive, i, &file_stat);
-            sprintf(archive_filename, file_stat.m_filename);
-            
-            if (!file_stat.m_is_directory) {
-            // Try to extract all the files to the heap.
-            p = mz_zip_reader_extract_file_to_heap(&zip_archive, archive_filename, &uncomp_size, 0);
-                if (!p)
-                {
-                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "mz_zip_reader_extract_file_to_heap() failed on file " + std::string(archive_filename));
-                    mz_zip_reader_end(&zip_archive);
-                    return ret;
-                }
-            
-                // Save to File.
-                zw = std::string(archive_filename);
-                ESP_LOGD(TAG, "Rohfilename: %s", zw.c_str());
-
-                if (toUpper(zw) == "FIRMWARE.BIN")
-                {
-                    zw = _target_bin + zw;
-                    ret = zw;
-                }
-                else
-                {
-                    std::string _dir = getDirectory(zw);
-                    if ((_dir == "config-initial") && !_initial_setup)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        _dir = "config";
-                        std::string _s1 = "config-initial";
-                        FindReplace(zw, _s1, _dir);
-                    }
-
-                    if (_dir.length() > 0)
-                    {
-                        zw = _main + zw;
-                    }
-                    else
-                    {
-                        zw = _target_zip + zw;
-                    }
-
-                }
-            
-                std::string filename_zw = zw + SUFFIX_ZW;
-
-                ESP_LOGI(TAG, "File to extract: %s, Temp. Filename: %s", zw.c_str(), filename_zw.c_str());
-
-                std::string folder = filename_zw.substr(0, filename_zw.find_last_of('/'));
-                MakeDir(folder);
-
-                // extrahieren in zwischendatei
-                DeleteFile(filename_zw);
-
-                FILE* fpTargetFile = fopen(filename_zw.c_str(), "wb");
-                uint writtenbytes = fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
-                fclose(fpTargetFile);
-                
-                bool isokay = true;
-
-                if (writtenbytes == (uint)uncomp_size)
-                {
-                    isokay = true;
-                }
-                else
-                {
-                    isokay = false;
-                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ERROR in writting extracted file (function fwrite) extracted file \"" +
-                            std::string(archive_filename) + "\", size " + std::to_string(uncomp_size));
-                }
-
-                DeleteFile(zw);
-                if (!isokay)
-                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ERROR in fwrite \"" + std::string(archive_filename) + "\", size " + std::to_string(uncomp_size));
-                isokay = isokay && RenameFile(filename_zw, zw);
-                if (!isokay)
-                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ERROR in Rename \"" + filename_zw + "\" to \"" + zw);
-
-                if (isokay)
-                    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Successfully extracted file \"" + std::string(archive_filename) + "\", size " + std::to_string(uncomp_size));
-                else
-                {
-                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ERROR in extracting file \"" + std::string(archive_filename) + "\", size " + std::to_string(uncomp_size));
-                    ret = "ERROR";
-                }
-                mz_free(p);
-            }
-        }
-
-        // Close the archive, freeing any resources it was using
-        mz_zip_reader_end(&zip_archive);
-    }
-
-    ESP_LOGD(TAG, "Success.");
-    return ret;
-}
-
-
-void unzip(std::string _in_zip_file, std::string _target_directory){
-    int i, sort_iter;
-    mz_bool status;
-    size_t uncomp_size;
-    mz_zip_archive zip_archive;
-    void* p;
-    char archive_filename[64];
-    std::string zw;
-    //    static const char* s_Test_archive_filename = "testhtml.zip";
-
-    ESP_LOGD(TAG, "miniz.c version: %s", MZ_VERSION);
-    ESP_LOGD(TAG, "Zipfile: %s", _in_zip_file.c_str());
-    ESP_LOGD(TAG, "Target Dir: %s", _target_directory.c_str());
-
-    // Now try to open the archive.
-    memset(&zip_archive, 0, sizeof(zip_archive));
-    status = mz_zip_reader_init_file(&zip_archive, _in_zip_file.c_str(), 0);
-    if (!status)
-    {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "mz_zip_reader_init_file() failed");
-        return;
-    }
-
-    // Get and print information about each file in the archive.
-    int numberoffiles = (int)mz_zip_reader_get_num_files(&zip_archive);
-    for (sort_iter = 0; sort_iter < 2; sort_iter++)
-    {
-        memset(&zip_archive, 0, sizeof(zip_archive));
-        status = mz_zip_reader_init_file(&zip_archive, _in_zip_file.c_str(), sort_iter ? MZ_ZIP_FLAG_DO_NOT_SORT_CENTRAL_DIRECTORY : 0);
-        if (!status)
-        {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "mz_zip_reader_init_file() failed");
-            return;
-        }
-
-        for (i = 0; i < numberoffiles; i++)
-        {
-            mz_zip_archive_file_stat file_stat;
-            mz_zip_reader_file_stat(&zip_archive, i, &file_stat);
-            sprintf(archive_filename, file_stat.m_filename);
- 
-            // Try to extract all the files to the heap.
-            p = mz_zip_reader_extract_file_to_heap(&zip_archive, archive_filename, &uncomp_size, 0);
-            if (!p)
-            {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "mz_zip_reader_extract_file_to_heap() failed");
-                mz_zip_reader_end(&zip_archive);
-                return;
-            }
-
-            // Save to File.
-            zw = std::string(archive_filename);
-            zw = _target_directory + zw;
-            ESP_LOGD(TAG, "File to extract: %s", zw.c_str());
-            FILE* fpTargetFile = fopen(zw.c_str(), "wb");
-            fwrite(p, 1, (uint)uncomp_size, fpTargetFile);
-            fclose(fpTargetFile);
-
-            ESP_LOGD(TAG, "Successfully extracted file \"%s\", size %u", archive_filename, (uint)uncomp_size);
-            //            ESP_LOGD(TAG, "File data: \"%s\"", (const char*)p);
-
-            // We're done.
-            mz_free(p);
-        }
-
-        // Close the archive, freeing any resources it was using
-        mz_zip_reader_end(&zip_archive);
-    }
-
-    ESP_LOGD(TAG, "Success.");
 }
 
 
