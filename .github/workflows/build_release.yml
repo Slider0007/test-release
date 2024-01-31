@@ -49,6 +49,11 @@ jobs:
         ref: ${{ needs.prepare-release.outputs.tag_name }}
         submodules: recursive
 
+    - name: Set variables
+      id: vars
+      run: |
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
     - name: Cache pip & platformIO cache files
       uses: actions/cache@v4
       with:
@@ -84,7 +89,7 @@ jobs:
     - name: Prepare WebUI (Generate parameter tooltips + Update hash)
       run: |
         rm -rf ./html
-        mkdir html
+        mkdir ./html
 
         python -m pip install markdown
         python ./tools/parameter-tooltip-generator/generate-param-doc-tooltips.py
@@ -92,7 +97,7 @@ jobs:
         cp -r ./sd-card/html/* ./html/
 
         echo "Replacing variables..."
-        cd html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
+        cd ./html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
 
     - name: Save generated files
       uses: actions/cache/save@v4
