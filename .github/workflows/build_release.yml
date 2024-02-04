@@ -6,14 +6,13 @@ on:
 
 jobs:
 #########################################################################################
-## Prepare and create release
+## Prepare release / Create reelase Part 1
 #
-# Use of release-please action to create a 'Release PR' which gets maintained automatically
-# After merging of 'Release PR', a new tag and release is getting created.
+# Use of release-please action to create a 'Release PR' which gets maintained automatically.
+# After merging the 'Release PR', a new tag and release is getting created.
 #########################################################################################
   prepare-release:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/build-workflow' || github.ref == 'refs/heads/develop' # Process only for specific branches
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       upload_url: ${{ steps.release.outputs.upload_url }}
@@ -42,7 +41,7 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Checkout tag
+    - name: Checkout tag # checkout tagged version when build a release for this tag
       if: ${{ needs.prepare-release.outputs.release_created }}
       uses: actions/checkout@v4
       with:
@@ -64,7 +63,7 @@ jobs:
         restore-keys: platformio # This matches above key as it is only used as a prefix. It restores the nearest cache
           
     - name: Cache PIO build files
-      if: ${{ ! needs.prepare-release.outputs.release_created }}
+      if: ${{ ! needs.prepare-release.outputs.release_created }} # do not use cached data when building a release
       uses: actions/cache@v4
       with:
         path: ./code/.pio/
@@ -82,8 +81,7 @@ jobs:
         pip install --upgrade platformio
 
     - name: Build firmware
-      #run: echo "Testing... ${{ github.ref }}, ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}, ${{ steps.vars.outputs.branch }}"
-      #> ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
+      #run: echo "Testing... ${{ github.ref }}, ${{ github.ref_name }}, ${{ steps.vars.outputs.sha_short }}, ${{ steps.vars.outputs.branch }}" > ./sd-card/html/version.txt; mkdir -p ./code/.pio/build/esp32cam/; cd ./code/.pio/build/esp32cam/; echo "${{ steps.vars.outputs.sha_short }}" > firmware.bin; cp firmware.bin partitions.bin; cp firmware.bin bootloader.bin # Testing
       run: cd code; platformio run --environment esp32cam
 
     - name: Prepare WebUI (Generate parameter tooltips + Update hash)
@@ -343,9 +341,9 @@ jobs:
 
 
 #########################################################################################
-## Release - Upload artifacts
+## Create Release Part 2 - Upload related artifacts
 #
-# Artifacts will gets uploaded to newly created release.
+# Artifacts will gets uploaded to newly created release tag.
 #########################################################################################  
   upload-release-artifacts:
     runs-on: ubuntu-latest
