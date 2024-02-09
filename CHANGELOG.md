@@ -1,5 +1,45 @@
 # Changelog
 
+## [16.1.0-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.32-SLFORK...v16.1.0-SLFORK) (2024-02-09)
+
+
+### Features
+
+* **test:** Update README.md ([81f4589](https://github.com/Slider0007/test-release/commit/81f4589a6de11b0c6d9c4479ce32be6a4c15b97b))
+
+
+### Bug Fixes
+
+* **test2:** Update README.md ([b124dd1](https://github.com/Slider0007/test-release/commit/b124dd1687c5f9d58543aa213d42d40b9d4e8a10))
+
+
+### Refactoring / Style Changes
+
+* **test3:** Update README.md ([db5282d](https://github.com/Slider0007/test-release/commit/db5282dfcde2a72806c5856410458fa3cd4fc67e))
+
+
+### Other Changes
+
+* build test environment ([e8c3909](https://github.com/Slider0007/test-release/commit/e8c390995a063cbbd348cd920433d5304ab64d90))
+* **build2:** test ([4e4e519](https://github.com/Slider0007/test-release/commit/4e4e519a73f00d9ae1cad98a93be1be5b10efc4e))
+* **build:** Minify HTML files ([ac550e4](https://github.com/Slider0007/test-release/commit/ac550e4efc298e81e75e3353370de5aaa0e5b518))
+* **build:** Move parameter decription to main repo ([ac9c631](https://github.com/Slider0007/test-release/commit/ac9c6319749f3a9f236e64fac85e646a18db58cf))
+* **build:** Test 2 Update release-please-config.json ([259fd35](https://github.com/Slider0007/test-release/commit/259fd35f9c6658e6299ed9c1e817b918b8ddaa76))
+* **build:** Test 3 Update release-please-config.json ([24a0ef8](https://github.com/Slider0007/test-release/commit/24a0ef88b8ea964032850c5c915dc7ff913b5de0))
+* **build:** Test 4 Update release-please-config.json ([5f9e4e5](https://github.com/Slider0007/test-release/commit/5f9e4e54cbdd22cd8b8f992be1d629e6b8b3ccc9))
+* **build:** Update actions ([e5bcd14](https://github.com/Slider0007/test-release/commit/e5bcd1489898f422d4a20f6e7cec1ed52bd5d4d6))
+* **build:** Update build_release.yml ([2843810](https://github.com/Slider0007/test-release/commit/2843810853311c54f2a24a6c0bb593475bd57543))
+* **build:** Update build_release.yml ([4e4e519](https://github.com/Slider0007/test-release/commit/4e4e519a73f00d9ae1cad98a93be1be5b10efc4e))
+* **build:** Update build_release.yml to v4 ([b0944aa](https://github.com/Slider0007/test-release/commit/b0944aa79244a529978ca4e6ded7c872cf4510c9))
+* **build:** Update python version ([3beadb2](https://github.com/Slider0007/test-release/commit/3beadb2b3c1c1a171a9df9dcde14ab90a6820172))
+* **build:** Update release-please-config.json ([4df7007](https://github.com/Slider0007/test-release/commit/4df7007446002548cba42656f7890f6c345d517a))
+* **build:** Update release-please-config.json ([d2505d0](https://github.com/Slider0007/test-release/commit/d2505d0ce358271447ca060525e457ded9fd749f))
+* **Test1:** Merge test1 ([#59](https://github.com/Slider0007/test-release/issues/59)) ([48f2eac](https://github.com/Slider0007/test-release/commit/48f2eac5d9c70bdbb372d4f56223781f6b7634a9))
+* **test4:** Update README.md ([0f76d99](https://github.com/Slider0007/test-release/commit/0f76d99d8a5d3c5aa931292be44fb41c6ae25d97))
+* Update .release-please-config.json ([52a6c98](https://github.com/Slider0007/test-release/commit/52a6c9874758436d67a5b119b03a1bf9cd204549))
+* Update build_release.yml ([9c2928d](https://github.com/Slider0007/test-release/commit/9c2928de42019dd64f3b19026fcdc82d1b432258))
+* Update build_release.yml ([6b6ff25](https://github.com/Slider0007/test-release/commit/6b6ff250f358bcb8b5a426d66933755f4f0e5c1e))
+
 ## [16.0.32-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.31-SLFORK...v16.0.32-SLFORK) (2023-12-11)
 
 
