@@ -180,19 +180,13 @@ extern "C" void app_main(void)
 
     // Check version information
     // ********************************************
-    std::string versionFormated = getFwVersion() + ", Date/Time: " + std::string(BUILD_TIME) + \
-        ", Web UI: " + getHTMLversion();
-
-     if (std::string(GIT_TAG) != "" && std::string(GIT_TAG) != "N/A") { // We are on a tag, add it as prefix
-        versionFormated = "Tag: '" + std::string(GIT_TAG) + "', " + versionFormated;
-    }
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, versionFormated);
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, getFwVersion() + " | Build time: " + std::string(BUILD_TIME) + " | WebUI: " + getHTMLversion());
 
     if (getHTMLcommit().substr(0, 7) == "?")
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Failed to read file html/version.txt to parse Web UI version"));
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Failed to read file html/version.txt to parse WebUI version"));
  
     if (getHTMLcommit().substr(0, 7) != std::string(GIT_REV).substr(0, 7)) { // Compare the first 7 characters of both hashes
-        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Web UI version (" + getHTMLcommit() + ") does not match firmware version (" + std::string(GIT_REV) + ")");
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "WebUI version (" + getHTMLcommit() + ") does not match firmware version (" + std::string(GIT_REV) + ")");
         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Recommendation: Repeat OTA update using AI-on-the-edge-device__update__*.zip");    
     }
 
