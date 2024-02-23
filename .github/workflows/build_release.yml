@@ -341,6 +341,41 @@ jobs:
         path: ./debug
 
 
+
+#########################################################################################
+## Pack additional files for documentation
+#
+# Package contents:
+# - pdf
+#########################################################################################
+  pack-for-API-docs:
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Generate API docs
+      uses: baileyjm02/markdown-to-pdf@v1
+      with:
+        input_dir: docs/API
+        output_dir: ./pdf/API
+        build_html: false
+  
+    - name: Set variables
+      id: vars
+      run: |
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
+
+    - name: Upload doc-files.zip artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: "AI-on-the-edge-device__doc-files__SLFork__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
+        path: ./pdf
+
+
+
 #########################################################################################
 ## Create Release Part 2 - Upload related artifacts
 #
