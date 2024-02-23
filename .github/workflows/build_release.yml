@@ -360,19 +360,19 @@ jobs:
         mkdir -p ./pdf/API/REST
         mkdir -p ./pdf/API/MQTT
 
-    - name: Generate REST API docs
-      uses: baileyjm02/markdown-to-pdf@v1
-      with:
-        input_dir: ./docs/API/REST
-        output_dir: ./pdf/API/REST
-        build_html: false
+    #- name: Generate REST API docs
+    #  uses: baileyjm02/markdown-to-pdf@v1
+     # with:
+     #   input_dir: ./docs/API/REST
+     #   output_dir: ./pdf/API/REST
+     #   build_html: false
 
-    - name: Generate MQTT API docs
-      uses: baileyjm02/markdown-to-pdf@v1
-      with:
-        input_dir: ./docs/API/MQTT
-        output_dir: ./pdf/API/MQTT
-        build_html: false
+   # - name: Generate MQTT API docs
+   #   uses: baileyjm02/markdown-to-pdf@v1
+   #   with:
+   #     input_dir: ./docs/API/MQTT
+   #     output_dir: ./pdf/API/MQTT
+   #     build_html: false
 
     - name: Build REST API docs
       run: |-
@@ -382,7 +382,7 @@ jobs:
         echo; echo "Input Folder Listing"
         ls
         echo; echo "Generating PDF"
-        for f in *.md; do cat $f; echo; done | md-to-pdf > ../_output/API_REST.pdf
+        for f in *.md; do cat $f; echo; done | md-to-pdf > ./_output/API_REST.pdf
         cd ../_output
         echo; echo "Output Folder Listing"
         ls
@@ -390,12 +390,12 @@ jobs:
 
     - name: Build MQTT API docs
       run: |-
-        npm install -g md-to-pdf
+        #npm install -g md-to-pdf
         cd ./docs/API/MQTT
         echo; echo "Input Folder Listing"
         ls
         echo; echo "Generating PDF"
-        for f in *.md; do cat $f; echo; done | md-to-pdf > ../_output/API_MQTT.pdf
+        for f in *.md; do cat $f; echo; done | md-to-pdf > ./_output/API_MQTT.pdf
         cd ../_output
         echo; echo "Output Folder Listing"
         ls
