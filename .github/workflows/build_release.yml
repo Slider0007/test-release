@@ -355,6 +355,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Prepare folder structure
+      run: |
+        rm -rf ./pdf/API
+        mkdir -p ./pdf/API
+
     - name: Generate API docs
       uses: baileyjm02/markdown-to-pdf@v1
       with:
