@@ -355,10 +355,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Prepare folder structure
+    - name: Prepare md to pdf
       run: |
         mkdir -p ./pdf/API/REST
         mkdir -p ./pdf/API/MQTT
+        mkdir -p ./output
+        npm install -g md-to-pdf
 
     #- name: Generate REST API docs
     #  uses: baileyjm02/markdown-to-pdf@v1
@@ -376,14 +378,12 @@ jobs:
 
     - name: Build REST API docs
       run: |-
-        npm install -g md-to-pdf
-        mkdir -p ./_output
         cd ./docs/API/REST
         echo; echo "Input Folder Listing"
         ls
         echo; echo "Generating PDF"
-        for f in *.md; do cat $f; echo; done | md-to-pdf > ./_output/API_REST.pdf
-        cd ../_output
+        for f in *.md; do cat $f; echo; done | md-to-pdf > ../../../output/API_REST.pdf
+        cd ../../../output
         echo; echo "Output Folder Listing"
         ls
         cd ..
@@ -395,8 +395,8 @@ jobs:
         echo; echo "Input Folder Listing"
         ls
         echo; echo "Generating PDF"
-        for f in *.md; do cat $f; echo; done | md-to-pdf > ./_output/API_MQTT.pdf
-        cd ../_output
+        for f in *.md; do cat $f; echo; done | md-to-pdf > ../../../output/API_MQTT.pdf
+        cd ../../../output
         echo; echo "Output Folder Listing"
         ls
         cd ..
@@ -411,7 +411,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: "AI-on-the-edge-device__doc-files__SLFork__${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
-        path: ./_output
+        path: ./output
 
 
 
