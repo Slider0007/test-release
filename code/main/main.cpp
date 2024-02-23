@@ -293,8 +293,8 @@ extern "C" void app_main(void)
             else { // HEAP size OK --> continue to camera init
                 // Init camera
                 // ********************************************
-                esp_err_t camStatus = Camera.InitCam();
-                Camera.LightOnOff(false);
+                esp_err_t camStatus = Camera.initCam();
+                Camera.setFlashlight(false);
 
                 // Check camera init
                 // ********************************************
@@ -499,8 +499,10 @@ void migrateConfiguration(void)
             migrated = migrated | replaceString(configLines[i], "LogImageLocation", "RawImagesLocation");
             migrated = migrated | replaceString(configLines[i], "LogfileRetentionInDays", "RawImagesRetention");
 
-            migrated = migrated | replaceString(configLines[i], ";FixedExposure = true", ";FixedExposure = false"); // Set it to its default value
-            migrated = migrated | replaceString(configLines[i], ";FixedExposure", "FixedExposure"); // Enable it
+            migrated = migrated | replaceString(configLines[i], "WaitBeforeTakingPicture", "FlashTime"); // Rename
+            migrated = migrated | replaceString(configLines[i], "LEDIntensity", "FlashIntensity"); // Rename
+
+            migrated = migrated | replaceString(configLines[i], "FixedExposure", "UNUSED"); // Mark as unused
 
             migrated = migrated | replaceString(configLines[i], ";Demo = true", ";Demo = false"); // Set it to its default value
             migrated = migrated | replaceString(configLines[i], ";Demo", "Demo"); // Enable it
@@ -517,8 +519,7 @@ void migrateConfiguration(void)
             migrated = migrated | replaceString(configLines[i], ";FlipImageSize = true", ";FlipImageSize = false"); // Set it to its default value
             migrated = migrated | replaceString(configLines[i], ";FlipImageSize", "FlipImageSize"); // Enable it
 
-            migrated = migrated | replaceString(configLines[i], ";InitialMirror = true", ";InitialMirror = false"); // Set it to its default value
-            migrated = migrated | replaceString(configLines[i], ";InitialMirror", "InitialMirror"); // Enable it
+            migrated = migrated | replaceString(configLines[i], "InitialMirror", "UNUSED"); // Mark as unused
         }
 
         if (section == "[Digits]") {
