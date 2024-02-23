@@ -357,13 +357,20 @@ jobs:
 
     - name: Prepare folder structure
       run: |
-        rm -rf ./pdf/API
-        mkdir -p ./pdf/API
+        mkdir -p ./pdf/API/REST
+        mkdir -p ./pdf/API/MQTT
+
+    - name: Generate REST API docs
+      uses: baileyjm02/markdown-to-pdf@v1
+      with:
+        input_dir: ./docs/API/REST
+        output_dir: ./pdf/API/REST
+        build_html: false
 
     - name: Generate API docs
       uses: baileyjm02/markdown-to-pdf@v1
       with:
-        input_dir: docs/API
+        input_dir: ./docs/API
         output_dir: ./pdf/API
         build_html: false
   
