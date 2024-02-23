@@ -367,11 +367,11 @@ jobs:
         output_dir: ./pdf/API/REST
         build_html: false
 
-    - name: Generate API docs
+    - name: Generate MQTT API docs
       uses: baileyjm02/markdown-to-pdf@v1
       with:
-        input_dir: ./docs/API
-        output_dir: ./pdf/API
+        input_dir: ./docs/API/MQTT
+        output_dir: ./pdf/API/MQTT
         build_html: false
   
     - name: Set variables
