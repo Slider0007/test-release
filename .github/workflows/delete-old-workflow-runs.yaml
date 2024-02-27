@@ -6,18 +6,18 @@ on:
   workflow_dispatch:
     inputs:
       days:
-        description: 'Days-worth of runs to keep for each workflow'
+        description: 'Keep runs per workflow [days]'
         required: true
         default: '90'
       minimum_runs:
-        description: 'Minimum runs to keep for each workflow'
+        description: 'Keep minimum runs per workflow'
         required: true
         default: '10'
       delete_workflow_pattern:
-        description: 'Name or filename of the workflow (if not set, all workflows are targeted)'
+        description: 'Workflow filename [empty: ALL]'
         required: false
       delete_workflow_by_state_pattern:
-        description: 'Filter workflows by state: active, deleted, disabled_fork, disabled_inactivity, disabled_manually'
+        description: 'Workflows with state'
         required: true
         default: "ALL"
         type: choice
@@ -28,7 +28,7 @@ on:
           - disabled_inactivity
           - disabled_manually
       delete_run_by_conclusion_pattern:
-        description: 'Remove runs based on conclusion: action_required, cancelled, failure, skipped, success'
+        description: 'Runs with state'
         required: true
         default: "ALL"
         type: choice
@@ -41,7 +41,7 @@ on:
           - skipped
           - success
       dry_run:
-        description: 'Dry run, no deletion'
+        description: 'Dry run [true]'
         required: false
 
 jobs:
