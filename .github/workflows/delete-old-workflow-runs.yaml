@@ -6,7 +6,7 @@ on:
       days:
         description: 'Days-worth of runs to keep for each workflow'
         required: true
-        default: '30'
+        default: '90'
       minimum_runs:
         description: 'Minimum runs to keep for each workflow'
         required: true
