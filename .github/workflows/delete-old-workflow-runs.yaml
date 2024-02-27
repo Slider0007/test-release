@@ -7,13 +7,13 @@ permissions:
   actions: write
 
 jobs:
-  clear-cache:
+  delete-old-workflow-runs
     runs-on: ubuntu-latest
     steps:
       - name: Delete workflow runs
         uses: MajorScruffy/delete-old-workflow-runs@v0.3.0
         with:
-          repository: MajorScruffy/delete-old-workflow-runs   # replace this with your own repository
-          older-than-seconds: 7776000                         # remove all workflow runs older than 90 days
+          repository: Slider0007/test-release     # replace this with your own repository
+          older-than-seconds: 7776000             # remove all workflow runs older than 90 days
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
