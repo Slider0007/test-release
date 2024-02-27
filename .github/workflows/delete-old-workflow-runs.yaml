@@ -7,7 +7,7 @@ permissions:
   actions: write
 
 jobs:
-  delete-old-workflow-runs
+  delete-old-workflow-runs:
     runs-on: ubuntu-latest
     steps:
       - name: Delete workflow runs
