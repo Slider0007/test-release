@@ -216,10 +216,10 @@ bool publishSystemData(int qos)
 
     allSendsSuccessed |= MQTTPublish(maintopic + "/" + std::string(LWT_TOPIC), LWT_CONNECTED, qos, retainFlag); // Publish "connected" to maintopic/connection
 
-    sprintf(tmp_char, "%ld", (long)getUpTime());
+    sprintf(tmp_char, "%ld", (long)getUptime());
     allSendsSuccessed |= MQTTPublish(maintopic + "/" + "uptime", std::string(tmp_char), qos, retainFlag);
     
-    sprintf(tmp_char, "%lu", (long) getESPHeapSizeTotal());
+    sprintf(tmp_char, "%lu", (long) getESPHeapSizeTotalFree());
     allSendsSuccessed |= MQTTPublish(maintopic + "/" + "freeMem", std::string(tmp_char), qos, retainFlag);
 
     sprintf(tmp_char, "%d", get_WIFI_RSSI());
@@ -323,6 +323,8 @@ void GotConnected(std::string maintopic, bool retainFlag)
 
 void register_server_mqtt_uri(httpd_handle_t server)
 {
+    ESP_LOGI(TAG, "Registering URI handlers");
+    
     httpd_uri_t uri = { };
     uri.method    = HTTP_GET;
 

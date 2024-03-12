@@ -32,10 +32,11 @@ class ClassFlowInfluxDBv2 : public ClassFlow
         ClassFlowInfluxDBv2(std::vector<ClassFlow*>* lfc, ClassFlow *_prev);
         virtual ~ClassFlowInfluxDBv2();
 
-        bool ReadParameter(FILE* pfile, std::string& aktparamgraph);
-        bool doFlow(std::string time);
-        void doPostProcessEventHandling();
-        std::string name() {return "ClassFlowInfluxDBv2";};
+    bool ReadParameter(FILE* pfile, std::string& aktparamgraph);
+    bool doFlow(std::string time);
+    void doPostProcessEventHandling();
+    bool isInfluxDBEnabled();
+    std::string name() {return "ClassFlowInfluxDBv2";};
 };
 
 #endif //CLASSFINFLUXDBv2_H

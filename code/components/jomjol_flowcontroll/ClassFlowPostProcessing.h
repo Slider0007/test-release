@@ -50,19 +50,19 @@ class ClassFlowPostProcessing : public ClassFlow
         bool doFlow(std::string time);
         void doPostProcessEventHandling();
 
-        std::vector<NumberPost*>* GetNumbers() {return &NUMBERS;};
-        std::string getNumbersName();
-        std::string getReadout(int _number);
-        std::string getReadoutParam(bool _rawValue, bool _noerror, int _number = 0);
-        std::string getReadoutError(int _number = 0);
-        std::string getReadoutRate(int _number = 0);
-        std::string getReadoutTimeStamp(int _number = 0);
-        std::string getJsonFromNumber(int i, std::string _lineend);
-        std::string GetJSON(std::string _lineend = "\n");
-        std::string GetFallbackValue(std::string _number = "");
-        bool SetFallbackValue(double zw, std::string _numbers);
-        bool getUseFallbackValue(void);
-        void setUseFallbackValue(bool _value);
+    std::vector<NumberPost*>* GetNumbers() {return &NUMBERS;};
+    std::string getNumbersName();
+    std::string getReadout(int _number);
+    std::string getReadoutParam(bool _rawValue, bool _noerror, int _number = 0);
+    std::string getReadoutStatus(int _number = 0);
+    std::string getReadoutRate(int _number = 0);
+    std::string getReadoutTimeStamp(int _number = 0);
+    std::string getJsonFromNumber(int i, std::string _lineend);
+    std::string GetJSON(std::string _lineend = "\n");
+    std::string GetFallbackValue(std::string _number = "");
+    bool SetFallbackValue(double zw, std::string _numbers);
+    bool getUseFallbackValue(void);
+    void setUseFallbackValue(bool _value);
 
         std::string name() {return "ClassFlowPostProcessing";};
 };

@@ -415,6 +415,7 @@ void MQTTdestroy_client(bool _disable = false)
         esp_mqtt_client_destroy(client);
         client = NULL;
         mqtt_initialized = false;
+        mqtt_enabled = false;
     }
 
     if (_disable) // Disable MQTT service, avoid restart with MQTTPublish

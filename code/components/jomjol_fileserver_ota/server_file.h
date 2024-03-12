@@ -6,7 +6,6 @@
 #include <esp_http_server.h>
 
 
-esp_err_t get_numbers_file_handler(httpd_req_t *req);
 esp_err_t get_data_file_handler(httpd_req_t *req);
 esp_err_t get_tflite_file_handler(httpd_req_t *req);
 

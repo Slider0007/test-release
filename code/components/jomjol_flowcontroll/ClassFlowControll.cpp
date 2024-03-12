@@ -75,6 +75,22 @@ ClassFlowControll::~ClassFlowControll()
 }
 
 
+ClassFlow* ClassFlowControll::getFlowClass(std::string _classname)
+{
+    for (int i = 0; i < FlowControll.size(); ++i) {
+        if (FlowControll[i]->name().compare(_classname) == 0)
+            return FlowControll[i];
+    }
+
+    for (int i = 0; i < FlowControlPublish.size(); ++i) {
+        if (FlowControlPublish[i]->name().compare(_classname) == 0)
+            return FlowControlPublish[i];
+    }
+
+    return NULL;
+}
+
+
 bool ClassFlowControll::ReadParameter(FILE* pfile, std::string& aktparamgraph)
 {
     std::vector<std::string> splitted;
@@ -267,14 +283,14 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
     #endif //ENABLE_INFLUXDB
 
     for (int i = 0; i < FlowControll.size(); ++i)
-        if (FlowControll[i]->name().compare(_classname) == 0){
+        if (FlowControll[i]->name().compare(_classname) == 0) {
             if (!(FlowControll[i]->name().compare("ClassFlowTakeImage") == 0))      // if it is a TakeImage, the image does not need to be included, this happens automatically with the html query.
                 FlowControll[i]->doFlow("");
             result = FlowControll[i]->getHTMLSingleStep(_host);
         }
 
     for (int i = 0; i < FlowControlPublish.size(); ++i)
-        if (FlowControlPublish[i]->name().compare(_classname) == 0){
+        if (FlowControlPublish[i]->name().compare(_classname) == 0) {
             FlowControlPublish[i]->doFlow("");
             result = FlowControlPublish[i]->getHTMLSingleStep(_host);
         }
@@ -699,6 +715,12 @@ void ClassFlowControll::PostProcessEventHandler()
 }
 
 
+float ClassFlowControll::getProcessingInterval(void)
+{
+    return AutoInterval;
+}
+
+
 bool ClassFlowControll::isAutoStart()
 {
     return AutoStart;
@@ -822,7 +844,7 @@ std::string ClassFlowControll::getJSON()
 std::string ClassFlowControll::getNumbersName()
 {
     if (flowpostprocessing == NULL) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Request rejected. Flowpostprocessing not available"); 
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getNumbersName: Request rejected. Postprocessing class not yet created"); 
         return "";
     }
     
@@ -834,7 +856,7 @@ std::string ClassFlowControll::getNumbersName()
 std::string ClassFlowControll::getNumbersName(int _number)
 {
     if (flowpostprocessing == NULL) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Request rejected. Flowpostprocessing not available"); 
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getNumbersName: Request rejected. Postprocessing class not yet created"); 
         return "";
     }
     
@@ -846,7 +868,7 @@ std::string ClassFlowControll::getNumbersName(int _number)
 int ClassFlowControll::getNumbersSize()
 {
     if (flowpostprocessing == NULL) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Request rejected. Flowpostprocessing not available"); 
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getNumbersSize: Request rejected. Postprocessing class not yet created"); 
         return -1;
     }
     
@@ -877,7 +899,7 @@ int ClassFlowControll::getNumbersROISize(int _seqNo = 0, int _filter = 0)
 int ClassFlowControll::getNumbersNamePosition(std::string _name)
 {
     if (flowpostprocessing == NULL) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Request rejected. Flowpostprocessing not available"); 
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getNumbersNamePosition: Request rejected. Postprocessing class not yet created"); 
         return -1;
     }
     
@@ -887,6 +909,52 @@ int ClassFlowControll::getNumbersNamePosition(std::string _name)
     }
 
     return -1;
+}
+
+
+/* Return value for a given numbers name array position and value type */
+std::string ClassFlowControll::getNumbersValue(int _position, int _type)
+{
+    if (flowpostprocessing == NULL) {
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getNumbersValue: Request rejected. Postprocessing class not yet created"); 
+        return "";
+    }
+
+    if (_position < 0 || _position > getNumbersSize()) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "getNumbersValue: Array position out of range"); 
+        return "";
+    }
+
+    switch (_type) {
+        case READOUT_TYPE_TIMESTAMP_PROCESSED:
+            return (*flowpostprocessing->GetNumbers())[_position]->sTimeProcessed;
+        
+        case READOUT_TYPE_TIMESTAMP_FALLBACKVALUE:
+            return (*flowpostprocessing->GetNumbers())[_position]->sTimeFallbackValue;
+        
+        case READOUT_TYPE_VALUE:
+            return (*flowpostprocessing->GetNumbers())[_position]->sActualValue;
+
+        case READOUT_TYPE_RAWVALUE:
+            return (*flowpostprocessing->GetNumbers())[_position]->sRawValue;
+
+        case READOUT_TYPE_FALLBACKVALUE:
+            return (*flowpostprocessing->GetNumbers())[_position]->sFallbackValue;
+
+        case READOUT_TYPE_VALUE_STATUS:
+            return (*flowpostprocessing->GetNumbers())[_position]->sValueStatus;
+        
+        case READOUT_TYPE_RATE_PER_MIN:
+            return (*flowpostprocessing->GetNumbers())[_position]->sRatePerMin;
+        
+        case READOUT_TYPE_RATE_PER_PROCESSING:
+            return (*flowpostprocessing->GetNumbers())[_position]->sRatePerProcessing;
+        
+        default:
+            return "";
+    }
+
+    return "";
 }
 
 
@@ -903,58 +971,9 @@ std::string ClassFlowControll::getNumbersValue(std::string _name, int _type)
         return "";
     }
 
-    switch (_type) {
-        case READOUT_TYPE_VALUE:
-            return (*flowpostprocessing->GetNumbers())[pos]->sActualValue;
-
-        case READOUT_TYPE_RAWVALUE:
-            return (*flowpostprocessing->GetNumbers())[pos]->sRawValue;
-
-        case READOUT_TYPE_FALLBACKVALUE:
-            return (*flowpostprocessing->GetNumbers())[pos]->sFallbackValue;
-
-        case READOUT_TYPE_VALUE_STATUS:
-            return (*flowpostprocessing->GetNumbers())[pos]->sValueStatus;
-
-        default:
-            return "";
-    }
-
-    return "";
+    return getNumbersValue(pos, _type);
 }
 
-
-/* Return value for a given numbers name array position and value type */
-std::string ClassFlowControll::getNumbersValue(int _position, int _type)
-{
-    if (flowpostprocessing == NULL) {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Request rejected. Flowpostprocessing not available"); 
-        return "";
-    }
-
-    if (_position < 0 || _position > getNumbersSize()) {
-        return "";
-    }
-
-    switch (_type) {
-        case READOUT_TYPE_VALUE:
-            return (*flowpostprocessing->GetNumbers())[_position]->sActualValue;
-
-        case READOUT_TYPE_RAWVALUE:
-            return (*flowpostprocessing->GetNumbers())[_position]->sRawValue;
-
-        case READOUT_TYPE_FALLBACKVALUE:
-            return (*flowpostprocessing->GetNumbers())[_position]->sFallbackValue;
-
-        case READOUT_TYPE_VALUE_STATUS:
-            return (*flowpostprocessing->GetNumbers())[_position]->sValueStatus;
-
-        default:
-            return "";
-    }
-
-    return "";
-}
 
 
 /* Return values for all numbers names (number sequences) and a given value type */

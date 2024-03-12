@@ -52,26 +52,27 @@
 <script src="jszip.min.js?v=$COMMIT_HASH"></script>
 <script src="FileSaver.min.js?v=$COMMIT_HASH"></script>
 <script>
-    function startBackup() {  
-        document.getElementById("progress").innerHTML = "Creating backup...<br>\n";
-        
-        // Get hostname
-        try {
-            var xhttp = new XMLHttpRequest();
-            xhttp.open("GET", getDomainname() + "/info?type=Hostname", false);
-            xhttp.send();
-            hostname = xhttp.responseText;
-        }
-        catch(err) {
-            setStatus("<span style=\"color: red\">Failed to fetch hostname: " + err.message + "!</span>");
-            return;
-        }
-        
-        // get date/time
-        var dateTime = new Date().toJSON().slice(0,10) + "_" + new Date().toJSON().slice(11,19).replaceAll(":", "-");
-        
-        zipFilename = hostname + "_" + dateTime + ".zip";
-        //console.log(zipFilename);
+
+function startBackup() {  
+    document.getElementById("progress").innerHTML = "Creating backup...<br>\n";
+    
+    // Get hostname
+    try {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", getDomainname() + "/info?type=hostname", false);
+        xhttp.send();
+        hostname = xhttp.responseText;
+    }
+    catch(err) {
+        setStatus("<span style=\"color: red\">Failed to fetch hostname: " + err.message + "!</span>");
+        return;
+    }
+    
+    // get date/time
+    var dateTime = new Date().toJSON().slice(0,10) + "_" + new Date().toJSON().slice(11,19).replaceAll(":", "-");
+    
+    zipFilename = hostname + "_" + dateTime + ".zip";
+    //console.log(zipFilename);
 
         // Get files list
         setStatus("Fetching File List...");

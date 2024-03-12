@@ -321,7 +321,7 @@
 
    function loadRSSI() 
    {
-		var url = getDomainname() + '/rssi'; 
+		var url = getDomainname() + '/info?type=wlan_rssi';
 
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {

@@ -52,7 +52,7 @@ function UpdatePage(_dosession = true){
         
 function LoadHostname()
 {
-    var url = getDomainname() + '/info?type=Hostname';   
+    var url = getDomainname() + '/info?type=hostname';   
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -76,7 +76,7 @@ var webUiVersion = "";
 
 function LoadFwVersion()
 {
-    var url = getDomainname() + '/info?type=FirmwareVersion';
+    var url = getDomainname() + '/info?type=firmware_version';
     
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -101,7 +101,7 @@ function LoadFwVersion()
 
 function LoadWebUiVersion()
 {
-    var url = getDomainname() + '/info?type=HTMLVersion';
+    var url = getDomainname() + '/info?type=html_version';
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -140,4 +140,15 @@ function compareVersions()
                         "It's strongly advised to use matching version. Check logs for more details.", 
                         'warning', 10000);
     }
+}
+
+
+function formatUptime(uptime)
+{
+    let uptime_days = Math.floor(uptime / (3600*24));
+    let uptime_hours = Math.floor(Math.floor((uptime - uptime_days * 3600*24) / (3600)));
+    let uptime_minutes = Math.floor((uptime - uptime_days * 3600*24 - uptime_hours * 3600) / (60));
+    let uptime_seconds = uptime - uptime_days * 3600*24 - uptime_hours * 3600 - uptime_minutes * 60;
+
+    return uptime_days + "d " + uptime_hours + "h " +uptime_minutes + "m " +uptime_seconds + "s";
 }

@@ -1,6 +1,6 @@
 [Overview](_OVERVIEW.md) 
 
-### REST API endpoint: logfileact
+## REST API endpoint: logfileact
 
 `http://IP-ADDRESS/logfileact`
 

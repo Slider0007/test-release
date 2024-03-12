@@ -250,6 +250,12 @@ void ClassFlowInfluxDBv2::handleFieldname(std::string _decsep, std::string _valu
 }
 
 
+bool ClassFlowInfluxDBv2::isInfluxDBEnabled(void)
+{
+    return InfluxDBenable;
+}
+
+
 ClassFlowInfluxDBv2::~ClassFlowInfluxDBv2()
 {
     // nothing to do

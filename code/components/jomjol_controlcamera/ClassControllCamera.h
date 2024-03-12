@@ -60,7 +60,12 @@ class CCamera
         void printCamInfo(void);
         void printCamConfig(void);
         bool getcameraInitSuccessful();
+        
         CameraParameter getCameraParameter();
+        std::string getCamType(void);
+        std::string getCamPID(void);
+        std::string getCamVersion(void);
+        int getCamFrequencyMhz(void);
 
         esp_err_t captureToBasisImage(CImageBasis *_Image);
         esp_err_t captureToFile(std::string _nm);

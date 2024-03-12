@@ -57,6 +57,9 @@
 
 static const char *TAG = "MAIN";
 
+
+std::string deviceStartTimestamp = "";
+
 extern const char* GIT_TAG;
 extern const char* GIT_REV;
 extern const char* GIT_BRANCH;
@@ -78,6 +81,8 @@ extern "C" void app_main(void)
         //register a buffer to record the memory trace
         ESP_ERROR_CHECK( heap_trace_init_standalone(trace_record, NUM_RECORDS) );
     #endif
+        
+    deviceStartTimestamp = getCurrentTimeString(TIME_FORMAT_OUTPUT);
         
     #ifdef DISABLE_BROWNOUT_DETECTOR
         WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
@@ -260,7 +265,7 @@ extern "C" void app_main(void)
         StatusLED(PSRAM_INIT, 1, true);
     }
     else { // ESP_OK -> PSRAM init OK --> continue to check PSRAM size
-        size_t psram_size = esp_psram_get_size(); // size_t psram_size = esp_psram_get_size(); // comming in IDF 5.0
+        size_t psram_size = esp_psram_get_size();
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "PSRAM size: " + std::to_string(psram_size) + " byte (" + std::to_string(psram_size/1024/1024) + 
                                                "MB / " + std::to_string(psram_size/1024/1024*8) + "MBit)");
 
@@ -272,7 +277,7 @@ extern "C" void app_main(void)
             StatusLED(PSRAM_INIT, 2, true);
         }
         else { // PSRAM size OK --> continue to check heap size
-            size_t _hsize = getESPHeapSizeTotal();
+            size_t _hsize = getESPHeapSizeTotalFree();
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Total heap: " + std::to_string(_hsize) + " byte");
 
             // Check heap memory
@@ -332,7 +337,7 @@ extern "C" void app_main(void)
     // ********************************************
     if (getSystemStatus() == 0) { // Continue with regular boot sequence
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Basic device initialization completed");
-        CreateMainFlowTask(); // Create main flow task
+        CreateMainFlowTask(); // Create main task
     }
     // Critical error(s) occured which do not allow to continue with regular boot sequence.
     // Provding only a reduced web interface for diagnostic purpose. Reduced web interface and interlock: server_main.cpp -> hello_main_handler()

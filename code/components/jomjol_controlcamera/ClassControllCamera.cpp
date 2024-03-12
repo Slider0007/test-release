@@ -213,17 +213,17 @@ void CCamera::printCamInfo(void)
 {
     // Print camera infos
     // ********************************************
-    char caminfo[64];
-
+    char caminfo[96];
     sensor_t * s = esp_camera_sensor_get();
     if (s == NULL) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "printCamInfo: Failed to get control structure");
         return;
     }
+    camera_sensor_info_t *info = esp_camera_sensor_get_info(&s->id);
 
-    sprintf(caminfo, "PID: 0x%02x, VER: 0x%02x, MIDL: 0x%02x, MIDH: 0x%02x, FREQ: %dMhz", s->id.PID, 
-                s->id.VER, s->id.MIDH, s->id.MIDL, s->xclk_freq_hz/1000000);
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Camera info: " + std::string(caminfo));
+    sprintf(caminfo, "TYPE: %s, PID: 0x%02x, VER: 0x%02x, MIDL: 0x%02x, MIDH: 0x%02x, FREQ: %dMhz", 
+                info->name, s->id.PID, s->id.VER, s->id.MIDH, s->id.MIDL, s->xclk_freq_hz/1000000);
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Info: " + std::string(caminfo));
 }
 
 
@@ -250,6 +250,54 @@ void CCamera::printCamConfig(void)
                 s->status.quality, s->status.raw_gma, s->status.saturation, s->status.scale, s->status.sharpness,
                 s->status.special_effect, s->status.vflip, s->status.wb_mode, s->status.wpc);
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Camera config: " + std::string(camconfig));
+}
+
+
+std::string CCamera::getCamType(void)
+{
+    sensor_t * s = esp_camera_sensor_get();
+    if (s == NULL) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "getCamType: Failed to get control structure");
+        return "";
+    }
+    camera_sensor_info_t *info = esp_camera_sensor_get_info(&s->id);
+    return std::string(info->name);
+}
+
+
+std::string CCamera::getCamPID(void)
+{
+    sensor_t * s = esp_camera_sensor_get();
+    if (s == NULL) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "getCamPID: Failed to get control structure");
+        return "";
+    }
+    camera_sensor_info_t *info = esp_camera_sensor_get_info(&s->id);
+    return intToHexString(s->id.PID);
+}
+
+
+std::string CCamera::getCamVersion(void)
+{
+    sensor_t * s = esp_camera_sensor_get();
+    if (s == NULL) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "getCamVersion: Failed to get control structure");
+        return "";
+    }
+    camera_sensor_info_t *info = esp_camera_sensor_get_info(&s->id);
+    return intToHexString(s->id.VER);
+}
+
+
+int CCamera::getCamFrequencyMhz(void)
+{
+    sensor_t * s = esp_camera_sensor_get();
+    if (s == NULL) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "getCamFrequencyMhz: Failed to get control structure");
+        return -1;
+    }
+    camera_sensor_info_t *info = esp_camera_sensor_get_info(&s->id);
+    return s->xclk_freq_hz/1000000;;
 }
 
 
@@ -569,10 +617,6 @@ esp_err_t CCamera::captureToBasisImage(CImageBasis *_Image)
         vTaskDelay(camParameter.flashTime / portTICK_PERIOD_MS);
     }
 
-	#ifdef DEBUG_DETAIL_ON
-	    LogFile.WriteHeapInfo("captureToBasisImage - After LightOn");
-	#endif
-
     camera_fb_t * fb = esp_camera_fb_get();
     esp_camera_fb_return(fb);        
     fb = esp_camera_fb_get();
@@ -620,7 +664,8 @@ esp_err_t CCamera::captureToFile(std::string _nm)
 {
     if (!getcameraInitSuccessful())
         return ESP_FAIL;
-    
+
+    esp_err_t retVal = ESP_OK;
     std::string ftype;
 
     if (camParameter.flashTime > 0) {    // Switch on for defined time if a flashTime is set
@@ -686,6 +731,7 @@ esp_err_t CCamera::captureToFile(std::string _nm)
     FILE * fp = fopen(_nm.c_str(), "wb");
     if (fp == NULL) { // If an error occurs during the file creation
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "captureToFile: Failed to open file " + _nm);
+        retVal = ESP_FAIL;
     }
     else {
         /* Related to article: https://blog.drorgluska.com/2022/06/esp32-sd-card-optimization.html */
@@ -699,7 +745,7 @@ esp_err_t CCamera::captureToFile(std::string _nm)
     if (converted)
         free(buf);
 
-    return ESP_OK;    
+    return retVal;    
 }
 
 

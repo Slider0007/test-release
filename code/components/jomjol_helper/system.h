@@ -19,11 +19,11 @@ float temperatureRead();
 bool setCPUFrequency(void);
 
 std::string getESPHeapInfo(void);
-size_t getESPHeapSizeTotal(void);
-size_t getESPHeapSizeInternal(void);
+size_t getESPHeapSizeTotalFree(void);
+size_t getESPHeapSizeInternalFree(void);
 size_t getESPHeapSizeInternalLargestFree(void);
 size_t getESPHeapSizeInternalMinFree(void);
-size_t getESPHeapSizeSPIRAM(void);
+size_t getESPHeapSizeSPIRAMFree(void);
 size_t getESPHeapSizeSPIRAMLargestFree(void);
 size_t getESPHeapSizeSPIRAMMinFree(void);
 

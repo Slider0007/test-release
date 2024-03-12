@@ -1,6 +1,6 @@
 [Overview](_OVERVIEW.md) 
 
-### REST API endpoint: GPIO
+## REST API endpoint: GPIO
 
 `http://IP-ADDRESS/GPIO`
 

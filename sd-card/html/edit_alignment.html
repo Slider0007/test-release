@@ -228,7 +228,7 @@
 
     function onClickUpdateMarker()
     {
-        var url = domainname + '/statusflow';
+        var url = domainname + '/process_data?type=process_state';
 
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {

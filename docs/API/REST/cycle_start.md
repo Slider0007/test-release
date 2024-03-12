@@ -1,11 +1,11 @@
 [Overview](_OVERVIEW.md) 
 
-### REST API endpoint: flow_start
+## REST API endpoint: cycle_start
 
-`http://IP-ADDRESS/flow_start`
+`http://IP-ADDRESS/cycle_start`
 
 
-Trigger a flow start
+Trigger a start of a new process cycle.
 
 Payload:
 - No payload needed

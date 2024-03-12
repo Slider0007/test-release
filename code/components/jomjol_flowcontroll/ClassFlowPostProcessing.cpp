@@ -1185,7 +1185,7 @@ std::string ClassFlowPostProcessing::getReadoutTimeStamp(int _number)
 }
 
 
-std::string ClassFlowPostProcessing::getReadoutError(int _number) 
+std::string ClassFlowPostProcessing::getReadoutStatus(int _number) 
 {
     return NUMBERS[_number]->sValueStatus;
 }

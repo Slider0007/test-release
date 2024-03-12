@@ -159,7 +159,7 @@
         var sel = document.getElementById("Numbers_value1");
         var _number = sel.options[sel.selectedIndex].text;  
         inputVal = inputVal.replace(",", ".");
-        url = domainname + "/set_fallbackvalue?value=" + inputVal + "&numbers=" + _number;     
+        url = domainname + "/set_fallbackvalue?sequence=" + _number + "&value=" + inputVal     
 
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
@@ -191,7 +191,7 @@
         // Get current Fallback Value
         var sel = document.getElementById("Numbers_value1");
         var _number = sel.options[sel.selectedIndex].text;
-        var url_sequence = _domainname + '/set_fallbackvalue?numbers=' + _number;
+        var url_sequence = _domainname + '/set_fallbackvalue?sequence=' + _number;
 
         var xhttp_sequence = new XMLHttpRequest();
         xhttp_sequence.onreadystatechange = function() {
@@ -219,7 +219,7 @@
         var sel = document.getElementById("Numbers_value1");
         var _number = sel.options[sel.selectedIndex].text;
 
-        var url_rawvalue = _domainname + '/value?all=true&type=raw';
+        var url_rawvalue = _domainname + '/process_data?type=raw_value';
         var xhttp_rawvalue = new XMLHttpRequest();
         xhttp_rawvalue.onreadystatechange = function() {
             if (this.readyState == 4) {
