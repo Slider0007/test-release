@@ -9,7 +9,6 @@
    
    
 
-
 ____
 #### #36 Run demo without camera
 Demo mode requires a working camera (if not, one receives a 'Cam bad' error). Would be nice to demo or play around on other ESP32 boards (or on ESP32-CAM boards when you broke the camera cable...).
