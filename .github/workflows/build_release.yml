@@ -74,7 +74,7 @@ jobs:
       if: ${{ ! needs.prepare-release.outputs.release_created }} # do not use cached data when building a release
       uses: actions/cache@v4
       with:
-        path: ./code/.pio/${{ matrix.plat }}
+        path: ./code/.pio/build/${{ matrix.plat }}
         key: build-${{ matrix.plat }}-${{ github.run_id }}
         restore-keys: build-${{ matrix.plat }} # This matches above key as it is only used as a prefix. It restores the nearest cache
           
