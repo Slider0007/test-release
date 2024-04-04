@@ -113,7 +113,7 @@ jobs:
       #  - (optional) /html/* (inkl. subfolders)
       #  - (optional) /config/*.tflite
       #########################################################################################
-    - name: Prepare OTA update artifact
+    - name: OTA Update - Prepare artifact
       run: |
         rm -rf ./update
         mkdir -p ./update
@@ -126,7 +126,7 @@ jobs:
         cp ./sd-card/config/*.tfl ./update/config/ 2>/dev/null || true
         cp ./sd-card/config/*.tflite ./update/config/ 2>/dev/null || true
 
-    - name: Upload OTA update artifact
+    - name: OTA Update - Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: "AI-on-the-edge-device__update__${{ matrix.plat }}-SLFork-${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
@@ -143,7 +143,7 @@ jobs:
       #  - sd-card.zip (Content for sd-card -> extract to root folder)
       #  - /config/*.*
       #########################################################################################
-    - name: Prepare manual_setup artifact
+    - name: Manual Setup - Prepare artifact
       run: |
         rm -rf manual_setup
         mkdir -p manual_setup
@@ -157,7 +157,7 @@ jobs:
         cp -r ./html ./sd-card/ # Overwrite the Web UI with the preprocessed files
         cd sd-card; zip -r ../manual_setup/sd-card.zip *; cd ..
   
-    - name: Upload manual_setup artifact
+    - name: Manual Setup - Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: "AI-on-the-edge-device__manual-setup__${{ matrix.plat }}-SLFork-${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
@@ -172,7 +172,7 @@ jobs:
       #  - /html/* (inkl. subfolders)
       #  - /config/*
       #########################################################################################
-    - name: Prepare remote_setup artifact
+    - name: Remote Setup - Prepare artifact
       run: |
         rm -rf ./remote_setup
         mkdir -p ./remote_setup
@@ -183,7 +183,7 @@ jobs:
         mkdir -p ./remote_setup/config/
         cp ./sd-card/config/* ./remote_setup/config/ 2>/dev/null || true
 
-    - name: Upload remote_setup artifact
+    - name: Remote Setup - Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: "AI-on-the-edge-device__remote-setup__${{ matrix.plat }}-SLFork-${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
@@ -197,7 +197,7 @@ jobs:
       # - sdkconfig.defaults
       # - sdkconfig.esp32cam
       #########################################################################################
-    - name: Prepare debug-files artifact
+    - name: Debug Files - Prepare artifact
       run: |
         rm -rf ./debug
         mkdir -p ./debug
@@ -207,7 +207,7 @@ jobs:
         cp -f "./code/sdkconfig.${{ matrix.plat }}" "debug/sdkconfig.${{ matrix.plat }}"
         cp -f "./code/.pio/build/${{ matrix.plat }}/firmware.elf" "debug/firmware.elf"
 
-    - name: Upload debug_files artifact
+    - name: Debug Files - Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: "AI-on-the-edge-device__debug-files__${{ matrix.plat }}-SLFork-${{ steps.vars.outputs.branch }}_(${{ steps.vars.outputs.sha_short }})"
