@@ -36,6 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [prepare-release]
     strategy:
+      fail-fast: false
       matrix:
         plat:
          - esp32cam
@@ -223,6 +224,7 @@ jobs:
     needs: [prepare-release, build]
     if: ${{ needs.prepare-release.outputs.release_created }}
     strategy:
+      fail-fast: false
       matrix:
         plat:
          - esp32cam
