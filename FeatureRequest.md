@@ -7,7 +7,7 @@
 2. Who ever has time, capacity and passion to support, can take any of the ideas and implement them. 
    I will support and help where ever I can!
    
-  
+
  
 
 ____
