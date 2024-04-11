@@ -58,7 +58,7 @@ esp_err_t handler_get_info(httpd_req_t *req)
             retVal = ESP_FAIL;
         if (cJSON_AddStringToObject(cJSONObject, "process_status", getProcessStatus().c_str()) == NULL)
             retVal = ESP_FAIL;
-        if (cJSON_AddNumberToObject(cJSONObject, "process_interval", (int)(flowctrl.getProcessingInterval() * 10) / 10.0) == NULL)
+        if (cJSON_AddNumberToObject(cJSONObject, "process_interval", (int)(flowctrl.getProcessInterval() * 10) / 10.0) == NULL)
             retVal = ESP_FAIL;
         if (cJSON_AddNumberToObject(cJSONObject, "process_time", getFlowProcessingTime()) == NULL)
             retVal = ESP_FAIL;
@@ -120,6 +120,8 @@ esp_err_t handler_get_info(httpd_req_t *req)
         if (cJSON_AddStringToObject(cJSONObject, "dns_address", getDNSAddress().c_str()) == NULL)
             retVal = ESP_FAIL;
         if (cJSON_AddStringToObject(cJSONObject, "hostname", getHostname().c_str()) == NULL)
+            retVal = ESP_FAIL;
+        if (cJSON_AddStringToObject(cJSONObject, "board_type", getBoardType().c_str()) == NULL)
             retVal = ESP_FAIL;
         if (cJSON_AddStringToObject(cJSONObject, "chip_model", getChipModel().c_str()) == NULL)
             retVal = ESP_FAIL;
@@ -210,7 +212,7 @@ esp_err_t handler_get_info(httpd_req_t *req)
         return ESP_OK;        
     }
     else if (type.compare("process_interval") == 0) {
-        httpd_resp_sendstr(req, to_stringWithPrecision(flowctrl.getProcessingInterval(),1).c_str());
+        httpd_resp_sendstr(req, to_stringWithPrecision(flowctrl.getProcessInterval(), 1).c_str());
         return ESP_OK;        
     }
     else if (type.compare("process_time") == 0) {
@@ -311,6 +313,10 @@ esp_err_t handler_get_info(httpd_req_t *req)
     }
     else if (type.compare("hostname") == 0) {
         httpd_resp_sendstr(req, getHostname().c_str());
+        return ESP_OK;        
+    }
+    else if (type.compare("board_type") == 0) {
+        httpd_resp_sendstr(req, getBoardType().c_str());
         return ESP_OK;        
     }
     else if (type.compare("chip_model") == 0) {
@@ -498,10 +504,10 @@ esp_err_t handler_img_tmp_virtual(httpd_req_t *req)
 
     // Serve raw.jpg
     if (filetosend == "raw.jpg")
-        return GetRawJPG(req); 
+        return flowctrl.SendRawJPG(req);
 
     // Serve alg.jpg, alg_roi.jpg or digital and analog ROIs
-    return GetJPG(filetosend, req);
+    return flowctrl.GetJPGStream(filetosend, req);
 
     // File was not served already --> serve with img_tmp_handler
     return handler_img_tmp(req);
@@ -565,7 +571,7 @@ esp_err_t handler_main(httpd_req_t *req)
             httpd_resp_send(req, message.c_str(), message.length());
             return ESP_OK;
         }
-        else if (isSetupModusActive()) {
+        else if (flowctrl.getStatusSetupModus()) {
             ESP_LOGD(TAG, "System is in setup mode --> index.html --> setup.html");
             filetosend = "/sdcard/html/setup.html";
         }

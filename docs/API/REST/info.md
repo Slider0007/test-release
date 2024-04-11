@@ -16,9 +16,9 @@ The following infos are available:
 | JSON Property / HTML query `type=`   | Description                                        | Output
 |:-------------------------------------|:---------------------------------------------------|:-----------------------
 | `api_name`                           | Name of the API                                    | `info:v2`
-| `process_status`                     | Process Status<br><br>Possible states:<br>- `Processing (Automatic)`<br>- `Processing (Triggered Only)`<br>- `Not Processing / Not Ready` | `Processing (Automatic)`
-| `process_interval`                   | Processing Interval [min]                          | `2.0`
-| `process_time`                       | Processing Time [sec]                              | `25`
+| `process_status`                     | Process Status<br><br>Possible States:<br>- `Processing (Automatic)`:  Timer-controlled automatic processing<br>- `Processing (Triggered Only)`: Manual triggered processing only<br>- `Not Processing / Not Ready`: Initializing / Initialization failed | `Processing (Automatic)`
+| `process_interval`                   | Process Interval [min]                             | `2.0`
+| `process_time`                       | Process Time [sec]                                 | `25`
 | `cycle_counter`                      | Process Cycle Counter                              | `64`
 | `datalogging_sdcard_status`          | Datalogging Status<br><br>Possible states:<br>- `Enabled`<br>- `Disabled` | `Enabled`
 | `mqtt_status`                        | MQTT Status<br><br>Possible states:<br>- `Connected (Encrypted)`<br>- `Connected`<br>- `Disconnected`<br>- `Disabled` | `Connected`
@@ -38,6 +38,7 @@ The following infos are available:
 | `gateway_address`                    | Device Gateway Address                             | `192.168.1.1`
 | `dns_address`                        | Device DNS Address                                 | `192.168.1.1`
 | `hostname`                           | Device Network Hostname                            | `watermeter`
+| `board_type`                         | Board Type                                  | `ESP32CAM`
 | `chip_model`                         | Device SOC Chip Model                              | `ESP32`
 | `chip_cores`                         | Device SOC Chip Cores                              | `2`
 | `chip_revision`                      | Device SOC Chip Revision                           | `1.0`
@@ -99,6 +100,7 @@ The following infos are available:
     "gateway_address": "192.168.1.1",
     "dns_address": "192.168.1.1",
     "hostname": "watermeter",
+    "board_type": "ESP32CAM",
     "chip_model": "ESP32",
     "chip_cores": 2,
     "chip_revision": "1.00",

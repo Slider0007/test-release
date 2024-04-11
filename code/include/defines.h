@@ -114,10 +114,6 @@
 #define CONFIG_FILE_BACKUP "/sdcard/config/config.bak"
 
 
-//interface_mqtt + read_wlanini
-#define __HIDE_PASSWORD
-
-
 //ClassFlowControll + Main + SoftAP
 #define WLAN_CONFIG_FILE "/sdcard/wlan.ini"
 
@@ -185,12 +181,14 @@
 #define READOUT_TYPE_RAWVALUE                4
 #define READOUT_TYPE_VALUE_STATUS            5
 #define READOUT_TYPE_RATE_PER_MIN            6
-#define READOUT_TYPE_RATE_PER_PROCESSING     7
+#define READOUT_TYPE_RATE_PER_INTERVAL       7
+
 
 //ClassFlowMQTT
-#define LWT_TOPIC           "connection"
-#define LWT_CONNECTED       "connected"
-#define LWT_DISCONNECTED    "connection lost"
+#define MQTT_STATUS_TOPIC           "/device/status/connection"
+#define MQTT_STATUS_ONLINE          "online"
+#define MQTT_STATUS_OFFLINE         "offline"
+#define MQTT_QOS                    1
 
 
 //CImageBasis
@@ -207,12 +205,6 @@
 
 //interface_influxdb
 #define MAX_HTTP_OUTPUT_BUFFER 2048
-
-
-//server_mqtt
-#define LWT_TOPIC        "connection"
-#define LWT_CONNECTED    "connected"
-#define LWT_DISCONNECTED "connection lost"
 
 
 // connect_wlan.cpp
@@ -288,7 +280,7 @@ CONFIG_WPA_11R_SUPPORT=n
 #define FLOW_INVALID_STATE          "Invalid State"
 
 // Process state misc
-#define FLOWSTATE_ERRORS_IN_ROW_LIMIT   3
+#define FLOWSTATE_ERROR_DEVIATION_IN_ROW_LIMIT   3
 
 
 // SoftAP for initial setup process
@@ -307,21 +299,21 @@ CONFIG_WPA_11R_SUPPORT=n
 // Define BOARD type
 // Define ENV_BOARD_TYPE in platformio.ini
 //************************************
-#if ENV_BOARD_TYPE && ENV_BOARD_TYPE == 1
+#if ENV_BOARD_TYPE == 1
 #define BOARD_AITHINKER_ESP32CAM
+#define BOARD_TYPE_NAME      "ESP32CAM"
 #else
 #error "Board type (ENV_BOARD_TYPE) not defined"
-#define BOARD_AITHINKER_ESP32CAM
+#define BOARD_TYPE_NAME      "Board unknown"
 #endif
 
 // Define CAMERA model
 // Define ENV_CAMERA_MODEL in platformio.ini
 //************************************
-#if ENV_CAMERA_MODEL && ENV_CAMERA_MODEL == 1
+#if ENV_CAMERA_MODEL == 1
 #define CAMERA_AITHINKER_ESP32CAM_OV2640
 #else
 #error "Camera model (ENV_CAMERA_MODEL) not defined"
-#define CAMERA_AITHINKER_ESP32CAM_OV2640
 #endif
 
 
@@ -361,7 +353,7 @@ CONFIG_WPA_11R_SUPPORT=n
 //************************************
 #ifdef CAMERA_AITHINKER_ESP32CAM_OV2640
     #define PWDN_GPIO_NUM       GPIO_NUM_32
-    #define RESET_GPIO_NUM      GPIO_NUM_NC
+    #define RESET_GPIO_NUM      -1
     #define XCLK_GPIO_NUM       GPIO_NUM_0
     #define SIOD_GPIO_NUM       GPIO_NUM_26
     #define SIOC_GPIO_NUM       GPIO_NUM_27

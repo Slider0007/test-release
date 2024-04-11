@@ -18,8 +18,8 @@ Further details can be found in the respective REST API endpoint description.
 | [/editflow](editflow.md)             | Parametrization Helper                             | HTML        | 
 | [/recognition_details](recognition_details.md)|Image Recognition Details (WebUI Page)     | HTML        |
 | [/camera](camera.md)                 | Camera Capture, Stream, Parametrization + Flashlight| HTML       | 
-| [/GPIO](gpio.md)                     | Read / Control GPIO                                | HTML        | 
-| [/mqtt_publish_discovery](mqtt_publish_discovery.md)|Publish Home Assistant MQTT Discovery Topics| HTML | 
+| [/gpio](gpio.md)                     | Read / Control GPIO                                | HTML        | 
+| [/mqtt](mqtt.md)                     | Publish HA discovery topics / Device info topics   | HTML        | 
 | [/data](data.md)                     | Data of today (last 80kB)                          | HTML        | 
 | [/log](log.md)                       | Log of today (last 80kB)                           | HTML        | 
 | [/ota](ota.md)                       | Over The Air Update                                | HTML        | 
@@ -31,7 +31,8 @@ Further details can be found in the respective REST API endpoint description.
 | /                                    | WebUI (Redirected to `index.html`)                 | HTML        | 
 
 
-*Endpoints which are marked as deprecated will be completely removed (functionality merged in another endpoint) or modified in upcoming major release. Check changelog for breaking changes.
+*Endpoints which are marked as deprecated will be completely removed (functionality merged in another endpoint) or 
+modified in upcoming major release. Check changelog for breaking changes.
 
 ### Migration notes (Removed / updated endpoints)
 Check migration notes for migrated or removed REST API endpoints: [Migration notes](xxx_migration_notes.md)

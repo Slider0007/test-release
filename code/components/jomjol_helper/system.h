@@ -6,11 +6,11 @@
 #include "sdmmc_cmd.h"
 
 
+std::string getBoardType(void);
 std::string getChipModel(void);
 int getChipCoreCount(void);
 std::string getChipRevision(void);
 void printDeviceInfo(void);
-//std::string get_device_info(void);
 
 std::string getIDFVersion(void);
 
@@ -55,6 +55,9 @@ int getSystemStatus(void);
 bool isSetSystemStatusFlag(SystemStatusFlag_t flag);
 
 std::string getResetReason(void);
+
+void CheckIsPlannedReboot();
+bool getIsPlannedReboot();
 
 void SaveSDCardInfo(sdmmc_card_t* card);
 std::string SDCardParseManufacturerIDs(int);
