@@ -22,7 +22,7 @@ extern "C" {
 #include "server_ota.h"
 #include "server_help.h"
 #include "MainFlowControl.h"
-#include "server_GPIO.h"
+#include "GpioControl.h"
 
 #ifdef ENABLE_MQTT
     #include "interface_mqtt.h"
@@ -854,8 +854,8 @@ void ClassFlowControll::AnalogDrawROI(CImageBasis *_zw)
 #ifdef ENABLE_MQTT
 bool ClassFlowControll::StartMQTTService() 
 {
-    if (flowMQTT == NULL)
-        return false;
+    if (flowMQTT == NULL) // Service disabled
+        return true;
     
     return flowMQTT->Start(AutoInterval);
 }
