@@ -2,19 +2,16 @@
 <img src="images/icon/watermeter.svg" width="80px"> 
 
 Artificial intelligence based systems have become established in our everyday lives. Just think of speech or image recognition. Most of the systems rely on either powerful processors or a direct connection to the cloud for doing the calculations there. With the increasing power of modern processors, the AI systems are coming closer to the end user – which is usually called **edge computing**.
-Here, this edge computing is put into a practically oriented example, where an AI network is implemented on an ESP32 device so: **AI on the Edge**.
+Here, this edge computing is put into a practically oriented example, where an AI network is implemented on an ESP32 series based device so: **AI on the Edge**.
 
-This project allows you to digitize your **analog** water, gas, power and other meters using cheap and easily available hardware.
+This project allows you to digitize your **analog** water, gas, power and other meters using a low-cost system on a chip microcontroller.
 
-All you need is an [ESP32-CAM board](https://jomjol.github.io/AI-on-the-edge-device-docs/Hardware-Compatibility/) and something of a practical hand.
-
-<img src="images/esp32-cam.png" width="120px">
 
 ## Key features
 - Tensorflow Lite (TFLite) integration – including easy-to-use wrapper
-- Inline image processing (feature detection, alignment, ROI extraction)
-- **Small** and **cheap** device (3 x 4.5 x 2 cm³, < 10 EUR)
-- Integrated camera and illumination
+- Inline image processing (Image taking, Image alignment, ROI extraction, Post processing)
+- Usage of **small** and **low-cost** devices ([Supported Hardware](#supported-hardware))
+- Integrated camera and illumination (depending on hardware)
 - Web interface for administration and control
 - OTA interface for updating directly via web interface
 - Full integration into [Home Assistant](docs/API/MQTT/home-assistant-discovery.md)
@@ -37,6 +34,13 @@ As a result, you get the digitized value of your meter. There are several option
 
 ### Web Interface
 <img src="https://raw.githubusercontent.com/Slider0007/AI-on-the-edge-device/develop/images/webinterface_overview.png" width="800"> 
+
+
+## Supported Hardware
+| Board Type                                                                     | SOC      | Remarks                         
+|:---                                                                            |:---      |:--- 
+| [ESP32-CAM](http://www.ai-thinker.com/pro_view-24.html)                        | ESP32    | - Only boards with >4MB RAM are supported<br>- Beware of inferior quality Chinese clones
+| [XIAO ESP32 Sense](https://www.seeedstudio.com/XIAO-ESP32S3-Sense-p-5639.html) | ESP32S3  | - No onboard illumination: Separate illumination (PWM controlable LED / Intelligent LED) necessary<br>- Running quite hot, small heat sink recommended
 
 
 ## Device Installation
@@ -63,8 +67,10 @@ A possibly already available development version (upcoming release version) can 
 
 ### 3. Install MCU Part Of Firmware
 Initially the MCU of the device has to be flashed via a direct USB connection. Further updates can be performed directly over the air (OTA). <br>
-For initial installation, use content of `AI-on-the-edge-device__manual-setup__*.zip`.<br>
-NOTE: OTA updates will be performed with `AI-on-the-edge-device__update__*.zip` package.
+For initial installation, use content of `AI-on-the-edge-device__manual-setup__{Board Type}__*.zip`.<br>
+NOTE: OTA updates will be performed with `AI-on-the-edge-device__update__{Board Type}__*.zip` package.
+
+<b>IMPORTANT:</b> Make sure to use correct firmware package for your board type.
 
 There are different ways to flash the microcontroller:
 - [Espressif Flash Tool](https://www.espressif.com/sites/default/files/tools/flash_download_tool_3.9.5.zip)<br>

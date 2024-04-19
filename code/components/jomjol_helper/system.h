@@ -5,6 +5,13 @@
 
 #include "sdmmc_cmd.h"
 
+typedef enum {
+    SPIRAMCategory_4MB = 0,
+    SPIRAMCategory_8MB = 1,
+    SPIRAMCategory_16MB = 2,
+    SPIRAMCategory_32MB = 3,
+    SPIRAMCategory_MAX = 4
+}SPIRAMCategory_t;
 
 std::string getBoardType(void);
 std::string getChipModel(void);
@@ -15,7 +22,10 @@ void printDeviceInfo(void);
 std::string getIDFVersion(void);
 int getConfigFileVersion(void);
 
-float temperatureRead();
+#ifdef SOC_TEMP_SENSOR_SUPPORTED
+void initSOCTemperatureSensor();
+#endif
+float getSOCTemperature();
 
 bool setCPUFrequency(void);
 
@@ -27,6 +37,9 @@ size_t getESPHeapSizeInternalMinFree(void);
 size_t getESPHeapSizeSPIRAMFree(void);
 size_t getESPHeapSizeSPIRAMLargestFree(void);
 size_t getESPHeapSizeSPIRAMMinFree(void);
+
+void setSPIRAMCategory(SPIRAMCategory_t category);
+SPIRAMCategory_t getSPIRAMCategory();
 
 #ifdef USE_HIMEM_IF_AVAILABLE
 size_t getESPHimemTotal(void);
