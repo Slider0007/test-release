@@ -344,6 +344,11 @@ CONFIG_WPA_11R_SUPPORT=n
     #endif
 
 
+    // UART Port (used for improv serial)
+    //-------------------------------------------------
+    #define DEFAULT_UART_NUM    UART_NUM_0
+
+
     // Spare GPIO
     //-------------------------------------------------
     // Options for usage defintion:
@@ -413,6 +418,11 @@ CONFIG_WPA_11R_SUPPORT=n
         #define GPIO_FLASHLIGHT_DEFAULT_SMARTLED_TYPE       LED_WS2812 // Flashlight default: SmartLED type
         #define GPIO_FLASHLIGHT_DEFAULT_SMARTLED_QUANTITY   1          // Flashlight default: SmartLED Quantity
     #endif
+
+
+    // UART Port (used for improv serial)
+    //-------------------------------------------------
+    #define DEFAULT_UART_NUM    UART_NUM_0
 
 
     // Spare GPIO

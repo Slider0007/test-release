@@ -38,14 +38,13 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
 
 void wifiInitAP(void)
 {
-    ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
     esp_netif_create_default_wifi_ap();
 
     wifi_init_config_t wifiInitCfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&wifiInitCfg));
 
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, NULL));
+    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL));
 
     wifi_config_t wifiConfig = { };
     strcpy((char*)wifiConfig.ap.ssid, (const char*) AP_ESP_WIFI_SSID);
@@ -67,9 +66,20 @@ void wifiInitAP(void)
 }
 
 
+void wifiDeinitAP(void)
+{
+    esp_wifi_disconnect();
+    esp_wifi_stop();
+    esp_event_handler_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler);
+    esp_wifi_deinit();
+    setStatusLedOff();
+    credentialsSet = true;
+}
+
+
 esp_err_t main_handler_AP(httpd_req_t *req)
 {
-    std::string message = "<h1>AI-on-the-edge - BASIC SETUP</h1><p>This is an access point to setup ";
+    std::string message = "<h1>AI-on-the-edge - BASIC SETUP</h1><p>This allows you to setup ";
     message += "the minimum required files and information on the device and the SD-card.<br><br>";
     message += "The initial setup is performed in 3 steps:<br>1. Set WLAN credentials<br>";
     message += "2. Upload ZIP package to flash SD card content<br>3. Reboot<br>";
