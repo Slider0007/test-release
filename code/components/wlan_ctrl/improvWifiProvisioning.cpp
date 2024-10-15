@@ -38,7 +38,7 @@ static QueueHandle_t uartQueueHandle;
 static const int evtBufferSize = (UART_HW_FIFO_LEN(DEFAULT_UART_NUM));
 static const int uartBufferSize = 2 * evtBufferSize;
 #else
-static const int evtBufferSize = 128;
+static const int evtBufferSize = 256;
 #endif // USB_SERIAL
 uint8_t evtData[evtBufferSize];
 
