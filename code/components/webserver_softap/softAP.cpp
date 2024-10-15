@@ -106,11 +106,10 @@ esp_err_t main_handler_AP(httpd_req_t *req)
 
     if (!SDCardContentExisting) {
         message = "<h3>2. Upload ZIP package to flash SD card content</h3><p>";
-        message += "After initial flashing of the firmware the the device sd-card is still empty.<br>";
-        message += "Please upload \"AI-on-the-edge-device__{Board Type}__*.zip\", which installs the SD card content.<p>";
+        message += "Upload a firmware release package \"AI-on-the-edge-device__{Board Type}__*.zip\" to install the SD card content.<p>";
         message += "<input id=\"newfile\" type=\"file\"><br><br>";
         message += "<button class=\"button\" style=\"width:300px\" id=\"doUpdate\" type=\"button\" onclick=\"upload()\">Upload File</button><p>";
-        message += "The upload might take up to 60s. After a succesfull upload the page will be reloaded.";
+        message += "The upload might take up to 60s. After succesfully uploading the file the page will be reloaded.";
         httpd_resp_send_chunk(req, message.c_str(), strlen(message.c_str()));
 
         message = "<script language=\"JavaScript\">";
@@ -120,7 +119,7 @@ esp_err_t main_handler_AP(httpd_req_t *req)
         message += "let filePath = document.getElementById(\"newfile\").value.split(/[\\\\/]/).pop();";
         message += "let file = document.getElementById(\"newfile\").files[0];";
         message += "if (!file.name.includes(\"AI-on-the-edge-device__\")){if (!confirm(\"The zip file name should contain 'AI-on-the-edge-device__'. ";
-        message += "Are you sure that you have downloaded the correct file?\"))return;};";
+        message += "Are you sure that you have chosen the correct file?\"))return;};";
         message += "let upload_path = \"/upload/firmware/\" + filePath; xhttp.open(\"POST\", upload_path, true); xhttp.send(file);";
         message += "document.getElementById(\"doUpdate\").disabled = true;}";
         message += "</script>";
@@ -129,8 +128,9 @@ esp_err_t main_handler_AP(httpd_req_t *req)
     }
 
     message = "<h3>3. Reboot</h3><p>";
-    message += "Reboot to proceed the update process.<br>The device is going restart twice ";
-    message += "and then connect to configured access point.<br>Please find the IP in your router settings and access it with the new IP address.<p>";
+    message += "Reboot to proceed the update process.<br>The device is going restart and connect to the configured wireless lan.<br>";
+    message += "Access the device using the IP address (check router logs) or device name \"watermeter\". If device is installed ";
+    message += "using web installer, just refresh your browser window.<p>";
     message += "The first update and initialization process can take up to 3 minutes.<br>Error logs can be found ";
     message += "using UART / serial console.<p>Have fun!<p>";
     message += "<button class=\"button\" type=\"button\" onclick=\"rb()\")>Reboot</button>";
