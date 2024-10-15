@@ -344,9 +344,11 @@ CONFIG_WPA_11R_SUPPORT=n
     #endif
 
 
-    // UART Port (used for improv serial)
+    // Serial Port: Improv Serial / Improv WiFi
     //-------------------------------------------------
-    #define DEFAULT_UART_NUM    UART_NUM_0
+    #define DEFAULT_UART_NUM        UART_NUM_0              // Use UART
+    #define DEFAULT_UART_TX_PIN     GPIO_NUM_1
+    #define DEFAULT_UART_RX_PIN     GPIO_NUM_3
 
 
     // Spare GPIO
@@ -420,9 +422,9 @@ CONFIG_WPA_11R_SUPPORT=n
     #endif
 
 
-    // UART Port (used for improv serial)
+    // Serial Port: Improv Serial / Improv WiFi
     //-------------------------------------------------
-    #define DEFAULT_UART_NUM    UART_NUM_0
+    #define USB_SERIAL                                      // Use USB Serial/JTAG controller console
 
 
     // Spare GPIO

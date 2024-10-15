@@ -3,7 +3,13 @@
 
 #include <string.h>
 
+#ifndef USB_SERIAL
 #include <driver/uart.h>
+#include <hal/gpio_types.h>
+#else
+#include <driver/usb_serial_jtag.h>
+#endif // USB_SERIAL
+
 #include <esp_err.h>
 #include <esp_log.h>
 #include <esp_wifi.h>
@@ -27,77 +33,85 @@ static const char *TAG = "IMPROV";
 static TaskHandle_t improvTaskHandle = NULL;
 static ImprovWiFi *improvWifi = NULL;
 
-static const int readBufSize = (UART_HW_FIFO_LEN(DEFAULT_UART_NUM));
-static const int uartBufferSize = 2 * readBufSize;
+#ifndef USB_SERIAL
 static QueueHandle_t uartQueueHandle;
+static const int evtBufferSize = (UART_HW_FIFO_LEN(DEFAULT_UART_NUM));
+static const int uartBufferSize = 2 * evtBufferSize;
+#else
+static const int evtBufferSize = 128;
+#endif // USB_SERIAL
+uint8_t evtData[evtBufferSize];
 
 extern std::string getFwVersion(void);
 
 
-void uart_event_handler(void)
+static void improvEventHandler(void)
 {
-    uart_event_t event;
-    uint8_t dtmp[readBufSize];
-    size_t buffered_size;
-
+#ifndef USB_SERIAL
     // Waiting for UART event
-    if (xQueueReceive(uartQueueHandle, (void *)&event, (TickType_t)portMAX_DELAY)) {
-        bzero(dtmp, readBufSize);
-        // ESP_LOGI(TAG, "uart[%d] event:", DEFAULT_UART_NUM);
+    uart_event_t event;
+
+    if (xQueueReceive(uartQueueHandle, (void *)&event, (TickType_t)portMAX_DELAY) == pdPASS) {
+        //ESP_LOGD(TAG, "uart[%d] event:", DEFAULT_UART_NUM);
         switch (event.type) {
-            // Event of UART receving data
-            /*We'd better handler data event fast, there would be much more data
-            events than other types of events. If we take too much time on data event,
-            the queue might be full.*/
+            // UART receving data
             case UART_DATA:
-                // ESP_LOGI(TAG, "[UART DATA]: %d", event.size);
-
-                uart_read_bytes(DEFAULT_UART_NUM, dtmp, event.size, portMAX_DELAY);
-                //	ESP_LOGI(TAG, "[DATA EVT]:");
-
-                improvWifi->handleSerial(dtmp, event.size);
+                bzero(evtData, evtBufferSize);
+                //ESP_LOGD(TAG, "[UART DATA]: %d", event.size);
+                uart_read_bytes(DEFAULT_UART_NUM, evtData, event.size, portMAX_DELAY);
+                improvWifi->handleSerial(evtData, event.size);
                 break;
-            // Event of HW FIFO overflow detected
+
+            // HW FIFO overflow detected
             case UART_FIFO_OVF:
-                // ESP_LOGI(TAG, "hw fifo overflow");
+                //ESP_LOGD(TAG, "hw fifo overflow");
+                uart_flush_input(DEFAULT_UART_NUM);
+                xQueueReset(uartQueueHandle);
+                break;
 
-                // If fifo overflow happened, you should consider adding flow control
-                // for your application. The ISR has already reset the rx FIFO, As an
-                // example, we directly flush the rx buffer here in order to read more
-                // data.
-                uart_flush_input(DEFAULT_UART_NUM);
-                xQueueReset(uartQueueHandle);
-                break;
-            // Event of UART ring buffer full
+            // Ring buffer full
             case UART_BUFFER_FULL:
-                // ESP_LOGI(TAG, "ring buffer full");
-                // If buffer full happened, you should consider increasing your buffer
-                // size As an example, we directly flush the rx buffer here in order to
-                // read more data.
+                //ESP_LOGD(TAG, "ring buffer full");
                 uart_flush_input(DEFAULT_UART_NUM);
                 xQueueReset(uartQueueHandle);
                 break;
-            // Others
+
+            // Other events
             default:
-                // ESP_LOGI(TAG, "uart event type: %d", event.type);
+                //ESP_LOGD(TAG, "uart event type: %d", event.type);
                 break;
         }
     }
+#else
+    // Waiting for USB data
+    bzero(evtData, evtBufferSize);
+    int readBytes = usb_serial_jtag_read_bytes(evtData, evtBufferSize, portMAX_DELAY);
+    improvWifi->handleSerial(evtData, readBytes);
+#endif // USB_SERIAL
 }
 
 
 static void improvTask(void *pvParameters)
 {
-    while (1) {
-        uart_event_handler();
+    while (true) {
+        improvEventHandler();
     }
 }
 
 
+#ifndef USB_SERIAL
 void improvUartWrite(const unsigned char *txData, int length)
 {
     uart_write_bytes(DEFAULT_UART_NUM, txData, length);
 }
+
+#else
+
+void improvUSBWrite(const unsigned char *txData, int length)
+{
+    usb_serial_jtag_write_bytes(txData, length, portMAX_DELAY);
+}
+#endif // USB_SERIAL
 
 
 void improvWifiScan(unsigned char *scanResponse, int bufLen, uint16_t *networkNum)
@@ -227,8 +241,17 @@ bool improvWifiConnect(const char *ssid, const char *password)
 
 void improvInit(void)
 {
+    LogFile.writeToFile(ESP_LOG_INFO, TAG, "Init started");
+
+    esp_err_t retVal = ESP_OK;
+
     improvWifi = new ImprovWiFi();
+
+#ifndef USB_SERIAL
     improvWifi->serialWrite(improvUartWrite);
+#else
+    improvWifi->serialWrite(improvUSBWrite);
+#endif // USB_SERIAL
 
     ImprovTypes::ChipFamily chipFamily;
     if (getChipModel() == "ESP32") {
@@ -247,20 +270,44 @@ void improvInit(void)
     improvWifi->setCustomisConnected(getWIFIisConnected);
     improvWifi->setCustomGetLocalIpCallback(getIPAddress);
 
-    // Set UART pins(TX: IO4, RX: IO5, RTS: IO18, CTS: IO19)
-    // uart_set_pin(DEFAULT_UART_NUM, 1, 3, -1, -1);
+#ifndef USB_SERIAL
+    // Install UART driver using an event queue
+    retVal = uart_driver_install(DEFAULT_UART_NUM, uartBufferSize, uartBufferSize, 10, &uartQueueHandle, 0);
+    if (retVal != ESP_OK) {
+        LogFile.writeToFile(ESP_LOG_ERROR, TAG, "improvInit: uart_driver_install: Error: Parameter error");
+    }
 
-    // Install UART driver using an event queue here
-    uart_driver_install(DEFAULT_UART_NUM, uartBufferSize, uartBufferSize, 10, &uartQueueHandle, 0);
+    retVal = uart_set_pin(DEFAULT_UART_NUM, DEFAULT_UART_TX_PIN, DEFAULT_UART_RX_PIN, -1, -1);
+    if (retVal != ESP_OK) {
+        LogFile.writeToFile(ESP_LOG_ERROR, TAG, "improvInit: uart_set_pin: Error: Parameter error");
+    }
+#else
+    usb_serial_jtag_driver_config_t usbCfg = USB_SERIAL_JTAG_DRIVER_CONFIG_DEFAULT();
+    usbCfg.rx_buffer_size = evtBufferSize;
+    usbCfg.tx_buffer_size = evtBufferSize;
+    retVal = usb_serial_jtag_driver_install(&usbCfg);
+    if (retVal != ESP_OK) {
+        LogFile.writeToFile(ESP_LOG_ERROR, TAG, "improvInit: usb_serial_jtag_driver_install: Error: failed to install driver");
+    }
+#endif // USB_SERIAL
 
-    xTaskCreatePinnedToCore(&improvTask, "improv", 4 * 1024, NULL, 4, &improvTaskHandle, tskNO_AFFINITY);
+    BaseType_t xReturned = xTaskCreate(&improvTask, "improv", 4 * 1024, NULL, tskIDLE_PRIORITY + 4, &improvTaskHandle);
+    if (xReturned != pdPASS) {
+        LogFile.writeToFile(ESP_LOG_ERROR, TAG, "Failed to create task 'improv'");
+    }
+
+    if (retVal != ESP_OK || xReturned != pdPASS) {
+        LogFile.writeToFile(ESP_LOG_INFO, TAG, "Init failed");
+        return;
+    }
+
+    LogFile.writeToFile(ESP_LOG_INFO, TAG, "Init successful");
 }
 
 
 void improvDeinit(void)
 {
     if (improvTaskHandle) {
-        uart_driver_delete(DEFAULT_UART_NUM);
         vTaskDelete(improvTaskHandle);
         improvTaskHandle = NULL;
     }
@@ -269,4 +316,10 @@ void improvDeinit(void)
         delete improvWifi;
         improvWifi = NULL;
     }
+
+#ifndef USB_SERIAL
+    uart_driver_delete(DEFAULT_UART_NUM);
+#else
+    usb_serial_jtag_driver_uninstall();
+#endif // USB_SERIAL
 }
