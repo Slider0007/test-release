@@ -1,16 +1,15 @@
 dependencies:
   espressif/esp-nn:
-    component_hash: b32869798bdb40dec6bc99caca48cd65d42f8a9f506b9ab9c598a076f891ede9
+    component_hash: f6f2851ce82137a66e4265071c9b852bbe0130b882a18dea9f03faea7bf1295a
     source:
-      pre_release: true
       service_url: https://api.components.espressif.com/
       type: service
-    version: 1.0.2
+    version: 1.1.0
   idf:
     component_hash: null
     source:
       type: idf
-    version: 5.0.2
-manifest_hash: 025d12c4c28f3880609a76bce0513603277176217ec72828090f5f48cb7eb486
-target: esp32
+    version: 5.2.1
+manifest_hash: 22cf0af3a7017c9470f454cd383dec56a9482584f8ff36b046ff8faef1019378
+target: esp32s3
 version: 1.0.0

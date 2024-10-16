@@ -9,9 +9,10 @@ import markdown
 parameterDocsFolder = "./docs/Configuration/Parameter"
 docsMainFolder = "./sd-card/html"
 configPage = "edit_config_param.html"
+referenceImagePage = "edit_reference.html"
 
 htmlTooltipPrefix = """
-    <div class="rst-content"><div class="tooltip"><img src="help.png" width="28px"><span class="tooltiptext">
+    <div class="rst-content"><div class="tooltip"><img src="help.png" width="20px"><span class="tooltiptext">
 """
 
 
@@ -44,15 +45,29 @@ def generateHtmlTooltip(section, parameter, markdownFile):
 
     htmlTooltip = htmlTooltipPrefix + htmlTooltip + htmlTooltipSuffix
 
-    # Add the tooltip to the config page
+    ####### configPage: Add tooltips
     with open(docsMainFolder + "/" + configPage, 'r') as configPageHandle:
         configPageContent = configPageHandle.read()
 
     # print("replacing $TOOLTIP_" + section + "_" + parameter + " with the tooltip content...")
-    configPageContent = configPageContent.replace("<td>$TOOLTIP_" + section + "_" + parameter + "</td>", "<td>" + htmlTooltip + "</td>")
+    configPageContent = configPageContent.replace("<th hidden>$TOOLTIP_" + section + "_" + parameter + "</th>",
+                                                    "<th style=\"font-weight: unset;\">" + htmlTooltip + "</th>")
+    configPageContent = configPageContent.replace("<td style=\"visibility:hidden\">$TOOLTIP_" + section + "_" + parameter + "</td>",
+                                                    "<td>" + htmlTooltip + "</td>")
 
     with open(docsMainFolder + "/" + configPage, 'w') as configPageHandle:
         configPageHandle.write(configPageContent)
+
+    ####### referenceImagePage: Add tooltips
+    with open(docsMainFolder + "/" + referenceImagePage, 'r') as referenceImagePageHandle:
+        referenceImagePageContent = referenceImagePageHandle.read()
+
+    # print("replacing $TOOLTIP_" + section + "_" + parameter + " with the tooltip content...")
+    referenceImagePageContent = referenceImagePageContent.replace("<td style=\"visibility:hidden\">$TOOLTIP_" + section + "_" + parameter + "</td>",
+                                                                  "<td>" + htmlTooltip + "</td>")
+
+    with open(docsMainFolder + "/" + referenceImagePage, 'w') as referenceImagePageHandle:
+        referenceImagePageHandle.write(referenceImagePageContent)
 
 
 print("Generating Tooltips...")
@@ -70,7 +85,7 @@ for folder in folders:
 
         parameter = file.split("/")[-1].replace(".md", "")
         parameter = parameter.replace("<", "").replace(">", "")
-        generateHtmlTooltip(folder, parameter, file)
+        generateHtmlTooltip(folder.lower(), parameter.lower(), file)
 
 """
 Copy images to main folder

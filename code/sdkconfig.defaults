@@ -1,8 +1,8 @@
-################################################## 
-# Application specific configuration
-# Edit this file instead of sdkconfig.esp32cam!
-# After editing make sure to explicitly delete 
-# sdkconfig.esp32cam to apply your changes!
+##################################################
+# Application specific and global configuration
+# Edit this file instead of sdkconfig.{board_type}!
+# After editing make sure to explicitly delete
+# sdkconfig.{board_type} to apply your changes!
 ##################################################
 
 #
@@ -11,24 +11,6 @@
 CONFIG_BOOTLOADER_COMPILER_OPTIMIZATION_SIZE=y
 CONFIG_BOOTLOADER_LOG_LEVEL_ERROR=y
 CONFIG_BOOTLOADER_LOG_LEVEL=1
-
-
-#
-# Serial flasher config
-#
-CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
-CONFIG_ESPTOOLPY_FLASHSIZE="4MB"
-CONFIG_ESPTOOLPY_FLASHSIZE_DETECT=y
-
-
-#
-# Partition Table
-#
-CONFIG_PARTITION_TABLE_CUSTOM=y
-CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
-CONFIG_PARTITION_TABLE_FILENAME="partitions.csv"
-CONFIG_PARTITION_TABLE_OFFSET=0x8000
-CONFIG_PARTITION_TABLE_MD5=y
 
 
 #
@@ -57,7 +39,7 @@ CONFIG_COMPILER_OPTIMIZATION_CHECKS_SILENT=y
 # RMT Configuration
 #
 CONFIG_RMT_SUPPRESS_DEPRECATE_WARN=y
-
+CONFIG_RMT_ISR_IRAM_SAFE=y
 
 #
 # ESP-TLS
@@ -81,13 +63,6 @@ CONFIG_ADC_DISABLE_DAC_OUTPUT=y
 
 
 #
-# Common ESP-related
-# 
-CONFIG_ESP_ERR_TO_NAME_LOOKUP=n
-CONFIG_ESP_ALLOW_BSS_SEG_EXTERNAL_MEMORY=y
-
-
-#
 # Ethernet
 #
 CONFIG_ETH_USE_SPI_ETHERNET=n
@@ -96,18 +71,13 @@ CONFIG_ETH_USE_SPI_ETHERNET=n
 # HTTP client
 #
 CONFIG_ESP_HTTP_CLIENT_ENABLE_HTTPS=y
+CONFIG_ESP_HTTP_CLIENT_ENABLE_BASIC_AUTH=y
 
 #
 # HTTP Server
 #
 CONFIG_HTTPD_MAX_REQ_HDR_LEN=1024
 CONFIG_HTTPD_PURGE_BUF_LEN=16
-
-
-#
-# Chip revision
-#
-CONFIG_ESP32_REV_MIN_0=y
 
 
 #
@@ -123,30 +93,10 @@ CONFIG_SPIRAM=y
 
 
 #
-# SPI RAM config
-#
-CONFIG_SPIRAM_SIZE=-1
-CONFIG_SPIRAM_SPEED_40M=y
-CONFIG_SPIRAM_BOOT_INIT=y
-#CONFIG_SPIRAM_USE_MEMMAP=y => Does not work: "cam_dma_config(306): frame buffer malloc failed"
-CONFIG_SPIRAM_USE_MALLOC=y
-CONFIG_SPIRAM_MEMTEST=y
-CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL=8192
-#CONFIG_SPIRAM_TRY_ALLOCATE_WIFI_LWIP=y => Leads to memory fragmentation, see https://github.com/jomjol/AI-on-the-edge-device/issues/2200
-CONFIG_SPIRAM_MALLOC_RESERVE_INTERNAL=131072
-CONFIG_SPIRAM_CACHE_WORKAROUND=y
-CONFIG_SPIRAM_IGNORE_NOTFOUND=y
-CONFIG_SPIRAM_ALLOW_BSS_SEG_EXTERNAL_MEMORY=y
-
-#force disable HIMEM as not used in default config, can be enabled with [env:esp32cam-himem]
-#free 256kb of internal memory : I (2112) esp_himem: Initialized. Using last 8 32KB address blocks for bank switching on 4352 KB of physical memory.
-CONFIG_SPIRAM_BANKSWITCH_ENABLE=n
-
-
-#
 # Event
 #
 CONFIG_ESP_SYSTEM_EVENT_TASK_STACK_SIZE=4864
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
 
 
 #
@@ -176,6 +126,25 @@ CONFIG_ESP_WIFI_SOFTAP_SUPPORT=y
 
 
 #
+# Core dump
+#
+CONFIG_ESP_COREDUMP_ENABLE_TO_FLASH=y
+CONFIG_ESP_COREDUMP_DATA_FORMAT_ELF=y
+CONFIG_ESP_COREDUMP_CHECKSUM_CRC32=y
+CONFIG_ESP_COREDUMP_CHECK_BOOT=y
+CONFIG_ESP_COREDUMP_ENABLE=y
+CONFIG_ESP_COREDUMP_LOGS=n
+CONFIG_ESP_COREDUMP_MAX_TASKS_NUM=16
+
+
+#
+# PHY
+#
+CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE=n
+CONFIG_ESP_PHY_RF_CAL_FULL=y
+
+
+#
 # FAT Filesystem support
 #
 CONFIG_FATFS_LFN_HEAP=y
@@ -184,7 +153,7 @@ CONFIG_FATFS_API_ENCODING_ANSI_OEM=y
 
 
 #
-# FreeRTOS 
+# FreeRTOS
 #
 CONFIG_FREERTOS_PLACE_FUNCTIONS_INTO_FLASH=n
 CONFIG_FREERTOS_PLACE_SNAPSHOT_FUNS_INTO_FLASH=n
@@ -222,7 +191,7 @@ CONFIG_LWIP_ESP_LWIP_ASSERT=n
 #
 # DHCP server
 #
-CONFIG_LWIP_DHCPS=n
+CONFIG_LWIP_DHCPS=y
 
 
 #
