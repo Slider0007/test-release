@@ -1,5 +1,12 @@
 # Changelog
 
+## [17.0.6-SLFork](https://github.com/Slider0007/test-release/compare/v17.0.5-SLFork...v17.0.6-SLFork) (2024-10-16)
+
+
+### Other Changes
+
+* **build:** Update ([2255006](https://github.com/Slider0007/test-release/commit/225500662014f45a5cf9312b2f189119196399cd))
+
 ## [17.0.5-SLFork](https://github.com/Slider0007/test-release/compare/v17.0.4-SLFork...v17.0.5-SLFork) (2024-10-16)
 
 
