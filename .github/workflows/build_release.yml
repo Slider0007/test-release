@@ -247,30 +247,20 @@ jobs:
         ref: gh-pages
 
     - name: Pull artifacts
-      id: pull_artifacts
-      uses: dsaltares/fetch-gh-release-asset@master
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        regex: true
-        file: "AI-on-the-edge-device__manual-setup__${{ matrix.plat }}.*.zip"
-        target: './artifacts/'
+      uses: actions/download-artifact@v4
+      name: "AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
 
     - name: Prepare data
       run: |
-        echo "Updating files"
+        echo "Updating files ..."
 
-        rm -rf "./firmware/${{ matrix.plat }}/"
-        mkdir -p "./firmware/${{ matrix.plat }}/"
+        cp -f "./"AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"/firmware.bin" "./firmware/${{ matrix.plat }}/bootloader.bin"
+        cp -f "./"AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"/partitions.bin" "./firmware/${{ matrix.plat }}/partitions.bin"
+        cp -f "./"AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"/firmware.bin" "./firmware/${{ matrix.plat }}/firmware.bin"
 
-        unzip ./artifacts/AI-on-the-edge-device__manual-setup__${{ matrix.plat }}__*.zip -d "./artifacts/"
-
-        cp -f "./artifacts/firmware.bin" "./firmware/${{ matrix.plat }}/bootloader.bin"
-        cp -f "./artifacts/partitions.bin" "./firmware/${{ matrix.plat }}/partitions.bin"
-        cp -f "./artifacts/firmware.bin" "./firmware/${{ matrix.plat }}/firmware.bin"
-
-        echo "Update version string"
-        sed -i -E 's/Firmware: .*./\Firmware: <b\>${{ steps.pull_artifacts.outputs.version }}\<\/b\>/g' index.html
-        sed -i -E 's/"version":.*.,/"version": "${{ steps.pull_artifacts.outputs.version }}",/g' manifest_${{ matrix.plat }}.json
+        echo "Updating version strings (index.html, manifest) ..."
+        sed -i -E 's/Firmware: .*./\Firmware: <b\>${{ needs.prepare-release.outputs.version }}\<\/b\>/g' index.html
+        sed -i -E 's/"version":.*.,/"version": "${{ needs.prepare-release.outputs.version }}",/g' manifest_${{ matrix.plat }}.json
 
     - name: Commit data
       shell: pwsh
