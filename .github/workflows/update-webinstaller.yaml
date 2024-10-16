@@ -48,8 +48,8 @@ jobs:
         cp -f "./artifacts/firmware.bin" "./firmware/${{ matrix.plat }}/firmware.bin"
 
         echo "Update version string"
-        sed -i 's/$VERSION/${{ steps.pull_artifacts.outputs.version }}/g' index.html
-        sed -i 's/$VERSION/${{ steps.pull_artifacts.outputs.version }}/g' manifest_${{ matrix.plat }}.json
+        sed -i -E 's/Firmware Version: .*./Firmware Version: ${{ steps.pull_artifacts.outputs.version }}/g' index.html
+        sed -i -E 's/"version":.*.,/"version":${{ steps.pull_artifacts.outputs.version }},/g' manifest_${{ matrix.plat }}.json
 
     - name: Commit data
       shell: pwsh
