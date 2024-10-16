@@ -8,6 +8,7 @@ jobs:
   update-webinstaller:
     runs-on: ubuntu-latest
     strategy:
+      max-parallel: 1  # The maximum number of jobs that can run simultaneously
       fail-fast: false
       matrix:
         plat:
@@ -48,8 +49,8 @@ jobs:
         cp -f "./artifacts/firmware.bin" "./firmware/${{ matrix.plat }}/firmware.bin"
 
         echo "Update version string"
-        sed -i -E 's/Firmware Version: .*./Firmware Version: ${{ steps.pull_artifacts.outputs.version }}/g' index.html
-        sed -i -E 's/"version":.*.,/"version":${{ steps.pull_artifacts.outputs.version }},/g' manifest_${{ matrix.plat }}.json
+        sed -i -E 's/<b>Firmware Version: .*./<b>Firmware Version: ${{ steps.pull_artifacts.outputs.version }}</b>/g' index.html
+        sed -i -E 's/"version":.*.,/"version": "${{ steps.pull_artifacts.outputs.version }}",/g' manifest_${{ matrix.plat }}.json
 
     - name: Commit data
       shell: pwsh
@@ -60,6 +61,6 @@ jobs:
         & git diff HEAD --exit-code | Out-Null
         if ($LASTEXITCODE -ne 0)
         {
-          & git commit -m "chore(${{ matrix.plat }}): Update firmware to ${{ steps.pull_artifacts.outputs.version }}"
-          & git push
+          & git commit -m "${{ matrix.plat }}: Update firmware to ${{ steps.pull_artifacts.outputs.version }}"
+          & git push --force
         }
