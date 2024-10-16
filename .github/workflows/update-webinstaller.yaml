@@ -12,7 +12,7 @@ jobs:
       matrix:
         plat:
          - esp32cam
-         - xiao-esp32s3-sense
+         - esp32cam-debug
 
     # Sets permissions of the GITHUB_TOKEN to allow downloading artifacts
     permissions:
@@ -46,7 +46,7 @@ jobs:
         rm -rf ./firmware/${{ matrix.plat }}/
         cd ./artifacts/
         ls
-        unzip *.zip
+        unzip AI-on-the-edge-device__manual-setup__${{ matrix.plat }}*.zip
         ls
         cp -f "*.bin" "./firmware/${{ matrix.plat }}/"
         echo "Updating index and manifest file..."
