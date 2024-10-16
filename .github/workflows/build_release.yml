@@ -248,7 +248,8 @@ jobs:
 
     - name: Pull artifacts
       uses: actions/download-artifact@v4
-      name: "AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
+      with:
+        name: "AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
 
     - name: Prepare data
       run: |
