@@ -30,7 +30,8 @@ jobs:
       uses: dsaltares/fetch-gh-release-asset@master
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        file: "*.zip"
+        regex: true
+        file: "AI-on-the-edge-device.*.zip"
         target: 'artifacts/'
 
     - name: Switch branch
