@@ -266,8 +266,8 @@ jobs:
         cp -f ./artifacts/firmware.bin ./firmware/${{ matrix.plat }}/firmware.bin
 
         echo "Updating version strings (index.html, manifest) ..."
-        sed -i -E 's/Firmware: .*./\Firmware: <b\>v${{ needs.prepare-release.outputs.version }}\<\/b\>/g' index.html
-        sed -i -E 's/"version":.*.,/"version": "v${{ needs.prepare-release.outputs.version }}",/g' manifest_${{ matrix.plat }}.json
+        sed -i -E 's/Firmware: .*./\Firmware: <b\>${{ needs.prepare-release.outputs.tag_name }}\<\/b\>/g' index.html
+        sed -i -E 's/"version":.*.,/"version": "${{ needs.prepare-release.outputs.tag_name }}",/g' manifest_${{ matrix.plat }}.json
 
     - name: Commit data to branch gh-pages
       shell: pwsh
@@ -278,6 +278,6 @@ jobs:
         & git diff HEAD --exit-code | Out-Null
         if ($LASTEXITCODE -ne 0)
         {
-          & git commit -m "${{ matrix.plat }}: Update firmware files to v${{ needs.prepare-release.outputs.version }}"
+          & git commit -m "${{ matrix.plat }}: Update firmware files to ${{ needs.prepare-release.outputs.tag_name }}"
           & git push --force
         }
