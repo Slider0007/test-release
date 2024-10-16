@@ -36,19 +36,18 @@ jobs:
 
     - name: Prepare data
       run: |
-        echo "Updating firmware files..."
-        ls
-        rm -f "./firmware/${{ matrix.plat }}/bootloader.bin"
-        rm -f "./firmware/${{ matrix.plat }}/partitions.bin"
-        rm -f "./firmware/${{ matrix.plat }}/firmware.bin"
-        ls
+        echo "Updating files"
+
+        rm -rf "./firmware/${{ matrix.plat }}/"
+        mkdir -p "./firmware/${{ matrix.plat }}/"
+
         unzip ./artifacts/AI-on-the-edge-device__manual-setup__${{ matrix.plat }}__*.zip -d "./artifacts/"
-        ls
+
         cp -f "./artifacts/firmware.bin" "./firmware/${{ matrix.plat }}/bootloader.bin"
         cp -f "./artifacts/partitions.bin" "./firmware/${{ matrix.plat }}/partitions.bin"
         cp -f "./artifacts/firmware.bin" "./firmware/${{ matrix.plat }}/firmware.bin"
-        ls
-        echo "Updating index and manifest file..."
+
+        echo "Update version string"
         sed -i 's/$VERSION/${{ steps.pull_artifacts.outputs.version }}/g' index.html
         sed -i 's/$VERSION/${{ steps.pull_artifacts.outputs.version }}/g' manifest_${{ matrix.plat }}.json
 
@@ -61,6 +60,6 @@ jobs:
         & git diff HEAD --exit-code | Out-Null
         if ($LASTEXITCODE -ne 0)
         {
-          & git commit -m "Update firmware files"
+          & git commit -m "chore(${{ matrix.plat }}): Update firmware to ${{ steps.pull_artifacts.outputs.version }}"
           & git push
         }
