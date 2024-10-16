@@ -258,10 +258,12 @@ jobs:
     - name: Prepare data
       run: |
         echo "Updating files ..."
-
-        cp -f ./artifacts/AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ needs.upload-release-artifacts.outputs.branch }}_${{ needs.upload-release-artifacts.outputs.sha_short }}/bootloader.bin ./firmware/${{ matrix.plat }}/bootloader.bin
-        cp -f ./artifacts/AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ needs.upload-release-artifacts.outputs.branch }}_${{ needs.upload-release-artifacts.outputs.sha_short }}/partitions.bin ./firmware/${{ matrix.plat }}/partitions.bin
-        cp -f ./artifacts/AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ needs.upload-release-artifacts.outputs.branch }}_${{ needs.upload-release-artifacts.outputs.sha_short }}/firmware.bin ./firmware/${{ matrix.plat }}/firmware.bin
+        cd ./artifacts
+        ls
+        cd ..
+        cp -f ./artifacts/bootloader.bin ./firmware/${{ matrix.plat }}/bootloader.bin
+        cp -f ./artifacts/partitions.bin ./firmware/${{ matrix.plat }}/partitions.bin
+        cp -f ./artifacts/firmware.bin ./firmware/${{ matrix.plat }}/firmware.bin
 
         echo "Updating version strings (index.html, manifest) ..."
         sed -i -E 's/Firmware: .*./\Firmware: <b\>v${{ needs.prepare-release.outputs.version }}\<\/b\>/g' index.html
