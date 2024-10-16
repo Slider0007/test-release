@@ -246,6 +246,12 @@ jobs:
       with:
         ref: gh-pages
 
+    - name: Set variables
+      id: vars
+      run: |
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
+
     - name: Pull artifacts
       uses: actions/download-artifact@v4
       with:
