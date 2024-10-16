@@ -43,13 +43,13 @@ jobs:
     - name: Prepare data
       run: |
         echo "Updating firmware files..."
-        rm -rf ./firmware/${{ matrix.plat }}/
+        rm -rf ${GITHUB_WORKSPACE}/firmware/${{ matrix.plat }}/
 
         cd ./artifacts/
         unzip AI-on-the-edge-device__manual-setup__${{ matrix.plat }}__*.zip
-        cp -f "bootloader.bin" "../firmware/${{ matrix.plat }}/bootloader.bin"
-        cp -f "partitions.bin" "../firmware/${{ matrix.plat }}/partitions.bin"
-        cp -f "firmware.bin" "../firmware/${{ matrix.plat }}/firmware.bin"
+        cp -f "bootloader.bin" "${GITHUB_WORKSPACE}/firmware/${{ matrix.plat }}/bootloader.bin"
+        cp -f "partitions.bin" "${GITHUB_WORKSPACE}/firmware/${{ matrix.plat }}/partitions.bin"
+        cp -f "firmware.bin" "${GITHUB_WORKSPACE}/firmware/${{ matrix.plat }}/firmware.bin"
         cd ..
 
         echo "Updating index and manifest file..."
