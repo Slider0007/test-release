@@ -44,8 +44,11 @@ jobs:
       run: |
         echo "Updating firmware files..."
         rm -rf ./firmware/${{ matrix.plat }}/
+        cd ./artifacts/
+        ls
         unzip ./artifacts/*.zip
-        cp -f "./artifacts/AI-on-the-edge-device__manual-setup__${{ matrix.plat }}__SLFork_${{ steps.pull_artifacts.outputs.version }}/*.bin" "./firmware/${{ matrix.plat }}/"
+        ls
+        cp -f "./artifacts/*.bin" "./firmware/${{ matrix.plat }}/"
         echo "Updating index and manifest file..."
         sed -i 's/$VERSION/${{ steps.pull_artifacts.outputs.version }}/g' index.html
         sed -i 's/$VERSION/${{ steps.pull_artifacts.outputs.version }}/g' manifest_${{ matrix.plat }}.json
