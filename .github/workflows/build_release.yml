@@ -171,6 +171,9 @@ jobs:
 #########################################################################################
   upload-release-artifacts:
     runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.vars.outputs.branch }}
+      sha_short: ${{ steps.vars.outputs.sha_short }}
     needs: [prepare-release, build]
     if: ${{ needs.prepare-release.outputs.release_created }}
     strategy:
@@ -246,12 +249,6 @@ jobs:
       with:
         ref: gh-pages
 
-    - name: Set variables
-      id: vars
-      run: |
-        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
-
     - name: Pull artifacts
       uses: actions/download-artifact@v4
 
@@ -259,9 +256,9 @@ jobs:
       run: |
         echo "Updating files ..."
 
-        cp -f "./AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}/firmware.bin" "./firmware/${{ matrix.plat }}/bootloader.bin"
-        cp -f "./AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}/partitions.bin" "./firmware/${{ matrix.plat }}/partitions.bin"
-        cp -f "./AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}/firmware.bin" "./firmware/${{ matrix.plat }}/firmware.bin"
+        cp -f "./AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ needs.upload-release-artifacts.outputs.branch }}_${{ needs.upload-release-artifacts.outputs.sha_short }}/firmware.bin" "./firmware/${{ matrix.plat }}/bootloader.bin"
+        cp -f "./AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ needs.upload-release-artifacts.outputs.branch }}_${{ needs.upload-release-artifacts.outputs.sha_short }}/partitions.bin" "./firmware/${{ matrix.plat }}/partitions.bin"
+        cp -f "./AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ needs.upload-release-artifacts.outputs.branch }}_${{ needs.upload-release-artifacts.outputs.sha_short }}/firmware.bin" "./firmware/${{ matrix.plat }}/firmware.bin"
 
         echo "Updating version strings (index.html, manifest) ..."
         sed -i -E 's/Firmware: .*./\Firmware: <b\>${{ needs.prepare-release.outputs.version }}\<\/b\>/g' index.html
