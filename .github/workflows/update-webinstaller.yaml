@@ -32,11 +32,11 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         regex: true
         file: "AI-on-the-edge-device.*.zip"
-        target: 'artifacts/'
+        target: './artifacts/'
 
     - name: Switch branch
       run: |
-        & git switch gh-pages
+        git switch gh-pages
 
     - name: Prepare data
       run: |
