@@ -8,7 +8,7 @@ jobs:
   update-webinstaller:
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 1  # The maximum number of jobs that can run simultaneously
+      max-parallel: 1
       fail-fast: false
       matrix:
         plat:
@@ -37,7 +37,7 @@ jobs:
 
     - name: Prepare data
       run: |
-        echo "Updating files"
+        echo "Updating files ..."
 
         rm -rf "./firmware/${{ matrix.plat }}/"
         mkdir -p "./firmware/${{ matrix.plat }}/"
@@ -48,11 +48,11 @@ jobs:
         cp -f "./artifacts/partitions.bin" "./firmware/${{ matrix.plat }}/partitions.bin"
         cp -f "./artifacts/firmware.bin" "./firmware/${{ matrix.plat }}/firmware.bin"
 
-        echo "Update version string"
+        echo "Updating version strings (index.html, manifest) ..."
         sed -i -E 's/Firmware: .*./\Firmware: <b\>${{ steps.pull_artifacts.outputs.version }}\<\/b\>/g' index.html
         sed -i -E 's/"version":.*.,/"version": "${{ steps.pull_artifacts.outputs.version }}",/g' manifest_${{ matrix.plat }}.json
 
-    - name: Commit data
+    - name: Commit data to branch gh-pages
       shell: pwsh
       run: |
         & git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
