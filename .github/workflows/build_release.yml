@@ -241,7 +241,7 @@ jobs:
       contents: write
 
     steps:
-    - name: Checkout gh-pages branch
+    - name: Checkout branch gh-pages
       uses: actions/checkout@v4
       with:
         ref: gh-pages
