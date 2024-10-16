@@ -50,7 +50,9 @@ jobs:
         ls
         unzip AI-on-the-edge-device__manual-setup__${{ matrix.plat }}__*.zip
         ls
-        cp -f "**/*.bin" "/firmware/${{ matrix.plat }}/"
+        cp -f "bootloader.bin" "/firmware/${{ matrix.plat }}/"
+        cp -f "partitions.bin" "/firmware/${{ matrix.plat }}/"
+        cp -f "firmware.bin" "/firmware/${{ matrix.plat }}/"
         cd ..
         ls
         echo "Updating index and manifest file..."
