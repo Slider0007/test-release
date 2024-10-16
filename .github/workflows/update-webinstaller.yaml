@@ -46,9 +46,9 @@ jobs:
         rm -rf ./firmware/${{ matrix.plat }}/
         cd ./artifacts/
         ls
-        unzip ./artifacts/*.zip
+        unzip *.zip
         ls
-        cp -f "./artifacts/*.bin" "./firmware/${{ matrix.plat }}/"
+        cp -f "*.bin" "./firmware/${{ matrix.plat }}/"
         echo "Updating index and manifest file..."
         sed -i 's/$VERSION/${{ steps.pull_artifacts.outputs.version }}/g' index.html
         sed -i 's/$VERSION/${{ steps.pull_artifacts.outputs.version }}/g' manifest_${{ matrix.plat }}.json
