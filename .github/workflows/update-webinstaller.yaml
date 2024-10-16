@@ -45,7 +45,7 @@ jobs:
         echo "Updating firmware files..."
         rm -rf ./firmware/${{ matrix.plat }}/
 
-        unzip AI-on-the-edge-device__manual-setup__${{ matrix.plat }}__*.zip ./artifacts/
+        unzip ./artifacts/AI-on-the-edge-device__manual-setup__${{ matrix.plat }}__*.zip ./artifacts/
         cp -f "./artifacts/firmware.bin" "./firmware/${{ matrix.plat }}/bootloader.bin"
         cp -f "./artifacts/partitions.bin" "./firmware/${{ matrix.plat }}/partitions.bin"
         cp -f "./artifacts/firmware.bin" "./firmware/${{ matrix.plat }}/firmware.bin"
