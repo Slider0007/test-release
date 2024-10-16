@@ -61,6 +61,6 @@ jobs:
         & git diff HEAD --exit-code | Out-Null
         if ($LASTEXITCODE -ne 0)
         {
-          & git commit -m "Update firmware"
-          & git push origin testcommit
+          & git commit -m "Update firmware files"
+          & git push
         }
