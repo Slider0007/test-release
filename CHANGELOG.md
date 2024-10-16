@@ -1,5 +1,22 @@
 # Changelog
 
+## [16.2.0-SLFORK](https://github.com/Slider0007/test-release/compare/v16.1.3-SLFORK...v16.2.0-SLFORK) (2024-10-16)
+
+
+### Features
+
+* **test:** Additional feat entry ([f001798](https://github.com/Slider0007/test-release/commit/f0017985e172cc6e34a6dde303f4e3739d0cdb86))
+
+
+### Refactoring / Style Changes
+
+* **test2:** Additional refactor entry ([f001798](https://github.com/Slider0007/test-release/commit/f0017985e172cc6e34a6dde303f4e3739d0cdb86))
+
+
+### Other Changes
+
+* **delete:** Delete FeatureRequest.md ([#63](https://github.com/Slider0007/test-release/issues/63)) ([f001798](https://github.com/Slider0007/test-release/commit/f0017985e172cc6e34a6dde303f4e3739d0cdb86))
+
 ## [16.1.3-SLFORK](https://github.com/Slider0007/test-release/compare/v16.1.2-SLFORK...v16.1.3-SLFORK) (2024-04-05)
 
 
