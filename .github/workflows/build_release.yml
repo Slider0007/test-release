@@ -254,8 +254,6 @@ jobs:
 
     - name: Pull artifacts
       uses: actions/download-artifact@v4
-      with:
-        name: "AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
 
     - name: Prepare data
       run: |
@@ -269,7 +267,7 @@ jobs:
         sed -i -E 's/Firmware: .*./\Firmware: <b\>${{ needs.prepare-release.outputs.version }}\<\/b\>/g' index.html
         sed -i -E 's/"version":.*.,/"version": "${{ needs.prepare-release.outputs.version }}",/g' manifest_${{ matrix.plat }}.json
 
-    - name: Commit data
+    - name: Commit data to branch gh-pages
       shell: pwsh
       run: |
         & git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
