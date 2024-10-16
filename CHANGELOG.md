@@ -1,5 +1,14 @@
 # Changelog
 
+## [17.0.2-SLFork](https://github.com/Slider0007/test-release/compare/v17.0.1-SLFork...v17.0.2-SLFork) (2024-10-16)
+
+
+### Other Changes
+
+* **build:** Adapt web installer update ([275b4ee](https://github.com/Slider0007/test-release/commit/275b4eeada6e876fde24c9d72bd82c07723c0880))
+* **build:** Update ([f62fcd2](https://github.com/Slider0007/test-release/commit/f62fcd223f336c18959272fac473fde368faac93))
+* **build:** Update ([b5c81c1](https://github.com/Slider0007/test-release/commit/b5c81c1648be1722e9b5128384cd176996460851))
+
 ## [17.0.1-SLFork](https://github.com/Slider0007/test-release/compare/v17.0.0-SLFork...v17.0.1-SLFork) (2024-10-16)
 
 
