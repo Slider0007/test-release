@@ -38,20 +38,24 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         regex: true
         file: "AI-on-the-edge-device.*.zip"
-        target: /artifacts/
+        target: './artifacts/'
 
     - name: Prepare data
       run: |
         echo "Updating firmware files..."
+        ls
         rm -rf ./firmware/${{ matrix.plat }}/
-        cd /artifacts/
         ls
-        unzip /artifacts/AI-on-the-edge-device__manual-setup__${{ matrix.plat }}__*.zip
+        cd artifacts/
         ls
-        cp -f "/artifacts/*.bin" "/firmware/${{ matrix.plat }}/"
+        unzip AI-on-the-edge-device__manual-setup__${{ matrix.plat }}__*.zip
+        ls
+        cp -f "*.bin" "/firmware/${{ matrix.plat }}/"
+        cd ..
+        ls
         echo "Updating index and manifest file..."
-        sed -i 's/$VERSION/${{ steps.pull_artifacts.outputs.version }}/g' /index.html
-        sed -i 's/$VERSION/${{ steps.pull_artifacts.outputs.version }}/g' /manifest_${{ matrix.plat }}.json
+        sed -i 's/$VERSION/${{ steps.pull_artifacts.outputs.version }}/g' index.html
+        sed -i 's/$VERSION/${{ steps.pull_artifacts.outputs.version }}/g' manifest_${{ matrix.plat }}.json
 
     - name: Commit data
       shell: pwsh
