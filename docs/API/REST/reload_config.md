@@ -1,6 +1,6 @@
 [Overview](_OVERVIEW.md) 
 
-### REST API endpoint: reload_config
+## REST API endpoint: reload_config
 
 `http://IP-ADDRESS/reload_config`
 

@@ -1,19 +1,76 @@
 <!DOCTYPE html>
-<html lang="en" xml:lang="en"> 
+<html lang="en" xml:lang="en">
 <head>
 	<meta charset="UTF-8">
 	<title>Overview</title>
 
 	<style>
-		.tg  {border-collapse:collapse;border-spacing:0;width:100%;min-width:600px;height:100%;}
-		.tg th{min-width:325px;width:325px;height:20px;font-size:16px;text-align:left;font-weight:bold;padding:5px 10px 5px 10px;
-					overflow:hidden;word-break:normal;background-color:lightgrey;}
-		.tg td{font-size:15px;padding:5px 10px 5px 10px;overflow:hidden;word-break:normal;}
-		.tg .tg-1{font-size:15px;vertical-align: top; padding-top:0px; font-family:Arial, Helvetica, sans-serif !important;}
-		.tg .tg-2{height:52px;font-size:15px;padding:3px 0px 3px 10px;vertical-align:middle;font-family:Arial, Helvetica, sans-serif !important;}
-		.tg .tg-3{height:45px;font-size:15px;padding:3px 10px 3px 10px;vertical-align:middle;font-family:Arial, Helvetica, sans-serif !important;}
-		.tg .tg-4{height:70px;font-size:15px;padding:5px 10px 5px 10px;vertical-align:text-top;font-family:Arial, Helvetica, sans-serif !important;}
-		.tg .tg-5{height:fit-content;font-size:15px;padding:5px 10px 5px 10px;vertical-align:text-top;font-family:Arial, Helvetica, sans-serif !important;}
+		.tg {
+			border-collapse:collapse;
+			border-spacing:0;
+			width:100%;
+			min-width:600px;
+			height:100%;
+		}
+
+		.tg th {
+			min-width:325px;
+			width:325px;
+			height:20px;
+			font-size:16px;
+			text-align:left;
+			font-weight:bold;
+			padding:5px 10px 5px 10px;
+			overflow:hidden;
+			word-break:normal;
+			background-color:lightgrey;
+		}
+
+		.tg td {
+			font-size:15px;
+			padding:5px 10px 5px 10px;
+			overflow:hidden;
+			word-break:normal;
+		}
+
+		.tg .tg-1 {
+			font-size:15px;
+			vertical-align:top;
+			padding-top:0px;
+			font-family:Arial, Helvetica, sans-serif !important;
+		}
+
+		.tg .tg-2 {
+			height:52px;
+			font-size:15px;
+			padding:3px 0px 3px 10px;
+			vertical-align:middle;
+			font-family:Arial, Helvetica, sans-serif !important;
+		}
+
+		.tg .tg-3 {
+			height:45px;
+			font-size:15px;
+			padding:3px 10px 3px 10px;
+			vertical-align:middle;
+			font-family:Arial, Helvetica, sans-serif !important;
+		}
+
+		.tg .tg-4 {
+			height:70px;
+			font-size:15px;
+			padding:5px 10px 5px 10px;
+			vertical-align:text-top;
+			font-family:Arial, Helvetica, sans-serif !important;
+		}
+
+		.tg .tg-5 {
+			height:fit-content;
+			font-size:15px;
+			padding:5px 10px 5px 10px;
+			vertical-align:text-top;
+			font-family:Arial, Helvetica, sans-serif !important;
+		}
 
 		body, html {
 			font-size: 100%;
@@ -50,8 +107,10 @@
 			border: 1px solid red;
 		}
 	</style>
-	
+
 	<script src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
+	<script src="global_common.js?v=$COMMIT_HASH"></script>
+	<script src="global_data.js?v=$COMMIT_HASH"></script>
 </head>
 
 <body style="font-family: arial">
@@ -66,13 +125,13 @@
 							<img style="display:none; width:16px; height:16px;" id="manual_refresh_img_loading" src="">
 						</td>
 						<td style="padding:0px;">
-							<input type="checkbox" id="AutoRefreshEnabled" value="1" onchange="AutoRefreshContent();">
+							<input type="checkbox" id="AutoRefreshEnabled" value="1" onchange="AutoRefreshContent();" checked>
 							<label style="color:black;" for=AutoRefreshEnabled>Auto Refresh</label>
 
 						</td>
 						<td style="padding:0px;">
-							<input required type="number" name="AutoRefreshTime" id="AutoRefreshTime" min="1" step="1" value="10" 
-							oninput="(!validity.rangeUnderflow||(value=2));" onchange="AutoRefreshContent();"> s
+							<input required type="number" id="AutoRefreshTime" min="1" value="5"
+								onchange="(!validity.rangeUnderflow||(value=1));AutoRefreshContent();"> s
 						</td>
 					</tr>
 					<tr>
@@ -87,64 +146,59 @@
 		</tr>
 		<tr>
 			<th class="th">Actual Value</th>
-		</tr> 
-		<tr>	
+		</tr>
+		<tr>
 			<td class="tg-2">
 				<div id="value"></div>
-			</td>	
+			</td>
 		</tr>
 		<tr>
 			<th class="th">Fallback Value</th>
-		</tr>	
-		<tr>	
+		</tr>
+		<tr>
 			<td class="tg-2">
 				<div id="fallback"></div>
-			</td>	
+			</td>
 		</tr>
 		<tr>
 			<th class="th">Raw Value</th>
-		</tr>	
-		<tr>	
+		</tr>
+		<tr>
 			<td class="tg-2">
 				<div id="raw"></div>
-			</td>	
+			</td>
 		</tr>
 		<tr>
 			<th class="th">Value Status</th>
-		</tr>	
-		<tr>	
+		</tr>
+		<tr>
 			<td class="tg-2">
 				<div id="status"></div>
-			</td>	
+			</td>
 		</tr>
 		<tr>
 			<th class="th">Process State</th>
-		</tr>	
-		<tr>	
+		</tr>
+		<tr>
 			<td class="tg-3">
 				<div id="statusflow" ></div>
 				<div id="processerror" style="color: rgb(255, 0, 0); font-weight: bold;"></div>
 			</td>
-		</tr>  
+		</tr>
 		<tr>
 			<th class="th">System Info</th>
-		</tr>	
-		<tr>	
+		</tr>
+		<tr>
 			<td>
 				<table>
-					<tr><td style="padding: 0px;">Uptime</td><td style="padding: 0px 20px"><output id="uptime"></output></td></tr>
+					<tr><td style="padding: 0px;">Device Uptime</td><td style="padding: 0px 20px"><output id="device_uptime"></output></td></tr>
 					<tr><td style="padding: 0px;">Cycle Counter</td><td style="padding: 0px 20px"><output id="cycle_counter"></output></td></tr>
-					<tr><td style="padding: 0px;">WIFI Signal</td><td style="padding: 0px 20px"><output id="rssi"></output></td></tr>
-					<tr><td style="padding: 0px;">CPU Temp</td><td style="padding: 0px 20px"><output id="cputemp"></output></td></tr>
+					<tr><td style="padding: 0px;">WLAN Signal</td><td style="padding: 0px 20px"><output id="wlan_rssi"></output></td></tr>
 				</table>
 			</td>
 		</tr>
 	</table>
 
-
-<script src="common.js?v=$COMMIT_HASH"></script> 
-<script src="readconfigcommon.js?v=$COMMIT_HASH"></script>
-<script src="readconfigparam.js?v=$COMMIT_HASH"></script>
 <script>
 
 	function addZero(i)
@@ -158,22 +212,21 @@
 
 	function LoadProcessData()
 	{
-		var url = domainname + '/process_data';
+		let url = domainname + '/process_data';
 
-		var xhttp = new XMLHttpRequest();
+		let xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
-				const _jsonData = JSON.parse(xhttp.responseText);			
+				const _jsonData = JSON.parse(xhttp.responseText);
 				loadValue(_jsonData.actual_value, "value", "border-collapse: collapse; width: 100%");
 				loadValue(_jsonData.fallback_value, "fallback", "border-collapse: collapse; width: 100%");
 				loadValue(_jsonData.raw_value, "raw", "border-collapse: collapse; width: 100%");
 				loadValue(_jsonData.value_status, "status", "border-collapse: collapse; width: 100%");
 				$('#statusflow').html(_jsonData.process_state);
-				loadProcessError(_jsonData.process_error);
-				$('#uptime').html(_jsonData.uptime);
+				loadProcessError(_jsonData.process_error, _jsonData.process_state);
+				$('#device_uptime').html(formatUptime(_jsonData.device_uptime));
 				$('#cycle_counter').html(_jsonData.cycle_counter);
-				loadRSSI(_jsonData.rssi);
-				$('#cputemp').html(_jsonData.temperature + "°C");
+				loadWLANRSSI(_jsonData.wlan_rssi);
 			}
 		};
 
@@ -182,94 +235,78 @@
 		xhttp.send();
 	}
 
-	
+
 	function LoadROIImage()
 	{
-		var d = new Date();
-		var h = addZero(d.getHours());
-		var m = addZero(d.getMinutes());
-		var s = addZero(d.getSeconds());
+		let d = new Date();
+		let h = addZero(d.getHours());
+		let m = addZero(d.getMinutes());
+		let s = addZero(d.getSeconds());
 		$('#timestamp').html(h + ":" + m + ":" + s);
-
-		document.getElementById("img").src = loadImage(domainname + '/img_tmp/alg_roi.jpg?' + Math.floor((Math.random() * 1000000) + 1), 
-														'img_not_available.png?v=$COMMIT_HASH').src;
+		document.getElementById("img").src = domainname + '/img_tmp/alg_roi.jpg?' + Math.floor((Math.random() * 1000000) + 1);
 	}
 
-
-	function loadValue(_value, _div, _style)
+	function loadValue(_data, _div, _style)
 	{
-		var _split = _value.split("\r");
+		if (_data == null)
+			return;
+
+		let out = "";
+
 		if (typeof _style == undefined)
 			out = "<table>";
 		else
 			out = "<table style=\"" + _style + "\">";
 
-		if (_split == null)
-				return;
+		Object.keys(_data).forEach(key => {
 
-		if (_split.length == 1) {
-			var _zer = ZerlegeZeile(_split[0], "\t")
-			if (_zer.length > 1) {
-				out = _zer[1];
-				if (_div == "status") {
-					if (_zer[1] != null && _zer[1].length > 0) {
-						if (_zer[1].substring(0,3) == "000")
-							out = "Valid";
-						else if (_zer[1].substring(0,3) == "E90")
-							out = "No Valid Value (NaN)";
-						else if (_zer[1].substring(0,3) == "E91")
-							out = "Rate Negative | Use Fallback";
-						else if (_zer[1].substring(0,3) == "E92")
-							out = "Rate Too High (<) | Use Fallback";
-						else if (_zer[1].substring(0,3) == "E93")
-							out = "Rate Too High (>) | Use Fallback";
-						else
-							out = ""
-					}
-				}
+			if (_div == "status") {
+				let ValueStatusCode = _data[key].substring(0,3);
+				if (ValueStatusCode == "000")
+					_data[key] = "Valid";
+				else if (ValueStatusCode == "W01")
+					_data[key] = "Empty / Invalid Data";
+				else if (ValueStatusCode == "E90")
+					_data[key] = "No Valid Value (NaN)";
+				else if (ValueStatusCode == "E91")
+					_data[key] = "Rate Negative | Use Fallback";
+				else if (ValueStatusCode == "E92")
+					_data[key] = "Rate Too High (<) | Use Fallback";
+				else if (ValueStatusCode == "E93")
+					_data[key] = "Rate Too High (>) | Use Fallback";
+				else
+					_data[key] = ""
+			}
+
+			if (Object.keys(_data).length == 1) {
+				out = _data[key];
 			}
 			else {
-				out = "";
+				out += "<tr><td style=\"width: 22%; padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\">" +
+					key + "</td><td style=\"padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\" >" +
+					_data[key] + "</td></tr>";
 			}
-		}
-		else {
-			for (var j = 0; j < _split.length; ++j) {
-				var _zer = ZerlegeZeile(_split[j], "\t");				
-				if (_div == "status") {
-					if (_zer[1] != null && _zer[1].length > 0) {
-						if (_zer[1].substring(0,3) == "000")
-							_zer[1] = "Valid";
-						else if (_zer[1].substring(0,3) == "E90")
-							_zer[1] = "No Valid Value (NaN)";
-						else if (_zer[1].substring(0,3) == "E91")
-							_zer[1] = "Negative Rate | Use Fallback";
-						else if (_zer[1].substring(0,3) == "E92")
-							_zer[1] = "Rate Too High (<) | Use Fallback";
-						else if (_zer[1].substring(0,3) == "E93")
-							_zer[1] = "Rate Too High (>) | Use Fallback";
-						else
-							_zer[1] = "";
-					}
-				}
-				
-				if (_zer.length == 1)
-					out = out + "<tr><td style=\"width: 22%; padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\">" + 
-						_zer[0] + "</td><td style=\"padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\"> </td></tr>"; 
-				else
-					out = out + "<tr><td style=\"width: 22%; padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\">" + 
-						_zer[0] + "</td><td style=\"padding: 3px 5px; text-align: left; vertical-align:middle; border: 1px solid lightgrey\" >" + _zer[1] + "</td></tr>"; 
-			}
-			out = out + "</table>"
-		}
+		});
+		out = out + "</table>"
 
 		document.getElementById(_div).innerHTML = out;
 	}
 
 
-	function loadProcessError(_value)
+	function loadProcessError(_value, _processState)
 	{
-		if (_value === "1") {
-			$('#processerror').html("!!! Process error detected. Check logs !!!");
+		if (_processState.split("] ")[1] == "Initialization - Delayed" ||
+			_processState.split("] ")[1] == "Initialization Failed" ||
+			_processState.split("] ")[1] == "Setup Mode" ||
+			_processState.split("] ")[1] == "Idle - No Autostart" ||
+			_processState.split("] ")[1] == "Idle - Waiting for Autostart")
+		{
+			if (_value < "0") {
+				$('#processerror').html("!!! Process error detected. Check logs !!!");
+			}
+			else {
+				$('#processerror').html("");
+			}
 		}
 		else {
 			$('#processerror').html("");
@@ -277,33 +314,33 @@
 	}
 
 
-	function loadRSSI(_value)
-	{		
+	function loadWLANRSSI(_value)
+	{
 		if (_value >= -55) {
-			$('#rssi').html("Excellent (" + _value + "dBm)");
+			$('#wlan_rssi').html("Excellent (" + _value + "dBm)");
 		}
 		else if (_value < -55 && _value >= -67) {
-			$('#rssi').html("Good (" + _value + "dBm)");
+			$('#wlan_rssi').html("Good (" + _value + "dBm)");
 		}
 		else if (_value < -67 && _value >= -78) {
-			$('#rssi').html("Fair (" + _value + "dBm)");
+			$('#wlan_rssi').html("Fair (" + _value + "dBm)");
 		}
 		else if (_value < -78 && _value >= -85) {
-			$('#rssi').html("Weak (" + _value + "dBm)");
+			$('#wlan_rssi').html("Weak (" + _value + "dBm)");
 		}
 		else {
-			$('#rssi').html("Unreliable (" + _value + "dBm)");
+			$('#wlan_rssi').html("Unreliable (" + _value + "dBm)");
 		}
 	}
 
 
 	function ManualRefreshContent()
-	{	
+	{
 		document.getElementById("manual_refresh_img_loading").style.display=""; // Display loading spinner as visual feedback
 
 		LoadProcessData();
 		LoadROIImage();
-		
+
 		setTimeout(function() { // Show loading spinner at least for 200ms
 			document.getElementById("manual_refresh_img_loading").style.display="none";
 		}, 200);
@@ -312,12 +349,10 @@
 
 	function initAutoRefreshContent()
     {
-        ParseConfigReduced();
-        param = getConfigParameters();
+		jsonConfig = getConfigFromStorage();
+		document.getElementById("AutoRefreshEnabled").checked = jsonConfig.webui.autorefresh.overviewpage.enabled;
+		document.getElementById("AutoRefreshTime").value = jsonConfig.webui.autorefresh.overviewpage.refreshtime;
 
-		document.getElementById("AutoRefreshEnabled").checked = param["WebUI"]["OverviewAutoRefresh"]["value1"] == "true" ? true : false;
-		document.getElementById("AutoRefreshTime").value = param["WebUI"]["OverviewAutoRefreshTime"]["value1"];   
-        
         autoRefreshTimeoutHandle = null; // Init auto refresh handle
         AutoRefreshContent();
     }
@@ -325,7 +360,7 @@
 
 
 	function AutoRefreshContent()
-	{	
+	{
 		if (document.getElementById("AutoRefreshEnabled").checked == true) { // Activated -> Set timeout
 
 			if (autoRefreshTimeoutHandle) { // Clear actual timeout handle
@@ -333,7 +368,7 @@
 				autoRefreshTimeoutHandle = null;
 			}
 
-			var autoRefreshTime = document.getElementById("AutoRefreshTime").value * 1000; // Refresh time in ms
+			let autoRefreshTime = document.getElementById("AutoRefreshTime").value * 1000; // Refresh time in ms
 
 			if (autoRefreshTime == null || autoRefreshTime == 0) { // If no value is set or value is zero, reset checkbox
 				document.getElementById("AutoRefreshEnabled").checked = false;
@@ -355,22 +390,29 @@
 	}
 
 
-	$(document).ready(function(){
+	$(document).ready(function() {
 		LoadProcessData();
 		LoadROIImage();
 	});
 
 
-	function init()
+	async function init()
 	{
 		domainname = getDomainname();
 		document.getElementById("img").src = domainname + '/img_loading.gif?v=$COMMIT_HASH'; // Preset with loading indicator
 		document.getElementById("manual_refresh_img_loading").src = domainname + '/img_loading.gif?v=$COMMIT_HASH'; // Preset with loading indicator
 
-		loadConfig().then(() => initAutoRefreshContent());
+        // @TODO. Check if config reloading can be avoided, because still up to date.
+        // Up to now reload config before every usage
+        /*if (noConfigInStorage())
+			loadConfig().then(() => initAutoRefreshContent());
+		else
+            initAutoRefreshContent();
+        */
+        loadConfig().then(() => initAutoRefreshContent());
 	}
 
-	
+
 	init();
 
 </script>

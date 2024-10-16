@@ -8,7 +8,7 @@ execute_process(COMMAND git log --pretty=format:'%h' -n 1
                 OUTPUT_VARIABLE GIT_REV
                 ERROR_QUIET)
 
-string(TIMESTAMP BUILD_TIME "%Y-%m-%d %H:%M")
+string(TIMESTAMP BUILD_TIME "%Y-%m-%dT%H:%M:%S+0000" UTC)
 
 # Check whether we got any revision (which isn't
 # always the case, e.g. when someone downloaded a zip
@@ -73,4 +73,4 @@ FILE(GLOB_RECURSE app_sources ${CMAKE_SOURCE_DIR}/main/*.*)
 
 idf_component_register(SRCS ${app_sources}
                     INCLUDE_DIRS "."
-                    REQUIRES esp_psram)
+                    REQUIRES esp_psram nvs_flash)

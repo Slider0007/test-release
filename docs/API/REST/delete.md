@@ -1,6 +1,6 @@
 [Overview](_OVERVIEW.md) 
 
-### REST API endpoint: delete
+## REST API endpoint: delete
 
 `http://IP-ADDRESS/delete`
 

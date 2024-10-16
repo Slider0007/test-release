@@ -1,361 +1,275 @@
 # Changelog
 
-## [16.2.0-SLFORK](https://github.com/Slider0007/test-release/compare/v16.1.3-SLFORK...v16.2.0-SLFORK) (2024-10-16)
+## [16.2.0-SLFork](https://github.com/Slider0007/AI-on-the-edge-device/compare/v16.1.3-SLFork...v16.2.0-SLFork) (2024-03-11)
 
 
 ### Features
 
-* **test:** Additional feat entry ([f001798](https://github.com/Slider0007/test-release/commit/f0017985e172cc6e34a6dde303f4e3739d0cdb86))
-
-
-### Refactoring / Style Changes
-
-* **test2:** Additional refactor entry ([f001798](https://github.com/Slider0007/test-release/commit/f0017985e172cc6e34a6dde303f4e3739d0cdb86))
-
-
-### Other Changes
-
-* **delete:** Delete FeatureRequest.md ([#63](https://github.com/Slider0007/test-release/issues/63)) ([f001798](https://github.com/Slider0007/test-release/commit/f0017985e172cc6e34a6dde303f4e3739d0cdb86))
-
-## [16.1.3-SLFORK](https://github.com/Slider0007/test-release/compare/v16.1.2-SLFORK...v16.1.3-SLFORK) (2024-04-05)
-
-
-### Other Changes
-
-* Update build_release.yml ([aadd825](https://github.com/Slider0007/test-release/commit/aadd82534390bac0281f7213007e853ac34a7ea4))
-
-## [16.1.2-SLFORK](https://github.com/Slider0007/test-release/compare/v16.1.1-SLFORK...v16.1.2-SLFORK) (2024-04-05)
-
-
-### Other Changes
-
-* Update build_release.yml ([87e3c72](https://github.com/Slider0007/test-release/commit/87e3c724ad6b9e89f9fa861d19060e7f4db8a2ab))
-* Update build_release.yml ([766f8f5](https://github.com/Slider0007/test-release/commit/766f8f5a82018e1ad23462c0468b5b5b5bc0dac8))
-
-## [16.1.1-SLFORK](https://github.com/Slider0007/test-release/compare/v16.1.0-SLFORK...v16.1.1-SLFORK) (2024-04-04)
-
-
-### Other Changes
-
-* **md-to-pdf:** Update build_release.yml ([be0d9da](https://github.com/Slider0007/test-release/commit/be0d9da3bdb47ab9db63de8a16c0582596f4fda6))
-
-## [16.1.0-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.32-SLFORK...v16.1.0-SLFORK) (2024-02-09)
-
-
-### Features
-
-* **test:** Update README.md ([81f4589](https://github.com/Slider0007/test-release/commit/81f4589a6de11b0c6d9c4479ce32be6a4c15b97b))
+* **camera:** Support additional camera features ([#141](https://github.com/Slider0007/AI-on-the-edge-device/issues/141)) ([96b2d05](https://github.com/Slider0007/AI-on-the-edge-device/commit/96b2d0599e6fdd0b24eea16ab06e6fe33bef423e))
 
 
 ### Bug Fixes
 
-* **test2:** Update README.md ([b124dd1](https://github.com/Slider0007/test-release/commit/b124dd1687c5f9d58543aa213d42d40b9d4e8a10))
+* **process init:** Load fallback value only with valid system time ([#149](https://github.com/Slider0007/AI-on-the-edge-device/issues/149)) ([deca53f](https://github.com/Slider0007/AI-on-the-edge-device/commit/deca53f1a8545efb67bbdc26c2ed6888ef4efc22))
 
 
 ### Refactoring / Style Changes
 
-* **test3:** Update README.md ([db5282d](https://github.com/Slider0007/test-release/commit/db5282dfcde2a72806c5856410458fa3cd4fc67e))
+* **webui:** Refactor reboot to ensure reliable user feedback ([#147](https://github.com/Slider0007/AI-on-the-edge-device/issues/147)) ([f9f6ad6](https://github.com/Slider0007/AI-on-the-edge-device/commit/f9f6ad677001e8a42939ef5b4b99c9dac644943d))
 
 
 ### Other Changes
 
-* build test environment ([e8c3909](https://github.com/Slider0007/test-release/commit/e8c390995a063cbbd348cd920433d5304ab64d90))
-* **build2:** test ([4e4e519](https://github.com/Slider0007/test-release/commit/4e4e519a73f00d9ae1cad98a93be1be5b10efc4e))
-* **build:** Minify HTML files ([ac550e4](https://github.com/Slider0007/test-release/commit/ac550e4efc298e81e75e3353370de5aaa0e5b518))
-* **build:** Move parameter decription to main repo ([ac9c631](https://github.com/Slider0007/test-release/commit/ac9c6319749f3a9f236e64fac85e646a18db58cf))
-* **build:** Test 2 Update release-please-config.json ([259fd35](https://github.com/Slider0007/test-release/commit/259fd35f9c6658e6299ed9c1e817b918b8ddaa76))
-* **build:** Test 3 Update release-please-config.json ([24a0ef8](https://github.com/Slider0007/test-release/commit/24a0ef88b8ea964032850c5c915dc7ff913b5de0))
-* **build:** Test 4 Update release-please-config.json ([5f9e4e5](https://github.com/Slider0007/test-release/commit/5f9e4e54cbdd22cd8b8f992be1d629e6b8b3ccc9))
-* **build:** Update actions ([e5bcd14](https://github.com/Slider0007/test-release/commit/e5bcd1489898f422d4a20f6e7cec1ed52bd5d4d6))
-* **build:** Update build_release.yml ([2843810](https://github.com/Slider0007/test-release/commit/2843810853311c54f2a24a6c0bb593475bd57543))
-* **build:** Update build_release.yml ([4e4e519](https://github.com/Slider0007/test-release/commit/4e4e519a73f00d9ae1cad98a93be1be5b10efc4e))
-* **build:** Update build_release.yml to v4 ([b0944aa](https://github.com/Slider0007/test-release/commit/b0944aa79244a529978ca4e6ded7c872cf4510c9))
-* **build:** Update python version ([3beadb2](https://github.com/Slider0007/test-release/commit/3beadb2b3c1c1a171a9df9dcde14ab90a6820172))
-* **build:** Update release-please-config.json ([4df7007](https://github.com/Slider0007/test-release/commit/4df7007446002548cba42656f7890f6c345d517a))
-* **build:** Update release-please-config.json ([d2505d0](https://github.com/Slider0007/test-release/commit/d2505d0ce358271447ca060525e457ded9fd749f))
-* **Test1:** Merge test1 ([#59](https://github.com/Slider0007/test-release/issues/59)) ([48f2eac](https://github.com/Slider0007/test-release/commit/48f2eac5d9c70bdbb372d4f56223781f6b7634a9))
-* **test4:** Update README.md ([0f76d99](https://github.com/Slider0007/test-release/commit/0f76d99d8a5d3c5aa931292be44fb41c6ae25d97))
-* Update .release-please-config.json ([52a6c98](https://github.com/Slider0007/test-release/commit/52a6c9874758436d67a5b119b03a1bf9cd204549))
-* Update build_release.yml ([9c2928d](https://github.com/Slider0007/test-release/commit/9c2928de42019dd64f3b19026fcdc82d1b432258))
-* Update build_release.yml ([6b6ff25](https://github.com/Slider0007/test-release/commit/6b6ff250f358bcb8b5a426d66933755f4f0e5c1e))
+* **build:** Add action to delete old workflow runs ([#144](https://github.com/Slider0007/AI-on-the-edge-device/issues/144)) ([2abf1f1](https://github.com/Slider0007/AI-on-the-edge-device/commit/2abf1f196204e944192e62c04624aad1bc5787f9))
+* **webui:** Include API docs in WebUI ([#143](https://github.com/Slider0007/AI-on-the-edge-device/issues/143)) ([ed7bfd5](https://github.com/Slider0007/AI-on-the-edge-device/commit/ed7bfd5ec7798b8d0718e1d0dd9d9bd973454987))
+* **webui:** Optimize web cache control settings ([#145](https://github.com/Slider0007/AI-on-the-edge-device/issues/145)) ([95a6d7e](https://github.com/Slider0007/AI-on-the-edge-device/commit/95a6d7eb636e800a8742f336acd8f7f99abe259d))
 
-## [16.0.32-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.31-SLFORK...v16.0.32-SLFORK) (2023-12-11)
+## [16.1.3-SLFork](https://github.com/Slider0007/AI-on-the-edge-device/compare/v16.1.2-SLFork...v16.1.3-SLFork) (2024-02-13)
+
+
+### Bug Fixes
+
+* **mqtt:** Fix Home Assistant topic 'problem' ([#140](https://github.com/Slider0007/AI-on-the-edge-device/issues/140)) ([926acdb](https://github.com/Slider0007/AI-on-the-edge-device/commit/926acdb500c3e688c5d1633da4140091708ca89d))
+* **mqtt:** Fix process init failed if MQTT not yet connected ([#139](https://github.com/Slider0007/AI-on-the-edge-device/issues/139)) ([64b63b7](https://github.com/Slider0007/AI-on-the-edge-device/commit/64b63b7892457c9048567613af75ea4646a6741c))
 
 
 ### Other Changes
 
-* **build:** Update build_release.yml ([11fc4b4](https://github.com/Slider0007/test-release/commit/11fc4b4f97899fc87c47ed675a6738797e669f5c))
-* **build:** Update build_release.yml ([d9236f4](https://github.com/Slider0007/test-release/commit/d9236f47c9f4c6a253999d86a7cb7d3218485b21))
+* **build:** Release tag gets printed twice in log: Remove one ([#137](https://github.com/Slider0007/AI-on-the-edge-device/issues/137)) ([73218c8](https://github.com/Slider0007/AI-on-the-edge-device/commit/73218c8d7207843a9322e8df9f8fa8df5d7e5b61))
 
-## [16.0.31-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.30-SLFORK...v16.0.31-SLFORK) (2023-11-07)
-
-
-### Other Changes
-
-* **build:** Create HTML version.txt ([d8f53d3](https://github.com/Slider0007/test-release/commit/d8f53d3b24f1470ba479d48c780e4370a469c9ed))
-
-## [16.0.30-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.29-SLFORK...v16.0.30-SLFORK) (2023-11-07)
+## [16.1.2-SLFork](https://github.com/Slider0007/AI-on-the-edge-device/compare/v16.1.1-SLFork...v16.1.2-SLFork) (2024-02-09)
 
 
-### Other Changes
+### Bug Fixes
 
-* Update build_release.yml ([7a08381](https://github.com/Slider0007/test-release/commit/7a083818b8cd67cb46501635ac125309702cc567))
+* **flowctrl:** Fix exception accessing getJPG ressource ([#121](https://github.com/Slider0007/AI-on-the-edge-device/issues/121)) ([5d114d3](https://github.com/Slider0007/AI-on-the-edge-device/commit/5d114d310279087cbeba7cb03d7549c4de6607e0))
+* **gpio:** Fix GPIO handler enable flag ([#134](https://github.com/Slider0007/AI-on-the-edge-device/issues/134)) ([6f4a8f4](https://github.com/Slider0007/AI-on-the-edge-device/commit/6f4a8f4ddc625603c8efc1ddbb4e88d16f199e75))
+* **mqtt:** Fix Home Assistant topic 'problem'  ([#130](https://github.com/Slider0007/AI-on-the-edge-device/issues/130)) ([cab4597](https://github.com/Slider0007/AI-on-the-edge-device/commit/cab4597ad7dc299cb76c6dbe38637d2742681c1c))
+* **mqtt:** Reset username+password when parameter is disabled ([#122](https://github.com/Slider0007/AI-on-the-edge-device/issues/122)) ([abb0afe](https://github.com/Slider0007/AI-on-the-edge-device/commit/abb0afe699a549ec2d360e2c3875e9f7e28d22fd))
+* **webui:** Add missing cycle start state message ([#133](https://github.com/Slider0007/AI-on-the-edge-device/issues/133)) ([f349a2d](https://github.com/Slider0007/AI-on-the-edge-device/commit/f349a2d078cac710a043a0309415899ff358bdf1))
 
-## [16.0.29-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.28-SLFORK...v16.0.29-SLFORK) (2023-10-17)
 
+### Refactoring / Style Changes
 
-### Other Changes
-
-* Update build_release.yml ([3dfccd2](https://github.com/Slider0007/test-release/commit/3dfccd265c5e02cbb3a04fa21d82689312de3573))
-
-## [16.0.28-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.27-SLFORK...v16.0.28-SLFORK) (2023-10-17)
+* **build:** Refactor board type / camera model selection ([#126](https://github.com/Slider0007/AI-on-the-edge-device/issues/126)) ([54f6847](https://github.com/Slider0007/AI-on-the-edge-device/commit/54f6847dd51afeb0ab31ce36ca9513f8628ed5d2))
+* Cleanup / rearrange header includes ([#117](https://github.com/Slider0007/AI-on-the-edge-device/issues/117)) ([a45431f](https://github.com/Slider0007/AI-on-the-edge-device/commit/a45431fc84f4e820fa23406819ff3291b7144cac))
+* **ota:** Refactor / cleanup OTA functions ([#123](https://github.com/Slider0007/AI-on-the-edge-device/issues/123)) ([c85bd06](https://github.com/Slider0007/AI-on-the-edge-device/commit/c85bd06b08b6c7741a51726654893d4f91254b51))
+* **sdcard:** Refactor SD card init ([#125](https://github.com/Slider0007/AI-on-the-edge-device/issues/125)) ([e0e2a4e](https://github.com/Slider0007/AI-on-the-edge-device/commit/e0e2a4e07d0a2c8831442dd99c194a442950272a))
+* **webui:** Improve page loading time (async REST API calls) ([#124](https://github.com/Slider0007/AI-on-the-edge-device/issues/124)) ([4c1a1c9](https://github.com/Slider0007/AI-on-the-edge-device/commit/4c1a1c9192572b2e7fb65e48dc51f249661076da))
 
 
 ### Other Changes
 
-* Update build_release.yml ([b5a2dc0](https://github.com/Slider0007/test-release/commit/b5a2dc0216acf892e15b63bf16f06adbcfc7b49d))
+* **build:** Include parameter docs into this repo ([#128](https://github.com/Slider0007/AI-on-the-edge-device/issues/128)) ([6fb0b53](https://github.com/Slider0007/AI-on-the-edge-device/commit/6fb0b5308022f411cbc55a637be95a2654a035eb))
+* **build:** Refactor / cleanup platformio environments ([#120](https://github.com/Slider0007/AI-on-the-edge-device/issues/120)) ([cd13662](https://github.com/Slider0007/AI-on-the-edge-device/commit/cd13662d8736e06d8b09d474a557e2a686853a3c))
+* **build:** Update github actions (node 16 EOL) ([#127](https://github.com/Slider0007/AI-on-the-edge-device/issues/127)) ([263c821](https://github.com/Slider0007/AI-on-the-edge-device/commit/263c82195754d4145f88d97c61b6052f2ac22101))
+* **build:** Update release-please-action (node 16 EOL) ([#135](https://github.com/Slider0007/AI-on-the-edge-device/issues/135)) ([9269194](https://github.com/Slider0007/AI-on-the-edge-device/commit/926919407adce5cf7419c82fbb65cddd235d3421))
+* **docs:** Add some troubleshooting docs ([#132](https://github.com/Slider0007/AI-on-the-edge-device/issues/132)) ([cfd046e](https://github.com/Slider0007/AI-on-the-edge-device/commit/cfd046ed72c916b0f5f859f1ce949fd175e07940))
+* **docs:** Include REST API + MQTT API description into this repo  ([#129](https://github.com/Slider0007/AI-on-the-edge-device/issues/129)) ([d3dc0a3](https://github.com/Slider0007/AI-on-the-edge-device/commit/d3dc0a3c32fa2de7735be339979b0b604b98b4cf))
+* **nvs:** Add staus LED blink codes for NVS init errors ([#131](https://github.com/Slider0007/AI-on-the-edge-device/issues/131)) ([f455c76](https://github.com/Slider0007/AI-on-the-edge-device/commit/f455c76dda7e7362aa3c83cd2b62d3f63c14d940))
 
-## [16.0.27-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.26-SLFORK...v16.0.27-SLFORK) (2023-10-17)
+## [16.1.1-SLFork](https://github.com/Slider0007/AI-on-the-edge-device/compare/v16.1.0-SLFork...v16.1.1-SLFork) (2024-01-08)
 
 
-### Other Changes
+### Bug Fixes
 
-* Update build_release.yml ([b8e634e](https://github.com/Slider0007/test-release/commit/b8e634ea361b4df653a2dae23594740fd90f5eff))
-
-## [16.0.26-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.25-SLFORK...v16.0.26-SLFORK) (2023-10-17)
-
-
-### Other Changes
-
-* Update build_release.yml ([6813733](https://github.com/Slider0007/test-release/commit/6813733efdf538b7076fd73e0a7ffef9cb17a7a8))
-
-## [16.0.25-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.24-SLFORK...v16.0.25-SLFORK) (2023-10-17)
+* **gpio:** Fix init issue & wrong mode comparison ([#115](https://github.com/Slider0007/AI-on-the-edge-device/issues/115)) ([8da5982](https://github.com/Slider0007/AI-on-the-edge-device/commit/8da5982de5566f50355c6ad69dd9d5db83603e89))
 
 
 ### Other Changes
 
-* Update build_release.yml ([61c0c95](https://github.com/Slider0007/test-release/commit/61c0c95697c1dbe8dbfe6be1721945cd5843e349))
+* **unity-test:** Fix compiler issue & code cleanup ([#118](https://github.com/Slider0007/AI-on-the-edge-device/issues/118)) ([9862696](https://github.com/Slider0007/AI-on-the-edge-device/commit/98626966a8973d20fdb3d06c3fd0aa7d8b429f00))
 
-## [16.0.24-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.23-SLFORK...v16.0.24-SLFORK) (2023-10-17)
-
-
-### Other Changes
-
-* Update build_release.yml ([05f49e1](https://github.com/Slider0007/test-release/commit/05f49e16d02ff80929b48250c81cdb20727b2e4d))
-
-## [16.0.23-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.22-SLFORK...v16.0.23-SLFORK) (2023-10-17)
+## [16.1.0-SLFork](https://github.com/Slider0007/AI-on-the-edge-device/compare/v16.0.2-SLFork...v16.1.0-SLFork) (2024-01-05)
 
 
-### Other Changes
+### Features
 
-* Update build_release.yml ([bb8a49b](https://github.com/Slider0007/test-release/commit/bb8a49b836395fc13803b960707e4b7df49647fd))
-
-## [16.0.22-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.21-SLFORK...v16.0.22-SLFORK) (2023-10-17)
-
-
-### Other Changes
-
-* Update build_release.yml ([dbacd09](https://github.com/Slider0007/test-release/commit/dbacd0912c83f34f0e37b3e4440f9f19ae03435d))
-* Update CMakeLists.txt ([0bc9101](https://github.com/Slider0007/test-release/commit/0bc910110cc01f048579ecf57d651d54e84084ab))
-
-## [16.0.21-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.20-SLFORK...v16.0.21-SLFORK) (2023-10-17)
+* **influxdb1+2:** Implement TLS encryption using certificates ([#105](https://github.com/Slider0007/AI-on-the-edge-device/issues/105)) ([4364427](https://github.com/Slider0007/AI-on-the-edge-device/commit/436442738c0d8b987130edfabd986b14c062ede6))
+* Make camera frequency adjustable ([#79](https://github.com/Slider0007/AI-on-the-edge-device/issues/79)) ([47f19c8](https://github.com/Slider0007/AI-on-the-edge-device/commit/47f19c887cdce38ef68872cac0a69baa0be3a599))
+* **mqtt:** Implement MQTT TLS encryption using certificates ([#102](https://github.com/Slider0007/AI-on-the-edge-device/issues/102)) ([7d53c1e](https://github.com/Slider0007/AI-on-the-edge-device/commit/7d53c1e5ad9f97aea834545af6cdab18d7de2c4f))
+* **webui:** 'Overview'+'Data Graph': Save auto page refresh config persistently ([#113](https://github.com/Slider0007/AI-on-the-edge-device/issues/113)) ([6a36d5a](https://github.com/Slider0007/AI-on-the-edge-device/commit/6a36d5a6e18e14f684763af1bdc1794821a25658))
+* **webui:** Automatic ROI naming + ROI/Alignment marker position validation ([#99](https://github.com/Slider0007/AI-on-the-edge-device/issues/99)) ([cd5b979](https://github.com/Slider0007/AI-on-the-edge-device/commit/cd5b979e8c76c3a1abe76bdf68200453285a30cd))
 
 
-### Other Changes
+### Bug Fixes
 
-* Update build_release.yml ([90a4575](https://github.com/Slider0007/test-release/commit/90a4575b19786d2bc6a79bc044bb760246fc2e7e))
+* **alignment marker:** Fix usage of preallocated RAM ([#95](https://github.com/Slider0007/AI-on-the-edge-device/issues/95)) ([5676d59](https://github.com/Slider0007/AI-on-the-edge-device/commit/5676d591dee9c2c53a918f829d2cbc059a25c9e7))
+* Fix 'MaxRateType' parameter migration ([#91](https://github.com/Slider0007/AI-on-the-edge-device/issues/91)) ([5926bf8](https://github.com/Slider0007/AI-on-the-edge-device/commit/5926bf890668136f465ad594735942dd77ffc336))
+* **influxdb:** Consider DST for UTC time converison ([#89](https://github.com/Slider0007/AI-on-the-edge-device/issues/89)) ([d1f77ac](https://github.com/Slider0007/AI-on-the-edge-device/commit/d1f77acb540c679132e176bd020f429855ca723c))
+* **influxdbv2:** Rename parameter 'database' to 'bucket' ([#100](https://github.com/Slider0007/AI-on-the-edge-device/issues/100)) ([b2f9e11](https://github.com/Slider0007/AI-on-the-edge-device/commit/b2f9e1134f1fe1b8331a055bbeaa1679cf94b64e))
+* **parameter migration:** Fix 'MaxRateType' parameter (Handling 'RateOff') ([#97](https://github.com/Slider0007/AI-on-the-edge-device/issues/97)) ([6901c01](https://github.com/Slider0007/AI-on-the-edge-device/commit/6901c0164f5aa793ac7aea78087b1cd011596198))
+* **REST API:** Fix misleading REST API send_file error ([#107](https://github.com/Slider0007/AI-on-the-edge-device/issues/107)) ([5112ce4](https://github.com/Slider0007/AI-on-the-edge-device/commit/5112ce487c97c5fc8298aecc5c363f2f350cc848))
+* **REST API:** Fix rare exception for log file handling ([#112](https://github.com/Slider0007/AI-on-the-edge-device/issues/112)) ([21e61d1](https://github.com/Slider0007/AI-on-the-edge-device/commit/21e61d136f49cd5230c7cfed773c74857438a45a))
+* **webui:** Increase file handling robustness -&gt; handle config.ini update in firmware ([#90](https://github.com/Slider0007/AI-on-the-edge-device/issues/90)) ([c348cb3](https://github.com/Slider0007/AI-on-the-edge-device/commit/c348cb34502462f8cece141a23f9d77954e3942e))
+* **webui:** Make REST API calls more robust ([#109](https://github.com/Slider0007/AI-on-the-edge-device/issues/109)) ([2909471](https://github.com/Slider0007/AI-on-the-edge-device/commit/2909471294558a4053bfcf5096e5674fe45a5bbe))
+* **wlan.ini:** ChangeRSSIThreshold: Fix logging issue ([#111](https://github.com/Slider0007/AI-on-the-edge-device/issues/111)) ([4c75e4e](https://github.com/Slider0007/AI-on-the-edge-device/commit/4c75e4ec4dad2b4a291698d74283c42d27188d36))
+* **wlan:** Fix deletion of array object ([#110](https://github.com/Slider0007/AI-on-the-edge-device/issues/110)) ([2f0934e](https://github.com/Slider0007/AI-on-the-edge-device/commit/2f0934ea6a566228fcc50056ab4eeb25b1f16aeb))
 
-## [16.0.20-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.19-SLFORK...v16.0.20-SLFORK) (2023-10-17)
 
+### Refactoring / Style Changes
 
-### Other Changes
-
-* Update build_release.yml ([3fb38bb](https://github.com/Slider0007/test-release/commit/3fb38bb072e1bcbea41b0e4edb31d77867497bb6))
-
-## [16.0.19-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.18-SLFORK...v16.0.19-SLFORK) (2023-10-17)
-
-
-### Other Changes
-
-* Update build_release.yml ([7bd2b38](https://github.com/Slider0007/test-release/commit/7bd2b38a08ea59e4f398ae43d6e86a1ca7b1ff27))
-
-## [16.0.18-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.17-SLFORK...v16.0.18-SLFORK) (2023-10-17)
+* **helper:** Move functions to system_info ([#82](https://github.com/Slider0007/AI-on-the-edge-device/issues/82)) ([40f95f8](https://github.com/Slider0007/AI-on-the-edge-device/commit/40f95f8f160f9935f1cc4cf9d31c7c5b3b0af309))
+* Relocate setCPUFrequency ([#88](https://github.com/Slider0007/AI-on-the-edge-device/issues/88)) ([d95c677](https://github.com/Slider0007/AI-on-the-edge-device/commit/d95c677ac78ebc4ddaca8e2b30b3cd6a74930807))
+* Rename 'round' to 'cycle' ([#84](https://github.com/Slider0007/AI-on-the-edge-device/issues/84)) ([ce61169](https://github.com/Slider0007/AI-on-the-edge-device/commit/ce611697e8f6260ecd1ff68f78f72a14776011a5))
+* **REST API:** Relocate REST API functions ([#83](https://github.com/Slider0007/AI-on-the-edge-device/issues/83)) ([285d8d7](https://github.com/Slider0007/AI-on-the-edge-device/commit/285d8d73e9396438ee2a082d387b02b5c53e2a41))
+* **webserver:** Adapt/Align some debug log level ([#98](https://github.com/Slider0007/AI-on-the-edge-device/issues/98)) ([7e1ee91](https://github.com/Slider0007/AI-on-the-edge-device/commit/7e1ee91b6e900b00178c9570fb0b3435716a52ce))
+* **webui:** Optimized mobile presenation ([#96](https://github.com/Slider0007/AI-on-the-edge-device/issues/96)) ([8cd041b](https://github.com/Slider0007/AI-on-the-edge-device/commit/8cd041b2461997652ce031537abc97a41456db97))
+* **webui:** Overlay notification box e.g. after user interaction ([#108](https://github.com/Slider0007/AI-on-the-edge-device/issues/108)) ([0902669](https://github.com/Slider0007/AI-on-the-edge-device/commit/09026696210c1c089303daeacc8bece9c9a3e558))
 
 
 ### Other Changes
 
-* Update build_release.yml ([433c455](https://github.com/Slider0007/test-release/commit/433c455c84d4c0a5b81ff3c77437a1fe420be36d))
+* **build:** Create release-please PR as draft ([#87](https://github.com/Slider0007/AI-on-the-edge-device/issues/87)) ([b0e039c](https://github.com/Slider0007/AI-on-the-edge-device/commit/b0e039ce49a72aafe91607dd0c4319b7de273862))
+* **build:** Ensure GIT_TAG is never empty ([#86](https://github.com/Slider0007/AI-on-the-edge-device/issues/86)) ([be07db0](https://github.com/Slider0007/AI-on-the-edge-device/commit/be07db066ca28adc38a55d6e5942a31db2521a32))
+* **build:** Fix git tag in device log ([#92](https://github.com/Slider0007/AI-on-the-edge-device/issues/92)) ([fb83eb0](https://github.com/Slider0007/AI-on-the-edge-device/commit/fb83eb07ea6442496b44080df6b83186aa4fa60c))
+* **build:** Remove folder creation during build ([#93](https://github.com/Slider0007/AI-on-the-edge-device/issues/93)) ([2d3a3ec](https://github.com/Slider0007/AI-on-the-edge-device/commit/2d3a3ec175c067260644cb7779fbdade42861539))
+* **dependency:** Update esp-tflite-micro, esp-nn, esp32-camera, stb, miniz ([#94](https://github.com/Slider0007/AI-on-the-edge-device/issues/94)) ([7949c5d](https://github.com/Slider0007/AI-on-the-edge-device/commit/7949c5dbb8555b91ba2af4ccf67743fa9bba6d9e))
+* Modify test environment detection ([#101](https://github.com/Slider0007/AI-on-the-edge-device/issues/101)) ([2509ffe](https://github.com/Slider0007/AI-on-the-edge-device/commit/2509ffe10f235d1a38124c28ed1595be0102a597))
+* **repo:** Update readme ([#103](https://github.com/Slider0007/AI-on-the-edge-device/issues/103)) ([16697ad](https://github.com/Slider0007/AI-on-the-edge-device/commit/16697adb3273d09814e586d406db900010a313db))
+* **tflite:** Updated digit/analog models ([#114](https://github.com/Slider0007/AI-on-the-edge-device/issues/114)) ([9671208](https://github.com/Slider0007/AI-on-the-edge-device/commit/9671208dfa6af7ad6a836595b0b561a51b67a0b8))
+* **unity-test:** Fix some test cases ([#104](https://github.com/Slider0007/AI-on-the-edge-device/issues/104)) ([a83348a](https://github.com/Slider0007/AI-on-the-edge-device/commit/a83348a1fd19c092af3c293888c1ed5aa87124f5))
+* Update static part of firmware version string ([#80](https://github.com/Slider0007/AI-on-the-edge-device/issues/80)) ([c283977](https://github.com/Slider0007/AI-on-the-edge-device/commit/c283977beb5aab74f8240564d92ded2eeb6365d2))
 
-## [16.0.17-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.16-SLFORK...v16.0.17-SLFORK) (2023-10-17)
-
-
-### Other Changes
-
-* Update build_release.yml ([99fc3e7](https://github.com/Slider0007/test-release/commit/99fc3e71ac8b9ee66a39eab108e53137d2ff4954))
-
-## [16.0.16-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.15-SLFORK...v16.0.16-SLFORK) (2023-10-17)
-
-
-### Other Changes
-
-* Update build_release.yml ([8a9a0c0](https://github.com/Slider0007/test-release/commit/8a9a0c03974e146abe11362781e1815983e537f8))
-* Update build_release.yml ([0bb4377](https://github.com/Slider0007/test-release/commit/0bb4377d9cb020808e7bca64c17c51c3b35db647))
-* Update build_release.yml ([bd522d1](https://github.com/Slider0007/test-release/commit/bd522d1bffc9766f190c9cd1e78b69ebfa2ed879))
-
-## [16.0.15-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.14-SLFORK...v16.0.15-SLFORK) (2023-10-17)
+## [16.0.2-SLFork](https://github.com/Slider0007/AI-on-the-edge-device/compare/v16.0.1-SLFork...v16.0.2-SLFork) (2023-10-18)
 
 
 ### Other Changes
 
-* Update build_release.yml ([9481fed](https://github.com/Slider0007/test-release/commit/9481fed58e00f5c37f06043a05252c1d5841d434))
-* Update build_release.yml ([1c74881](https://github.com/Slider0007/test-release/commit/1c7488133bbbd0e51952158c829d55e31abc8e96))
+* **build:** Fix build workflow (commit hash) ([#77](https://github.com/Slider0007/AI-on-the-edge-device/issues/77)) ([d7f9991](https://github.com/Slider0007/AI-on-the-edge-device/commit/d7f9991f763c202e63672dcdb6f651d1973bad4a))
 
-## [16.0.14-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.13-SLFORK...v16.0.14-SLFORK) (2023-10-17)
-
-
-### Other Changes
-
-* Update build_release.yml ([03b18a6](https://github.com/Slider0007/test-release/commit/03b18a60c08d6801a48cf45489988cf12e3111d8))
-
-## [16.0.13-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.12-SLFORK...v16.0.13-SLFORK) (2023-10-17)
+## [16.0.1-SLFork](https://github.com/Slider0007/AI-on-the-edge-device/compare/v16.0.0-SLFork...v16.0.1-SLFork) (2023-10-18)
 
 
 ### Other Changes
 
-* Update build_release.yml ([f500cd6](https://github.com/Slider0007/test-release/commit/f500cd675a74deb32924f38a747e7ea13402a785))
+* **build:** Fix build workflow (correct artifacts & release version string) ([#75](https://github.com/Slider0007/AI-on-the-edge-device/issues/75)) ([e8c8c00](https://github.com/Slider0007/AI-on-the-edge-device/commit/e8c8c00e6bc362e24ece924b51a4b6025f93d9d6))
 
-## [16.0.12-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.11-SLFORK...v16.0.12-SLFORK) (2023-10-17)
+## [16.0.0-SLFork](https://github.com/Slider0007/AI-on-the-edge-device/compare/v15.1.1...v16.0.0-SLFork) (2023-10-13)
 
-
-### Other Changes
-
-* Update build_release.yml ([da28633](https://github.com/Slider0007/test-release/commit/da286332e214a2e4d63d33edcb779cadff575749))
-
-## [16.0.11-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.10-SLFORK...v16.0.11-SLFORK) (2023-10-17)
-
-
-### Other Changes
-
-* Update build_release.yml ([1d1cb77](https://github.com/Slider0007/test-release/commit/1d1cb7725cbe9ba0360673fe78a322a34bfe1d5d))
-* Update build_release.yml ([1dc1d39](https://github.com/Slider0007/test-release/commit/1dc1d39c721d208a9e9092b1a836b5d252fff529))
-
-## [16.0.10-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.9-SLFORK...v16.0.10-SLFORK) (2023-10-17)
-
-
-### Other Changes
-
-* Update build_release.yml ([738028d](https://github.com/Slider0007/test-release/commit/738028db529195d992452a8e666d1b92709fdc5e))
-
-## [16.0.9-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.8-SLFORK...v16.0.9-SLFORK) (2023-09-04)
-
-
-### Other Changes
-
-* Update ([c9ea36f](https://github.com/Slider0007/test-release/commit/c9ea36feee24c0c4d04d880c89c8c7f2c3b67b51))
-
-## [16.0.8-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.7-SLFORK...v16.0.8-SLFORK) (2023-09-04)
-
-
-### Other Changes
-
-* Update README.md ([#25](https://github.com/Slider0007/test-release/issues/25)) ([9028579](https://github.com/Slider0007/test-release/commit/90285795144921bdee5e4a61c91e07bf6a1b7598))
-
-## [16.0.7-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.6-SLFORK...v16.0.7-SLFORK) (2023-09-04)
-
-
-### Other Changes
-
-* update ([3d6452e](https://github.com/Slider0007/test-release/commit/3d6452eb2c5b61f04575f45bf85507bee3a88c6a))
-
-## [16.0.6-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.5-SLFORK...v16.0.6-SLFORK) (2023-09-04)
-
-
-### Other Changes
-
-* update ([837fd8d](https://github.com/Slider0007/test-release/commit/837fd8dfe650a3c6487fd3ba92b3ea50e75327ef))
-
-## [16.0.5-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.4-SLFORK...v16.0.5-SLFORK) (2023-09-04)
-
-
-### Other Changes
-
-* update permisssion ([dd8334e](https://github.com/Slider0007/test-release/commit/dd8334ea82386fdb70b7f4e718e14dc51595831f))
-
-## [16.0.4-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.3-SLFORK...v16.0.4-SLFORK) (2023-09-04)
-
-
-### Other Changes
-
-* Update ([ddf212c](https://github.com/Slider0007/test-release/commit/ddf212ce5b1bb1eae1cc5ea2f89a71514086420e))
-
-## [16.0.3-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.2-SLFORK...v16.0.3-SLFORK) (2023-09-04)
-
-
-### Other Changes
-
-* Update ([42084bc](https://github.com/Slider0007/test-release/commit/42084bc770b4be32c3ce59d7d087518606724c5c))
-
-## [16.0.2-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.1-SLFORK...v16.0.2-SLFORK) (2023-09-04)
-
-
-### Other Changes
-
-* test123 ([6ea56d2](https://github.com/Slider0007/test-release/commit/6ea56d29f7b5bf85f34fea19b5d5feb10fa8bde4))
-
-## [16.0.1-SLFORK](https://github.com/Slider0007/test-release/compare/v16.0.0-SLFORK...v16.0.1-SLFORK) (2023-09-04)
-
-
-### Other Changes
-
-* test ([7506f01](https://github.com/Slider0007/test-release/commit/7506f01514d482a82249bc2dba7876660958dafd))
-
-## [16.0.0-SLFORK](https://github.com/Slider0007/test-release/compare/v15.1.2-SLFORK...v16.0.0-SLFORK) (2023-09-04)
+The following changes are implemented on the the base of jomjol's v15.1.1 release.
+--> https://github.com/jomjol/AI-on-the-edge-device/tree/2a7f3b33a30985b43a8db123a1f5f6e5f264f486
 
 
 ### ⚠ BREAKING CHANGES
 
-* Test Breaking fearure
+* Changed MQTT topic names
+* Renamed REST API /value option: error -> status
+* Adapted data log structure (value status only status number)
+* Rename of `preValue` name variants to `fallbackValue` in code and WebUI
+* Rework result post-processing and publishing (REST, MQTT, InfluxDB)
+* Rework ROI CNN result processing and related functions
+* Remove legacy REST APIs
+* Update REST API handler_value + Refactor WebUI recognition page
+* Save prevalue (fallbackvalue) to NVS instead of file
+* Fully reworked main flow state machine (new state names)
+* Reload configuration without device reboot
 
 ### Features
 
-* Test Breaking fearure ([9a01249](https://github.com/Slider0007/test-release/commit/9a0124990c5bc7039d0d170ab7eff4c351aaca4f))
+* Add a post process event handler to perform error/debug handling) ([932d538](https://github.com/Slider0007/AI-on-the-edge-device/commit/932d538d7f0aca67268832d379f7cf987b482868))
+* Dedicated state names for digit/analog processing (inspired by caco3) ([47b37eb](https://github.com/Slider0007/AI-on-the-edge-device/commit/47b37eb31e52280f158a55bc9ac450cba716a2d6))
+* Enhance alignment algo + Add error handling ([de17472](https://github.com/Slider0007/AI-on-the-edge-device/commit/de174727ced04461fcac849a39b4302a0f9ddc8a))
+* **fileserver:** Enhanced file deletion routine (cherry picked, implemented by caco3) ([783b7ea](https://github.com/Slider0007/AI-on-the-edge-device/commit/783b7eaba6fcbe7c6cf65419039785cd5a34f975))
+* Extend InfluxDBv1 with individual topic names (implemented by jomjol) (#2319)
+* Fully reworked main flow state machine (new state names) ([751e42d](https://github.com/Slider0007/AI-on-the-edge-device/commit/751e42d083ddc6089e3c4320d5069ab85e457cd2))
+* Implement a camera livestream handler (#2286)
+* Keep alignment marker in RAM to reduce SD read cycles ([3f68cc4](https://github.com/Slider0007/AI-on-the-edge-device/commit/3f68cc40f0d6bd2537796701fb9d2f799c68e0c6))
+* Keep tflite models file loaded after cycle init ([6a3d1df](https://github.com/Slider0007/AI-on-the-edge-device/commit/6a3d1df0bfac1cb0d222c4c861a503625587256c))
+* Move bss segment to SPIRAM -&gt; more free internal RAM ([7c7a63c](https://github.com/Slider0007/AI-on-the-edge-device/commit/7c7a63c9245e0f324628d65677468d836c6ec22a))
+* Provide cycle process error -&gt; MQTT / REST API ([fe6231e](https://github.com/Slider0007/AI-on-the-edge-device/commit/fe6231eb9f8bdc67def2af63ddeeb79e61894c48))
+* Reload configuration without device reboot ([751e42d](https://github.com/Slider0007/AI-on-the-edge-device/commit/751e42d083ddc6089e3c4320d5069ab85e457cd2))
+* Remove legacy REST APIs ([020d9ec](https://github.com/Slider0007/AI-on-the-edge-device/commit/020d9ec32d3cf321e94ff9252cf558e7dd76ec6f))
+* Rework result post-processing and publishing (REST, MQTT, InfluxDB) ([d07b86f](https://github.com/Slider0007/AI-on-the-edge-device/commit/d07b86fa76a07b6ee278a3ea0a7bebc2cdaa3c48))
+* Rework ROI CNN result processing and related functions ([bd6ab71](https://github.com/Slider0007/AI-on-the-edge-device/commit/bd6ab71113d48b9401b2a82f890391ea555e7a17))
+* ROI images not saving to sd card by default to reduce write cycles ([be023b4](https://github.com/Slider0007/AI-on-the-edge-device/commit/be023b47cebbfc04aa1ecd52a1ba9b2ae41d29ed))
+* Save prevalue (fallbackvalue) to NVS instead of file ([a39bc52](https://github.com/Slider0007/AI-on-the-edge-device/commit/a39bc5226023ffa79e5c6620b15929665ded5c23))
+* Update REST API handler_value + Refactor WebUI recognition page ([020d9ec](https://github.com/Slider0007/AI-on-the-edge-device/commit/020d9ec32d3cf321e94ff9252cf558e7dd76ec6f))
+* Set prevalue using MQTT + set prevalue to RAW value (REST+MQTT) (#2252)
+* **webui:** Add initial rotate to WebUI config page ([5767e93](https://github.com/Slider0007/AI-on-the-edge-device/commit/5767e93ab77bd92514af135dd39ed208bd869558))
+* **webui:** Alignment: Add option to switch off rotation ([da2e900](https://github.com/Slider0007/AI-on-the-edge-device/commit/da2e900670596acde8d7d9b274b21047f1785804))
+* **webui:** Allow firmware.bin as valid file name ([932d538](https://github.com/Slider0007/AI-on-the-edge-device/commit/932d538d7f0aca67268832d379f7cf987b482868))
+* **webui:** Config page: Remove unnecessary checkboxes ([d93eeb5](https://github.com/Slider0007/AI-on-the-edge-device/commit/d93eeb5ad590fabdd398d9e94ac6314a4c963f52))
+* **webui:** Data Graph: Add Raw value + refactor ([d07b86f](https://github.com/Slider0007/AI-on-the-edge-device/commit/d07b86fa76a07b6ee278a3ea0a7bebc2cdaa3c48))
+* **webui:** Enahnce WebUI using new REST API /process_data and some further chnages ([85ceeba](https://github.com/Slider0007/AI-on-the-edge-device/commit/85ceeba408e000f404900fe454e14931e442024b))
+* **webui:** Implement auto page refresh function for 'Overview' and 'Data Graph' ([3ab1eda](https://github.com/Slider0007/AI-on-the-edge-device/commit/3ab1eda2ad9ad8a24145a8568357c00fde1e4aea))
+* **webui:** Improve handling of missing parameter ([935f930](https://github.com/Slider0007/AI-on-the-edge-device/commit/935f930ee45fb1818dd4ba85419462505f368860))
+* **webui:** Overview.html: Rename value status result to valid / invalid ([12aae5f](https://github.com/Slider0007/AI-on-the-edge-device/commit/12aae5f7c845b02f022d7e78b26948d1a04f746d))
+* **webui:** Updated WebUI to match new flow states ([751e42d](https://github.com/Slider0007/AI-on-the-edge-device/commit/751e42d083ddc6089e3c4320d5069ab85e457cd2))
 
 
 ### Bug Fixes
 
-* **fileserver:** avoid sending *two* "last-chunk" sequences ([#2532](https://github.com/Slider0007/test-release/issues/2532)) ([#53](https://github.com/Slider0007/test-release/issues/53)) ([db467c0](https://github.com/Slider0007/test-release/commit/db467c0a034a1e9acbe3d02cb892eec15c4272ba))
-* test Fix ([9a01249](https://github.com/Slider0007/test-release/commit/9a0124990c5bc7039d0d170ab7eff4c351aaca4f))
+* Delete TFLiteClass only when ClassFlowCNN gets deleted ([f4f2d8b](https://github.com/Slider0007/AI-on-the-edge-device/commit/f4f2d8b305ae77a9b2f34c168520180109e479a3))
+* Digit no zero crossing issue ([#74](https://github.com/Slider0007/AI-on-the-edge-device/issues/74)) ([9c1a35d](https://github.com/Slider0007/AI-on-the-edge-device/commit/9c1a35da36c6c2168e5135d3f705797c0503143e))
+* **fileserver:** avoid sending *two* "last-chunk" sequences ([#2532](https://github.com/Slider0007/AI-on-the-edge-device/issues/2532)) ([#53](https://github.com/Slider0007/AI-on-the-edge-device/issues/53)) ([db467c0](https://github.com/Slider0007/AI-on-the-edge-device/commit/db467c0a034a1e9acbe3d02cb892eec15c4272ba))
+* Fix first digit when extended resolution off ([#2466](https://github.com/Slider0007/AI-on-the-edge-device/issues/2466)) ([733e58d](https://github.com/Slider0007/AI-on-the-edge-device/commit/733e58d075fd8d3223e33c5237bb4d0070eee0c2))
+* Fix last element missing in digit model drop down (#2282)
+* Fix leading NaN (#2310)
+* Fix broken sysinfo (implemented by caco3) (#2381)
+* **mqtt:** mqtt_handler_set_prevalue: fix memory leak ([0b99624](https://github.com/Slider0007/AI-on-the-edge-device/commit/0b99624d9ecb45269f806fc1242faea194a2bcba))
+* Update SmartLeds driver (avoid build warnings) ([b641a92](https://github.com/Slider0007/AI-on-the-edge-device/commit/b641a92d6b52911409cfa9a44db78007eaf272bc))
+* **webui:** Analog ROI: Fix wrong multiplier view ([575f504](https://github.com/Slider0007/AI-on-the-edge-device/commit/575f504a0298ab81f864b9632733f29bf1303710))
+* **webui:** Aspect ratio for analog ROIs incorrect ([1bb3470](https://github.com/Slider0007/AI-on-the-edge-device/commit/1bb347097055cf428da614588bd115ecd180637b))
+* **webui:** Config: Remove unused parameter `ErrorMessage` in code and WebUI ([d07b86f](https://github.com/Slider0007/AI-on-the-edge-device/commit/d07b86fa76a07b6ee278a3ea0a7bebc2cdaa3c48))
+* **webui:** Fix missing first entry of logfile + datafile in default viewer ([583a24f](https://github.com/Slider0007/AI-on-the-edge-device/commit/583a24ff3ca4ee81c304f76977861bd8f18b665d))
+* **webui:** Remove icon of parameter tooltip admonitions ([7c9a1bf](https://github.com/Slider0007/AI-on-the-edge-device/commit/7c9a1bf4e19637319c865030749b23313ed3fa36))
+* **webui:** Remove unused gethost.js ([d4e832b](https://github.com/Slider0007/AI-on-the-edge-device/commit/d4e832b7a12c6ec010bdb01a178c236d6987ca36))
+* **webui:** Show info message if no recent log / data entries available ([f22be0c](https://github.com/Slider0007/AI-on-the-edge-device/commit/f22be0ce4d588202eaf8566212fca27fbae2d13f))
+* **wifi:** Allow operation with empty WIFI password ([bd07d7a](https://github.com/Slider0007/AI-on-the-edge-device/commit/bd07d7a7e805a192cb9d1ca5cf47ccf335a7e61a))
 
 
-### Refactoring / Style Changes
+### Refactor / Style Changes
 
-* delete not used files ([514ddca](https://github.com/Slider0007/test-release/commit/514ddca21b104d63755d56325bec7b1ed422090c))
+* Adapted data log structure (value status only status number) ([d07b86f](https://github.com/Slider0007/AI-on-the-edge-device/commit/d07b86fa76a07b6ee278a3ea0a7bebc2cdaa3c48))
+* Changed MQTT topic names ([d07b86f](https://github.com/Slider0007/AI-on-the-edge-device/commit/d07b86fa76a07b6ee278a3ea0a7bebc2cdaa3c48))
+* Harmonize / update some logs ([7d8d646](https://github.com/Slider0007/AI-on-the-edge-device/commit/7d8d6463911077e5ca1c93e121b1cf8aa3762487))
+* Harmonize time usage ([3505044](https://github.com/Slider0007/AI-on-the-edge-device/commit/3505044a8eda8262e2530971aab65c6dd51aaf52))
+* **influxdb:** Refactor InfluxDBv1+v2 functions ([4f59958](https://github.com/Slider0007/AI-on-the-edge-device/commit/4f599584701f32b8d5186eb7aab67b8fba6833b7))
+* Move function 'PowerResetCamera' to 'ClassControllCamera' ([69fb93b](https://github.com/Slider0007/AI-on-the-edge-device/commit/69fb93b993ff69490bc760b70e8c4e27089da5d9))
+* Refactor camera init during boot ([932d538](https://github.com/Slider0007/AI-on-the-edge-device/commit/932d538d7f0aca67268832d379f7cf987b482868))
+* Refactor ClassControllCamera ([751e42d](https://github.com/Slider0007/AI-on-the-edge-device/commit/751e42d083ddc6089e3c4320d5069ab85e457cd2))
+* Refactor ClassTakeImage ([751e42d](https://github.com/Slider0007/AI-on-the-edge-device/commit/751e42d083ddc6089e3c4320d5069ab85e457cd2))
+* Refactor demo mode ([932d538](https://github.com/Slider0007/AI-on-the-edge-device/commit/932d538d7f0aca67268832d379f7cf987b482868))
+* Refactor file and folder retention functions ([932d538](https://github.com/Slider0007/AI-on-the-edge-device/commit/932d538d7f0aca67268832d379f7cf987b482868))
+* Refactor string usage ([2632887](https://github.com/Slider0007/AI-on-the-edge-device/commit/2632887fb94f84062f23799a99e7b7cfbc05263f))
+* Rename of `preValue` name variants to `fallbackValue` in code and WebUI ([d07b86f](https://github.com/Slider0007/AI-on-the-edge-device/commit/d07b86fa76a07b6ee278a3ea0a7bebc2cdaa3c48))
+* Renamed REST API /value option: error -&gt; status ([d07b86f](https://github.com/Slider0007/AI-on-the-edge-device/commit/d07b86fa76a07b6ee278a3ea0a7bebc2cdaa3c48))
+* Renaming & cleanup of some modules / functions in source code (#2265)
+* **sdkconfig:** Adapt structure and headline namings to sdkconfig.esp32cam ([7922855](https://github.com/Slider0007/AI-on-the-edge-device/commit/79228559a38ad9069651cae04117e1aa1181549a))
+* **webui:** Adapt some parameter name & visibility (regular / expert) ([597373c](https://github.com/Slider0007/AI-on-the-edge-device/commit/597373ce3a3d4d24510d98546c8ce9a839ecf9b1))
+* **webui:** Overview: Show round counter in separate line ([d07b86f](https://github.com/Slider0007/AI-on-the-edge-device/commit/d07b86fa76a07b6ee278a3ea0a7bebc2cdaa3c48))
+* **webui:** Parameter tooltips: Update style + support tables ([0f5ca2f](https://github.com/Slider0007/AI-on-the-edge-device/commit/0f5ca2ffccd03c108bf3f26ba7cf6af5be8fa38c))
+* **webui:** Show round counter in separate line ([932d538](https://github.com/Slider0007/AI-on-the-edge-device/commit/932d538d7f0aca67268832d379f7cf987b482868))
+* **wifi:** Refactor wifi init ([a707db3](https://github.com/Slider0007/AI-on-the-edge-device/commit/a707db35c2e2cd69bfb267a3678d2c0ba5c20ad6))
 
 
 ### Other Changes
 
-* add manifest file ([514ddca](https://github.com/Slider0007/test-release/commit/514ddca21b104d63755d56325bec7b1ed422090c))
-* **build-workflow:** release 16.0.0-SLFORK ([338fac5](https://github.com/Slider0007/test-release/commit/338fac5684153866cc33cc0b18502fcc93120c0d))
-* **build-workflow:** release 16.0.0-SLFORK ([9c16b1f](https://github.com/Slider0007/test-release/commit/9c16b1feaa47e8563d008254bb6f3aaf300702ca))
-* **build-workflow:** release 16.0.0-SLFORK ([055949c](https://github.com/Slider0007/test-release/commit/055949ce9b57117a64815f48b382d839b5cb9eb6))
-* **build-workflow:** release 16.0.0-SLFORK ([c983493](https://github.com/Slider0007/test-release/commit/c9834930eae38bdb50e417fab3a38322501d2802))
-* **build-workflow:** release 16.0.0-SLFORK ([7d50b56](https://github.com/Slider0007/test-release/commit/7d50b5613743aff3834d003efd4fee77e9061ad8))
-* **build-workflow:** release 16.0.0-SLFORK ([54502c2](https://github.com/Slider0007/test-release/commit/54502c2084c4fc971b3fbb1f1513656fa44f288e))
-* **build-workflow:** release 16.0.0-SLFORK ([54502c2](https://github.com/Slider0007/test-release/commit/54502c2084c4fc971b3fbb1f1513656fa44f288e))
-* **build-workflow:** release 16.0.0-SLFORK ([2d4eefe](https://github.com/Slider0007/test-release/commit/2d4eefe52017833ffafc1ee399bca8e120821f2a))
-* chnage to release-pr ([e268139](https://github.com/Slider0007/test-release/commit/e268139a3d10624cdac248487abb2dfe9a2e587e))
-* update build workflow ([776de2e](https://github.com/Slider0007/test-release/commit/776de2e7fb2359f3ba7e8db5ee8d2131e198ab3b))
-* Update changelog ([7211245](https://github.com/Slider0007/test-release/commit/7211245051e584af516e09ab8c15e8b4adcfbb11))
-* update flow ([a9db990](https://github.com/Slider0007/test-release/commit/a9db99075f7d9e83fd11e4ecbcfc653bda971589))
-* update workflow ([27f1b5b](https://github.com/Slider0007/test-release/commit/27f1b5b3b12684c4cfb2e9979f19711795579c60))
-* update workflow ([9a01249](https://github.com/Slider0007/test-release/commit/9a0124990c5bc7039d0d170ab7eff4c351aaca4f))
-* **workflow:** Update please release ([a724173](https://github.com/Slider0007/test-release/commit/a72417300b770171fdb3953f92e28274627e33c9))
-
-## [15.1.2-SLFork] - 2023-06-20
-
-### Changes
-
-For a full list of changes see [Full list of changes](https://github.com/Slider0007/AI-on-the-edge-device/compare/v15.1.1...v15.1.2-SLFORK)
+* **build:** Add debug files artifact + General update ([0e79a93](https://github.com/Slider0007/AI-on-the-edge-device/commit/0e79a932990b05a828b4aca95cd43d49281c100d))
+* **build:** Add platformIO env to local build firmware + parameter tooltips ([f59cd63](https://github.com/Slider0007/AI-on-the-edge-device/commit/f59cd63fa27e23089fae28d8950fa1c7fee1af46))
+* **build:** Optimize caching ([027b89e](https://github.com/Slider0007/AI-on-the-edge-device/commit/027b89e0bcc53d3ff85083442bcba9c773af7bf6))
+* **build:** Rework build workflow (add release-please action) ([113a7f3](https://github.com/Slider0007/AI-on-the-edge-device/commit/113a7f38abeaa9fb91cf05560671bcac414be303))
+* **platformio:** Migration of PlatformIO 5.2.0 to 6.1.0 (resp. ESP IDF from 4.4.2 to 5.0.1) (#2305)
+* **platformio:** Update platformIO to 6.3.2 ([7c0b2e5](https://github.com/Slider0007/AI-on-the-edge-device/commit/7c0b2e581d359776fa3cfaaf9f3eda446ec30d95))
+* Remove miniz examples ([1ad5f69](https://github.com/Slider0007/AI-on-the-edge-device/commit/1ad5f6930152dcdd95b67e36bb0a98c5883c654e))
+* Removed the stb_image files and re-add them as a submodule. (#2223)
+* Remove obsolete ClassFlowWriteList (#2264)
+* Remove redundant 'getFileSize()' function ([55ac7c1](https://github.com/Slider0007/AI-on-the-edge-device/commit/55ac7c1fb000adcbcb60b0f6baf504a4b2e60e4e))
+* Remove webupdater
+* **sdcard:** Buffered SD card R/W: Increase buffer from 128 to 512 byte ([4141e4d](https://github.com/Slider0007/AI-on-the-edge-device/commit/4141e4db308e1b0d4cc27b2dd55bcb64c42113c4))
+* **sdkconfig:** Disable IPv6 ([7922855](https://github.com/Slider0007/AI-on-the-edge-device/commit/79228559a38ad9069651cae04117e1aa1181549a))
+* **submodule:** Update esp-camera v2.04 ([cc9e03b](https://github.com/Slider0007/AI-on-the-edge-device/commit/cc9e03bad42dd49015170f735bb2fa6396d91528))
+* **submodule:** Update esp-nn v1.0-rc1 ([cc9e03b](https://github.com/Slider0007/AI-on-the-edge-device/commit/cc9e03bad42dd49015170f735bb2fa6396d91528))
+* **submodule:** Update tflite (master, 2023-05-08) ([cc9e03b](https://github.com/Slider0007/AI-on-the-edge-device/commit/cc9e03bad42dd49015170f735bb2fa6396d91528))
+* **submodule:** Update TFLite related submodules -&gt; Reduced flash/RAM usage ([e70db93](https://github.com/Slider0007/AI-on-the-edge-device/commit/e70db939e2f787304b59d9009fd6485f3bb93e51))
+* **testcases:** Adapt test cases to new naming + add test cases ([194f87c](https://github.com/Slider0007/AI-on-the-edge-device/commit/194f87ce999a170bc51e7d97923ecdf68630f537))
+* **tflite:** New dig-class100 model (provided by haverland) ([9cff3e5](https://github.com/Slider0007/AI-on-the-edge-device/commit/9cff3e5bda258ea75f77a613e2b25234dd46f514))
+* **tflite:** New digit/analog models (provided by haverland) ([a11e0f6](https://github.com/Slider0007/AI-on-the-edge-device/commit/a11e0f6930dff8debda670792efdf5da15f0b918))
+* **tflite:** New tflite models (provided by haverland) ([6dc06bd](https://github.com/Slider0007/AI-on-the-edge-device/commit/6dc06bd4980417e9dee55adaee049397c800ea9a))
+* **webui:** Config: Parameter `Use FallbackValue` delcare as expert parameter ([d07b86f](https://github.com/Slider0007/AI-on-the-edge-device/commit/d07b86fa76a07b6ee278a3ea0a7bebc2cdaa3c48))
+* **webui:** Update image files for flowstates ([e68789a](https://github.com/Slider0007/AI-on-the-edge-device/commit/e68789af671539c0f68bc6c89a44da3a10781b69))
+* **webui:** Update copyright year
 
 ## [15.1.1] - 2023-03-23
 

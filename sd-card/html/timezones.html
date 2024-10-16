@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xml:lang="en"> 
+<html lang="en" xml:lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Timezones</title>
@@ -529,8 +529,9 @@
     <p>Source: <a href=https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv target=_blank>https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv</a></p>
 
 <script>
-    function myFunction() {
-        var input, filter, table, tr, td, i, txtValue;
+    function myFunction()
+    {
+        let input, filter, table, tr, td, i, txtValue;
         input = document.getElementById("myInput");
         filter = input.value.toUpperCase();
         table = document.getElementById("data");
@@ -544,7 +545,7 @@
                 } else {
                     tr[i].style.display = "none";
                 }
-            }       
+            }
         }
     }
 
@@ -552,4 +553,3 @@
 
 </body>
 </html>
-    

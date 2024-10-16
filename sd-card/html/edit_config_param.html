@@ -31,7 +31,11 @@
 			text-align: left;
 			font-size: 1em;
 			background-color: lightgray;
-			padding: 5px;
+			padding: 10px;
+		}
+
+		.section {
+			padding: 1px 10px 1px 10px;
 		}
 
 		td {
@@ -42,7 +46,7 @@
 		.button {
 			padding: 5px 10px;
 			width: 220px;
-			font-size: 1em;	
+			font-size: 1em;
 		}
 
 		input[type=number] {
@@ -57,7 +61,7 @@
 			vertical-align: middle;
 		}
 
-		input[type=text] {
+		input[type=text], input[type=password] {
 			width: 96%;
 			min-width:240px;
 			max-width:96%;
@@ -75,7 +79,7 @@
 			padding: 3px 5px;
 			display: inline-block;
 			border: 1px solid #ccc;
-			font-size: 1em; 
+			font-size: 1em;
 			margin-right: 10px;
 			vertical-align: middle;
 		}
@@ -87,7 +91,7 @@
 			padding: 3px 5px;
 			display: inline-block;
 			border: 1px solid #ccc;
-			font-size: 1em; 
+			font-size: 1em;
 			margin-right: 10px;
 			vertical-align: middle;
 		}
@@ -105,11 +109,6 @@
 			color:rgb(122, 122, 122);
 		}
 
-		#GPIO_LEDColor_value1 #GPIO_LEDColor_value2 #GPIO_LEDColor_value3 {
-			width: 30px;
-			font-size: 1em;
-		}
-
 		.invalid-input {
 			background-color: #FFAA00;
 		}
@@ -124,12 +123,17 @@
 			border: 1px solid red;
 		}
 
+		select:invalid {
+			background-color: rgba(255, 0, 0, 0.25);
+			border: 1px solid red;
+		}
+
 		.hidden {
 			display: none;
 		}
 
 		.expert {
-			background-color: #ffefef;
+			background-color: #ffefefb9;
 			font-size: 1em;
 		}
 
@@ -153,21 +157,21 @@
 			min-width: 600px;
 			max-width: 600px;
 			width: 600px;
-			background-color: #dfdfdf;
+			background-color: #f1f1f1;
 
 			padding-top: 5px;
 			padding-bottom: 10px;
 			padding-left: 10px;
 			padding-right: 10px;
 
-			border: solid black 1px; 
+			border: solid black 1px;
 
 			/* Position the tooltip */
 			position: absolute;
-			z-index: 1;
+			z-index: 99;
 			top: 100%;
 			left: 100%;
-			margin-left: -600px;
+			margin-left: -620px;
 		}
 
 		.tooltip:hover .tooltiptext {
@@ -185,30 +189,30 @@
 
 		.tooltip .tooltiptext h1 { /* Tooltip headline, e.g. parameter name */
 			font-size: 1.5em;
-			margin-top: 0.2em !important; 
+			margin-top: 0.2em !important;
 			margin-bottom: 0.3em !important;
 		}
 
 		.tooltip .tooltiptext h2 { /* Tooltip sub-headline, e.g. description*/
 			font-size: 1.2em;
-			margin-top: 1em !important; 
+			margin-top: 1em !important;
 			margin-bottom: 0.3em !important;
 		}
 
-		.tooltip .tooltiptext h3 { 
+		.tooltip .tooltiptext h3 {
 			font-size: 1.05em;
-			margin-top: 1em !important; 
+			margin-top: 1em !important;
 			margin-bottom: 0.3em !important;
 		}
 
-		.tooltip .tooltiptext h4 { 
+		.tooltip .tooltiptext h4 {
 			font-size: 0.83em;
-			margin-top: 1em !important; 
+			margin-top: 1em !important;
 			margin-bottom: 0.3em !important;
 		}
 
 		.tooltip .tooltiptext p {
-			margin-top: 0.3em !important; 
+			margin-top: 0.3em !important;
 			margin-bottom: 0.3em !important;
 		}
 
@@ -219,10 +223,19 @@
 		}
 
 		details {
-				text-align: justify;
-				font-size: 1em;
-				margin-right: 10px;
+			text-align: justify;
+			font-size: 1em;
+			margin-right: 10px;
 		}
+
+		.field-icon {
+			float: right;
+			margin-left: -22px;
+			margin-top: -22px;
+			position: relative;
+			z-index: 2;
+		}
+
 	</style>
 
 	<link rel="stylesheet" href="mkdocs_theme.css?v=$COMMIT_HASH">
@@ -236,26 +249,20 @@
 	<h2>Configuration</h2>
 
 	<details id="desc_details">
-        <summary><b>CLICK HERE</b> for usage description.
+        <summary><b>CLICK HERE</b> for usage description
         </summary>
 		<p>
-			This page lists all available configuration parameters of the device. 
-			The description of each parameter can be shown by hovering over or by clicking the 
-			<img src="help.png" width="16"> icon.
-		</p>
-		<p>	
-			The page gets opened with the default view which should be sufficient for regular configuration tasks. 
-			Enabling the <b>"Expert View"</b> some expert parameters (light red background color) will be added to
-			the parameter list. Additionally the button <b>"Edit "Config.ini" File"</b> to edit the underlaying 
-			configuration file (config.ini) manually is now shown on top of the page. This function should be only 
-			used for special cases.
+			This page lists all configuration parameters of the device.
+			The description of each parameter can be shown by hovering over or by clicking the
+			<img src="help.png" width="14" alt="help"> icon. Parameter which most of the time should kept
+			at default setting or parameter which are used for any special purpose, e.g. debugging, are
+			marked with <span class="expert">light red background color</span>.
 		</p>
 		<p>
-			Sections (entire functionality) or single parameters having a checkbox can be enabled or disabled.
-			Disabling results in a disabled functionality.
+			Parameter which are not used are hidden and are only shown if functionality is enabled.
 		</p>
 		<p>
-			Don't forget to save the changes with the button <b>"Save And Apply"</b> at the bottom of this page. 
+			Don't forget to save the changes with the button <b>"Save And Apply"</b> at the bottom of this page.
             The new configuration gets automatically applied. No reboot is required.
 		</p>
     </details>
@@ -264,291 +271,597 @@
 <div id="divloading">Loading configuration ...</div>
 <div id="divcontent" style="display:none">
 
-	<!-- Configuration View -->
-	<table class="table">
-        <colgroup>
-            <col span="1" style="width:290px">
-            <col span="1" style="width:300px;">
-            <col span="1">
-        </colgroup>
+		<!-- Operation Mode -->
+		<table class="table">
+			<colgroup>
+				<col span="1" style="width:310px">
+				<col span="1" style="width:310px;">
+				<col span="1">
+			</colgroup>
 
-		<tr>
-            <th colspan="3">Configuration View</th>
-		</tr> 
-		<tr>
-			<td class="indent1">
-				<input style="margin-top:12px;margin-bottom:12px" type="checkbox" id="ExpertModus_enabled" value="1"  onclick='UpdateExpertModus()' >
-					<label for="ExpertModus_enabled">Expert View</label> 
-			</td>
-			<td>
-				<button style="display:none;" class="button" id="Edit_Config_Direct" onclick="editConfigDirect()">Edit "Config.ini" File</button>
-			</td>
-			<td></td>
-		</tr>
-	</table>
+			<tr>
+				<th colspan="3">Operation Mode</th>
+			</tr>
 
+			<tr>
+				<td class="indent1">
+					<span>Operation Mode</span>
+				</td>
+				<td>
+					<form id="operationmode_opmode_form">
+						<select class="classvisibility_init" name="operationmode.opmode" id="operationmode_opmode_value"
+						onchange='setClassVisibility("classvisibility_operationmode_opmode_auto", this.value == 1);
+								setClassVisibility("classvisibility_operationmode_opmode_demoimages", this.value >= 0);
+					  			gatherChangedParameter(this.form, true)'>
+							<option value="-1" selected>Setup</option>
+							<option value="0">Manual</option>
+							<option value="1">Automatic</option>
+						</select>
+					</form>
+				</td>
+				<td style="visibility:hidden">$TOOLTIP_operationmode_opmode</td>
+			</tr>
+
+			<tr class="classvisibility_operationmode_opmode_auto">
+				<td class="indent2">
+					<span>Automatic Process Interval</span>
+				</td>
+				<td>
+					<form id="operationmode_automaticprocessinterval_form">
+						<input required type="number" min="0.1" step="0.1" value="1.0"
+							name="operationmode.automaticprocessinterval" id="operationmode_automaticprocessinterval_value"
+							onchange="(!validity.rangeUnderflow||(value=0.1)) && (!validity.stepMismatch||(value=this.value));
+								gatherChangedParameter(this.form)">Minutes
+					</form>
+				</td>
+				<td style="visibility:hidden">$TOOLTIP_operationmode_automaticprocessinterval</td>
+			</tr>
+
+			<tr class="classvisibility_operationmode_opmode_demoimages expert">
+				<td class="indent1">
+					<span>Use Demo Images</span>
+				</td>
+				<td>
+					<form id="operationmode_usedemoimages_form">
+						<select name="operationmode.usedemoimages" id="operationmode_usedemoimages_value"
+								onchange="gatherChangedParameter(this.form)">
+							<option value="false" selected>Disabled</option>
+							<option value="true">Enabled</option>
+						</select>
+					</form>
+				</td>
+				<td style="visibility:hidden">$TOOLTIP_operationmode_usedemoimages</td>
+			</tr>
+
+		</table>
 
 	<!-- Take Image -->
 	<table class="table">
 		<colgroup>
-			<col span="1" style="width:290px">
-			<col span="1" style="width:300px;">
+			<col span="1" style="width:310px">
+			<col span="1" style="width:310px;">
 			<col span="1">
 		</colgroup>
 
 		<tr>
 			<th colspan="3">Take Image</th>
-		</tr> 
-
-		<tr class="expert">
-			<td class="indent1">
-				<input type="checkbox" id="TakeImage_RawImagesLocation_enabled" value="1" onclick='InvertEnableItem("TakeImage", "RawImagesLocation")'  >
-				<label for=TakeImage_RawImagesLocation_enabled><span id="TakeImage_RawImagesLocation_text" style="color:black;">Raw Images Location</span></label>
-			</td>
-			<td>
-				<input required type="text" name="name" id="TakeImage_RawImagesLocation_value1">
-			</td>
-			<td>$TOOLTIP_TakeImage_RawImagesLocation</td>
 		</tr>
 
-		<tr class="expert">
-			<td class="indent1">
-				<input type="checkbox" id="TakeImage_RawImagesRetention_enabled" value="1" onclick='InvertEnableItem("TakeImage", "RawImagesRetention")'  >
-				<label for=TakeImage_RawImagesRetention_enabled><span id="TakeImage_RawImagesRetention_text" style="color:black;">Raw Images Retention</span></label>
+		<tr>
+			<td style="padding-top:25px" colspan="3">
+				<b>Flashlight</b>
 			</td>
-			<td>
-				<input required type="number" id="TakeImage_RawImagesRetention_value1"  min="0" step="1"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Days
-			</td>
-			<td>$TOOLTIP_TakeImage_RawImagesRetention</td>
-		</tr>
-
-		<tr class="expert">		
-			<td class="indent1">
-				<span id="TakeImage_WaitBeforeTakingPicture_text" style="color:black;">Flash Duration</span>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_WaitBeforeTakingPicture_value1"  min="0" step="any"
-					oninput="(!validity.rangeUnderflow||(value=0));">Seconds
-			</td>
-			<td>$TOOLTIP_TakeImage_WaitBeforeTakingPicture</td>
-		</tr>
-
-		<tr class="expert">
-			<td class="indent1">
-				<span id="TakeImage_CameraFrequency_text" style="color:black;">Camera Frequency</span>
-			</td>
-			<td>
-				<select id="TakeImage_CameraFrequency_value1">
-					<option value="20" selected>20 Mhz</option>
-					<option value="16" >16 Mhz</option>
-					<option value="10" >10 Mhz</option>
-					<option value="8" >8 Mhz</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_CameraFrequency</td>
-		</tr>
-
-		<tr class="expert">
-			<td class="indent1">
-				<span id="TakeImage_ImageQuality_text" style="color:black;">Image Quality</span>
-			</td>
-			<td>
-				<input required type="number" id="TakeImage_ImageQuality_value1"  min="8" max="63"
-					oninput="(!validity.rangeUnderflow||(value=8)) && (!validity.rangeOverflow||(value=63)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_TakeImage_ImageQuality</td>
-		</tr>
-
-		<tr class="expert">
-			<td class="indent1">
-				<span id="TakeImage_ImageSize_text" style="color:black;">Image Size</span>
-			</td>
-			<td>
-				<select id="TakeImage_ImageSize_value1">
-					<option value="VGA" selected>VGA</option>
-					<option value="QVGA" >QVGA</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_ImageSize</td>
 		</tr>
 
 		<tr>
 			<td class="indent1">
-				<span id="TakeImage_LEDIntensity_text" style="color:black;">LED Intensity</span>
+				<span>Flashlight GPIO Mapping</span>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_LEDIntensity_value1"  min="0" max="100"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=100)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
+				<span id="takeimage_flashlightgpiomapping_value"></span>
 			</td>
-			<td>$TOOLTIP_TakeImage_LEDIntensity</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_flashlight_gpiomapping</td>
 		</tr>
 
 		<tr>
 			<td class="indent1">
-				<span id="TakeImage_Brightness_text" style="color:black;">Brightness</span>
+				<span>Flash Time</span>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_Brightness_value1"  min="-2" max="2"
-					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
+				<form id="takeimage_flashlight_flashtime_form">
+					<input required type="number" min="100" step="100" value="2000"
+						name="takeimage.flashlight.flashtime" id="takeimage_flashlight_flashtime_value"
+						onchange="(!validity.rangeUnderflow||(value=100)) && (!validity.stepMismatch||(value=this.value));
+							gatherChangedParameter(this.form, true)">Milliseconds
+				</form>
 			</td>
-			<td>$TOOLTIP_TakeImage_Brightness</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_flashlight_flashtime</td>
 		</tr>
 
 		<tr>
 			<td class="indent1">
-				<span id="TakeImage_Contrast_text" style="color:black;">Contrast</span>
+				<span>Flash Intensity</span>
 			</td>
 			<td>
-				<input required type="number" id="TakeImage_Contrast_value1"  min="-2" max="2"
-					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
+				<form id="takeimage_flashlight_flashintensity_form">
+					<input required type="number" min="0" max="100" value="50"
+						name="takeimage.flashlight.flashintensity" id="takeimage_flashlight_flashintensity_value"
+						onchange="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=100));
+							gatherChangedParameter(this.form, true)">%
+				</form>
 			</td>
-			<td>$TOOLTIP_TakeImage_Contrast</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_flashlight_flashintensity</td>
 		</tr>
 
 		<tr>
-			<td class="indent1">
-				<span id="TakeImage_Saturation_text" style="color:black;">Saturation</span>
+			<td style="padding-top:25px" colspan="3">
+				<b>Camera</b>
 			</td>
-			<td>
-				<input required type="number" id="TakeImage_Saturation_value1"  min="-2" max="2"
-					oninput="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_TakeImage_Saturation</td>
-		</tr>
-		
-		<tr class="expert">
-			<td class="indent1">
-				<span id="TakeImage_FixedExposure_text" style="color:black;">Fixed Exposure</span>
-			</td>
-			<td>
-				<select id="TakeImage_FixedExposure_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_TakeImage_FixedExposure</td>
 		</tr>
 
 		<tr class="expert">
 			<td class="indent1">
-				<span id="TakeImage_Demo_text" style="color:black;">Demo Mode</span>
+				<span>Camera Frequency</span>
 			</td>
 			<td>
-				<select id="TakeImage_Demo_value1">
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
+				<form id="takeimage_camera_camerafrequency_form">
+					<select name="takeimage.camera.camerafrequency" id="takeimage_camera_camerafrequency_value"
+							onchange="gatherChangedParameter(this.form, true)">
+						<option value="20" selected>20 Mhz</option>
+						<option value="10" >10 Mhz</option>
+						<option value="8" >8 Mhz</option>
+						<option value="5" >5 Mhz</option>
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_TakeImage_Demo</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_camerafrequency</td>
 		</tr>
+
+		<tr class="expert">
+			<td class="indent1">
+				<span>Image Quality</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_imagequality_form">
+					<input required type="number" min="8" max="63" value="12"
+						name="takeimage.camera.imagequality" id="takeimage_camera_imagequality_value"
+						onchange="(!validity.rangeUnderflow||(value=8)) && (!validity.rangeOverflow||(value=63));
+							gatherChangedParameter(this.form, true)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_imagequality</td>
+		</tr>
+
+		<tr class="expert">
+			<td class="indent1">
+				<span>Image Size</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_imagesize_form">
+					<select name="takeimage.camera.imagesize" id="takeimage_camera_imagesize_value"
+							onchange="gatherChangedParameter(this.form)">
+						<option value="VGA" selected>VGA</option>
+						<option value="QVGA" >QVGA</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_imagesize</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Brightness</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_brightness_form">
+					<input required type="number" min="-2" max="2" value="0"
+						name="takeimage.camera.brightness" id="takeimage_camera_brightness_value"
+						onchange="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2));
+							gatherChangedParameter(this.form)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_brightness</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Contrast</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_contrast_form">
+					<input required type="number" min="-2" max="2" value="0"
+						name="takeimage.camera.contrast" id="takeimage_camera_contrast_value"
+						onchange="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2));
+							gatherChangedParameter(this.form, true)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_contrast</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Saturation</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_saturation_form">
+					<input required type="number" min="-2" max="2" value="0"
+						name="takeimage.camera.saturation" id="takeimage_camera_saturation_value"
+						onchange="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2));
+							gatherChangedParameter(this.form, true)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_saturation</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Sharpness</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_sharpness_form">
+					<select name="takeimage.camera.sharpness" id="takeimage_camera_sharpness_value"
+							onchange="gatherChangedParameter(this.form, true)">
+						<option value="-4">Auto</option>
+						<option value="-3">-3</option>
+						<option value="-2">-2</option>
+						<option value="-1">-1</option>
+						<option value="0" selected> 0</option>
+						<option value="1"> 1</option>
+						<option value="2"> 2</option>
+						<option value="3"> 3</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_sharpness</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Exposure Control Mode</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_exposurecontrolmode_form">
+					<select class="classvisibility_init" name="takeimage.camera.exposurecontrolmode" id="takeimage_camera_exposurecontrolmode_value"
+							onchange='setClassVisibility("classvisibility_takeimage_exposurecontrolmode_auto", this.value > 0);
+									  	setClassVisibility("classvisibility_takeimage_exposurecontrolmode_manual", this.value == 0);
+										gatherChangedParameter(this.form, true)'>
+						<option value="0">Manual</option>
+						<option value="1" selected>Auto</option>
+						<option value="2">Auto (AEC2)</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_exposurecontrolmode</td>
+		</tr>
+
+		<tr class="classvisibility_takeimage_exposurecontrolmode_auto">
+			<td class="indent2">
+				<span>Auto Exposure Level</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_autoexposurelevel_form">
+					<input required type="number" min="-2" max="2" value="0"
+						name="takeimage.camera.autoexposurelevel" id="takeimage_camera_autoexposurelevel_value"
+						onchange="(!validity.rangeUnderflow||(value=-2)) && (!validity.rangeOverflow||(value=2));
+							gatherChangedParameter(this.form, true)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_autoexposurelevel</td>
+		</tr>
+
+		<tr class="classvisibility_takeimage_exposurecontrolmode_manual">
+			<td class="indent2">
+				<span>Manual Exposure Value</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_manualexposurevalue_form">
+					<input required type="number" min="0" max="1200" value="300"
+						name="takeimage.camera.manualexposurevalue" id="takeimage_camera_manualexposurevalue_value"
+						onchange="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=1200));
+							gatherChangedParameter(this.form, true)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_manualexposurevalue</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Gain Control Mode</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_gaincontrolmode_form">
+					<select class="classvisibility_init" name="takeimage.camera.gaincontrolmode" id="takeimage_camera_gaincontrolmode_value"
+							onchange="setClassVisibility('classvisibility_takeimage_gaincontrolmode_manual', this.value == 0);
+										gatherChangedParameter(this.form, true)">
+						<option value="0">Manual</option>
+						<option value="1" selected>Auto</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_gaincontrolmode</td>
+		</tr>
+
+		<tr class="classvisibility_takeimage_gaincontrolmode_manual">
+			<td class="indent1">
+				<span>Manual Gain Value</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_manualgainvalue_form">
+					<input required type="number" min="0" max="5" value="0"
+						name="takeimage.camera.manualgainvalue" id="takeimage_camera_manualgainvalue_value"
+						onchange="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=5));
+							gatherChangedParameter(this.form, true)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_manualgainvalue</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Special Effect</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_specialeffect_form">
+					<select name="takeimage.camera.specialeffect" id="takeimage_camera_specialeffect_value"
+							onchange="gatherChangedParameter(this.form, true)">
+						<option value="0" selected>None</option>
+						<option value="1">Negative</option>
+						<option value="2">Grayscale</option>
+						<option value="7">Gray+Negative</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_specialeffect</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Mirror Image</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_mirrorimage_form">
+					<select name="takeimage.camera.mirrorimage" id="takeimage_camera_mirrorimage_value"
+							onchange="gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_mirrorimage</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Flip Image</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_flipimage_form">
+					<select name="takeimage.camera.flipimage" id="takeimage_camera_flipimage_value"
+							onchange="gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_flipimage</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Zoom Mode</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_zoommode_form">
+					<select class="classvisibility_init" name="takeimage.camera.zoommode" id="takeimage_camera_zoommode_value"
+							onchange='setClassVisibility("classvisibility_takeimage_zoommode", this.value > 0);
+								gatherChangedParameter(this.form, true)'>
+						<option value="0" selected>Off</option>
+						<option value="1">Crop</option>
+						<option value="2">Scale & Crop</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_zoommode</td>
+		</tr>
+
+		<tr class="classvisibility_takeimage_zoommode">
+
+			<td class="indent2">
+				<span>Zoom Offset X</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_zoomoffsetx_form">
+					<input required type="number" min="0" max="960" value="0"
+						name="takeimage.camera.zoomoffsetx" id="takeimage_camera_zoomoffsetx_value"
+						onchange="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=960));
+							gatherChangedParameter(this.form, true)">Pixel
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_zoomoffsetx</td>
+		</tr>
+
+		<tr class="classvisibility_takeimage_zoommode">
+
+			<td class="indent2">
+				<span>Zoom Offset Y</span>
+			</td>
+			<td>
+				<form id="takeimage_camera_zoomoffsety_form">
+					<input required type="number" min="0" max="720" value="0"
+						name="takeimage.camera.zoomoffsety" id="takeimage_camera_zoomoffsety_value"
+						onchange="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=720));
+							gatherChangedParameter(this.form, true)">Pixel
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_camera_zoomoffsety</td>
+		</tr>
+
+		<tr>
+			<td style="padding-top:25px" colspan="3">
+				<b>Debug</b>
+			</td>
+		</tr>
+
+		<tr class="expert">
+			<td class="indent1">
+				<span>Save Raw Images</span>
+			</td>
+			<td>
+				<form id="takeimage_debug_saverawimages_form">
+					<select class="classvisibility_init" name="takeimage.debug.saverawimages" id="takeimage_debug_saverawimages_value"
+							onchange='setClassVisibility("classvisibility_takeimage_debug_saverawimages", this.value);
+										gatherChangedParameter(this.form)'>
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_debug_saverawimages</td>
+		</tr>
+
+		<tr class="classvisibility_takeimage_debug_saverawimages expert">
+			<td class="indent2">
+				<span>Raw Images Location</span>
+			</td>
+			<td>
+				<form id="takeimage_debug_rawimageslocation_form">
+					<input required type="text"
+						name="takeimage.debug.rawimageslocation" id="takeimage_debug_rawimageslocation_value"
+						onchange="gatherChangedParameter(this.form)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_debug_rawimageslocation</td>
+		</tr>
+
+		<tr class="classvisibility_takeimage_debug_saverawimages expert">
+			<td class="indent2">
+				<span>Raw Images Retention</span>
+			</td>
+			<td>
+				<form id="takeimage_debug_rawimagesretention_form">
+					<input required type="number" min="0" value="5"
+						name="takeimage.debug.rawimagesretention" id="takeimage_debug_rawimagesretention_value" placeholder="/log/source"
+						onchange="(!validity.rangeUnderflow||(value=0));gatherChangedParameter(this.form, true)">Days
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_takeimage_debug_rawimagesretention</td>
+		</tr>
+
 	</table>
 
 
-	<!-- Alignment -->
+	<!-- Image Alignment -->
 	<table class="table">
 		<colgroup>
-			<col span="1" style="width:290px">
-			<col span="1" style="width:300px;">
+			<col span="1" style="width:310px">
+			<col span="1" style="width:310px;">
 			<col span="1">
 		</colgroup>
 
 		<tr>
-			<th colspan="3">Alignment</th>
+			<th colspan="3">Image Alignment</th>
 		</tr>
 
 		<tr>
 			<td class="indent1">
-				<span id="Alignment_AlignmentAlgo_text" style="color:black;">Alignment Algorithm</span>
+				<span>Alignment Algorithm</span>
 			</td>
 			<td>
-				<select id="Alignment_AlignmentAlgo_value1">
-					<option value="default" selected>Rotation + Default Algo</option>
-					<option value="highAccuracy" >Rotation + High Accuracy Algo</option>
-					<option value="fast" >Rotation + Fast Algo</option>
-					<option value="rotation" >Only Rotation</option>
-					<option value="off" >Off</option>
-				</select>
+				<form id="imagealignment_alignmentalgo_form">
+					<select class="classvisibility_init" name="imagealignment.alignmentalgo" id="imagealignment_alignmentalgo_value"
+							onchange="setClassVisibility('classvisibility_imagealignment_algo_3', this.value < 3);
+									  setClassVisibility('classvisibility_imagealignment_algo_4', this.value < 4);
+								gatherChangedParameter(this.form, true)">
+						<option value="0" selected>Rotation + Default Algo</option>
+						<option value="1" >Rotation + High Accuracy Algo</option>
+						<option value="2" >Rotation + Fast Algo</option>
+						<option value="3" >Only Rotation</option>
+						<option value="4" >Off</option>
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_Alignment_AlignmentAlgo</td>
-		</tr>
-		
-		<tr class="expert">
-			<td class="indent1">
-			    <span id="Alignment_SearchFieldX_text" style="color:black;">Search Field X</span>
-			</td>
-			<td>
-				<input required type="number" name="name" id="Alignment_SearchFieldX_value1"  min="1"  step="1"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Pixel
-			</td>
-			<td>$TOOLTIP_Alignment_SearchFieldX</td>
+			<td style="visibility:hidden">$TOOLTIP_imagealignment_alignmentalgo</td>
 		</tr>
 
-		<tr class="expert">
-			<td class="indent1">
-				<span id="Alignment_SearchFieldY_text" style="color:black;">Search Field Y</span>
+		<tr class="classvisibility_imagealignment_algo_3 expert">
+			<td class="indent2">
+			    <span>Search Field X</span>
 			</td>
 			<td>
-				<input required type="number" name="name" id="Alignment_SearchFieldY_value1"  min="1"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Pixel
+				<form id="imagealignment_searchfield_x_form">
+					<input required type="number" min="1" value="20"
+						name="imagealignment.searchfield.x" id="imagealignment_searchfield_x_value"
+						onchange="(!validity.rangeUnderflow||(value=1));gatherChangedParameter(this.form, true)">Pixel
+				</form>
 			</td>
-			<td>$TOOLTIP_Alignment_SearchFieldY</td>
+			<td style="visibility:hidden">$TOOLTIP_imagealignment_searchfield_x</td>
 		</tr>
 
-		<tr class="expert">
-			<td class="indent1">
-			    <span id="Alignment_FlipImageSize_text" style="color:black;">Flip Image Size</span>
+		<tr class="classvisibility_imagealignment_algo_3 expert">
+			<td class="indent2">
+				<span>Search Field Y</span>
 			</td>
 			<td>
-				<select id="Alignment_FlipImageSize_value1">
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
+				<form id="imagealignment_searchfield_y_form">
+					<input required type="number" min="1" value="20"
+						name="imagealignment.searchfield.y" id="imagealignment_searchfield_y_value"
+						onchange="(!validity.rangeUnderflow||(value=1));gatherChangedParameter(this.form, true)">Pixel
+				</form>
 			</td>
-			<td>$TOOLTIP_Alignment_FlipImageSize</td>
+			<td style="visibility:hidden">$TOOLTIP_imagealignment_searchfield_y</td>
+		</tr>
+
+		<tr class="classvisibility_imagealignment_algo_3 classvisibility_imagealignment_algo_4">
+			<td class="indent1">
+			    <span>Image Rotation</span>
+			</td>
+			<td>
+				<form id="imagealignment_imagerotation_form">
+					<input required type="number" min="-180.0" max="180.0" step="0.1" value="0.0"
+						name="imagealignment.imagerotation" id="imagealignment_imagerotation_value"
+						onchange="(!validity.rangeUnderflow||(value=-180.0)) && (!validity.rangeOverflow||(value=180.0)) &&
+							(!validity.stepMismatch||(value=this.value));gatherChangedParameter(this.form)">Degree
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_imagealignment_imagerotation</td>
 		</tr>
 
 		<tr>
 			<td class="indent1">
-			    <span id="Alignment_InitialRotate_text" style="color:black;">Image Rotation</span>
+			    <span>Flip Image Size</span>
 			</td>
 			<td>
-				<input required type="number" name="name" id="Alignment_InitialRotate_value1"  min="-360.0" max="360.0" step="0.1"
-				oninput="(!validity.rangeUnderflow||(value=-360.0)) && (!validity.rangeOverflow||(value=360.0)) && 
-				(!validity.stepMismatch||(value=parseInt(this.value)));">Degree
+				<form id="imagealignment_flipimagesize_form">
+					<select name="imagealignment.flipimagesize" id="imagealignment_flipimagesize_value"
+							onchange="gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_Alignment_InitialRotate</td>
+			<td style="visibility:hidden">$TOOLTIP_imagealignment_flipimagesize</td>
 		</tr>
 
 		<tr>
-			<td class="indent1">
-			    <span id="Alignment_InitialMirror_text" style="color:black;">Mirror Image</span>
+			<td style="padding-top:25px" colspan="3">
+				<b>Debug</b>
 			</td>
-			<td>
-				<select id="Alignment_InitialMirror_value1">
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_Alignment_InitialMirror</td>
 		</tr>
 
 		<tr class="expert">
 			<td class="indent1">
-			    <span id="Alignment_SaveDebugInfo_text" style="color:black;">Save Debug Info</span>
+			    <span>Save Debug Info</span>
 			</td>
 			<td>
-				<select id="Alignment_SaveDebugInfo_value1">
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
+				<form id="imagealignment_debug_savedebuginfo_form">
+					<select name="imagealignment.debug.savedebuginfo" id="imagealignment_debug_savedebuginfo_value"
+							onchange="gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_Alignment_SaveDebugInfo</td>
+			<td style="visibility:hidden">$TOOLTIP_imagealignment_debug_savedebuginfo</td>
 		</tr>
 	</table>
 
@@ -556,62 +869,111 @@
 	<!-- Digit ROIs -->
 	<table class="table">
 		<colgroup>
-			<col span="1" style="width:290px">
-			<col span="1" style="width:300px;">
+			<col span="1" style="width:310px">
+			<col span="1" style="width:310px;">
 			<col span="1">
 		</colgroup>
 
-		<tr id="Category_Digits_ex4">
-			<th colspan="3">
-				<input type="checkbox" id="Category_Digits_enabled" value="1"  onclick ='UpdateAfterCategoryCheck()'  >
-				<label for=Category_Digits_enabled>Digit ROI Processing</label>
+		<tr>
+			<th>
+				<span>Digit ROI Processing</span>
 			</th>
+			<th class="section">
+				<form id="digit_enabled_form">
+					<select style="font-weight:bold" class="classvisibility_init" name="digit.enabled" id="digit_enabled_value"
+							onchange="setClassVisibility('classvisibility_digit_enabled', this.value); $(digit_model_value).trigger('onchange')
+								this.value == 'true' ? $(digit_debug_saveroiimages_value).trigger('onchange') : null;
+								gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
+			</th>
+			<th hidden>$TOOLTIP_digit_enabled</th>
 		</tr>
 
-		<tr class="DigitItem">
+		<tr class="classvisibility_digit_enabled">
 			<td class="indent1" >
-				<span id="Digits_Model_text" style="color:black;">Model</span>
+				<span>Model</span>
 			</td>
 			<td>
-				<select class="select_large" id="Digits_Model_value1">
-				</select>
+				<form id="digit_model_form">
+					<select class="select_large" name="digit.model" id="digit_model_value"
+						onchange="setClassVisibility('classvisibility_digit_model_class11',
+														$(digit_enabled_value).val() && this.value.includes('class11'));
+							setClassVisibility('classvisibility_digit_model_cont',
+														$(digit_enabled_value).val() && this.value.includes('cont'));
+							gatherChangedParameter(this.form)">
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_Digits_Model</td>
-		</tr>
-		
-		<tr class="DigitItem expert">
-			<td class="indent1">
-				<span id="Digits_CNNGoodThreshold_text" style="color:black;">CNN Good Threshold</span>
-			</td>
-			<td>
-				<input required type="number" id="Digits_CNNGoodThreshold_value1" min="0" max="1" step="0.01"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=1)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_Digits_CNNGoodThreshold</td>
+			<td style="visibility:hidden">$TOOLTIP_digit_model</td>
 		</tr>
 
-		<tr class="DigitItem expert">
+		<tr class="classvisibility_digit_enabled classvisibility_digit_model_cont expert">
 			<td class="indent1">
-				<input type="checkbox" id="Digits_ROIImagesLocation_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "ROIImagesLocation")'  >
-				<label for=Digits_ROIImagesLocation_enabled><span id="Digits_ROIImagesLocation_text" style="color:black;">ROI Images Location</span></label>
+				<span>CNN Good Threshold</span>
 			</td>
 			<td>
-				<input required type="text" name="name" id="Digits_ROIImagesLocation_value1">
+				<form id="digit_cnngoodthreshold_form">
+					<input required type="number" min="0" max="1" step="0.01" value="0.00"
+						name="digit.cnngoodthreshold" id="digit_cnngoodthreshold_value"
+						onchange="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=1)) &&
+							(!validity.stepMismatch||(value=this.value));gatherChangedParameter(this.form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_Digits_ROIImagesLocation</td>
+			<td style="visibility:hidden">$TOOLTIP_digit_cnngoodthreshold</td>
 		</tr>
 
-		<tr class="DigitItem expert">
+		<tr class="classvisibility_digit_enabled">
+			<td style="padding-top:25px" colspan="3">
+				<b>Debug</b>
+			</td>
+		</tr>
+
+		<tr class="classvisibility_digit_enabled expert">
 			<td class="indent1">
-				<input type="checkbox" id="Digits_ROIImagesRetention_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "ROIImagesRetention")'  >
-				<label for=Digits_ROIImagesRetention_enabled><span id="Digits_ROIImagesRetention_text" style="color:black;">ROI Images Retention</span></label>
+				<span>Save ROI Images</span>
 			</td>
 			<td>
-				<input required type="number" id="Digits_ROIImagesRetention_value1" min="0"  step="1"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Days
+				<form id="digit_debug_saveroiimages_form">
+					<select name="digit.debug.saveroiimages" id="digit_debug_saveroiimages_value"
+							onchange='setClassVisibility("classvisibility_digit_debug_saveroiimages", this.value);
+								gatherChangedParameter(this.form)'>
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_Digits_ROIImagesRetention</td>
+			<td style="visibility:hidden">$TOOLTIP_digit_debug_saveroiimages</td>
+		</tr>
+
+		<tr class="classvisibility_digit_enabled classvisibility_digit_debug_saveroiimages expert">
+			<td class="indent2">
+				<span>ROI Images Location</span>
+			</td>
+			<td>
+				<form id="digit_debug_roiimageslocation_form">
+					<input required type="text"
+						name="digit.debug.roiimageslocation" id="digit_debug_roiimageslocation_value"
+						onchange="gatherChangedParameter(this.form)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_digit_debug_roiimageslocation</td>
+		</tr>
+
+		<tr class="classvisibility_digit_enabled classvisibility_digit_debug_saveroiimages expert">
+			<td class="indent2">
+				<span>ROI Images Retention</span>
+			</td>
+			<td>
+				<form id="digit_debug_roiimagesretention_form">
+					<input required type="number" min="0" value="5"
+						name="digit.debug.roiimagesretention" id="digit_debug_roiimagesretention_value" placeholder="/log/digit"
+						onchange="(!validity.rangeUnderflow||(value=0));gatherChangedParameter(this.form, true)">Days
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_digit_debug_roiimagesretention</td>
 		</tr>
 	</table>
 
@@ -619,48 +981,92 @@
 	<!-- Analog ROIs -->
 	<table class="table">
 		<colgroup>
-			<col span="1" style="width:290px">
-			<col span="1" style="width:300px;">
+			<col span="1" style="width:310px">
+			<col span="1" style="width:310px;">
 			<col span="1">
 		</colgroup>
 
-		<tr id="Category_Analog_ex4">
-			<th colspan="3">
-				<input type="checkbox" id="Category_Analog_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()'  >
-				<label for=Category_Analog_enabled>Analog ROI Processing</label>
+		<tr>
+			<th>
+			    <span>Analog ROI Processing</span>
 			</th>
+			<th class="section">
+				<form id="analog_enabled_form">
+					<select style="font-weight:bold" class="classvisibility_init" name="analog.enabled" id="analog_enabled_value"
+								onchange="setClassVisibility('classvisibility_analog_enabled', this.value);
+								this.value == 'true' ? $(analog_debug_saveroiimages_value).trigger('onchange') : null;
+								gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
+			</th>
+			<th hidden>$TOOLTIP_analog_enabled</th>
 		</tr>
 
-		<tr class="AnalogItem">
+		<tr class="classvisibility_analog_enabled">
 			<td class="indent1">
-			    <span id="Analog_Model_text" style="color:black;">Model</span>
+			    <span>Model</span>
 			</td>
-			<td> 
-				<select class="select_large" id="Analog_Model_value1">
-				</select>
+			<td>
+				<form id="analog_model_form">
+					<select class="select_large" name="analog.model" id="analog_model_value"
+						onchange="gatherChangedParameter(this.form)">
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_Analog_Model</td>
+			<td style="visibility:hidden">$TOOLTIP_analog_model</td>
 		</tr>
 
-		<tr class="AnalogItem expert">
-			<td class="indent1">
-				<input type="checkbox" id="Analog_ROIImagesLocation_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "ROIImagesLocation")'  >
-				<label for=Analog_ROIImagesLocation_enabled><span id="Analog_ROIImagesLocation_text" style="color:black;">ROI Images Location</span>
-				</label>
+		<tr class="classvisibility_analog_enabled">
+			<td style="padding-top:25px" colspan="3">
+				<b>Debug</b>
 			</td>
-			<td> <input required type="text" name="name" id="Analog_ROIImagesLocation_value1"> </td>
-			<td>$TOOLTIP_Analog_ROIImagesLocation</td>
 		</tr>
 
-		<tr class="AnalogItem expert">
+		<tr class="classvisibility_analog_enabled expert">
 			<td class="indent1">
-				<input type="checkbox" id="Analog_ROIImagesRetention_enabled" value="1"  onclick = 'InvertEnableItem("Analog", "ROIImagesRetention")'  >
-				<label for=Analog_ROIImagesRetention_enabled><span id="Analog_ROIImagesRetention_text" style="color:black;">ROI Images Retention</span></label></td>
-			<td> 
-				<input required type="number" id="Analog_ROIImagesRetention_value1" min="0" step="1"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Days
+				<span>Save ROI Images</span>
 			</td>
-			<td>$TOOLTIP_Analog_ROIImagesRetention</td>
+			<td>
+				<form id="analog_debug_saveroiimages_form">
+					<select name="analog.debug.saveroiimages" id="analog_debug_saveroiimages_value"
+							onchange='setClassVisibility("classvisibility_analog_debug_saveroiimages", this.value);
+										gatherChangedParameter(this.form)'>
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_analog_debug_saveroiimages</td>
+		</tr>
+
+		<tr class="classvisibility_analog_enabled classvisibility_analog_debug_saveroiimages expert">
+			<td class="indent2">
+				<span>ROI Images Location</span>
+			</td>
+			<td>
+				<form id="analog_debug_roiimageslocation_form">
+					<input required type="text"
+						name="analog.debug.roiimageslocation" id="analog_debug_roiimageslocation_value" placeholder="/log/analog"
+						onchange="gatherChangedParameter(this.form)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_analog_debug_roiimageslocation</td>
+		</tr>
+
+		<tr class="classvisibility_analog_enabled classvisibility_analog_debug_saveroiimages expert">
+			<td class="indent2">
+				<span>ROI Images Retention</span>
+			</td>
+			<td>
+				<form id="analog_debug_roiimagesretention_form">
+					<input required type="number" min="0" value="5"
+						name="analog.debug.roiimagesretention" id="analog_debug_roiimagesretention_value"
+						onchange="(!validity.rangeUnderflow||(value=0));gatherChangedParameter(this.form, true)">Days
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_analog_debug_roiimagesretention</td>
 		</tr>
 	</table>
 
@@ -668,8 +1074,8 @@
 	<!-- Post-Processing -->
 	<table class="table">
 		<colgroup>
-			<col span="1" style="width:290px">
-			<col span="1" style="width:300px;">
+			<col span="1" style="width:310px">
+			<col span="1" style="width:310px;">
 			<col span="1">
 		</colgroup>
 
@@ -677,317 +1083,483 @@
 			<th colspan="3">Post-Processing</th>
 		</tr>
 
-		<tr class="expert">
-			<td class="indent1">
-				<span id="PostProcessing_FallbackValueUse_text" style="color:black;">Use Fallback Value</span>
-			</td>
-			<td>
-				<select id="PostProcessing_FallbackValueUse_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_PostProcessing_FallbackValueUse</td>
-		</tr>
-
-		<tr class="expert">
-			<td class="indent1">
-				<span id="PostProcessing_FallbackValueAgeStartup_text" style="color:black;">Max. Age of Fallback Value</span>
-			</td>
-			<td>
-				<input required type="number" id="PostProcessing_FallbackValueAgeStartup_value1"  min="0"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Minutes
-			</td>
-			<td>$TOOLTIP_PostProcessing_FallbackValueAgeStartup</td>
-		</tr>
-
-		<tr class="expert">
-			<td class="indent1">
-				<span id="PostProcessing_CheckDigitIncreaseConsistency_text" style="color:black;">Check Digit Increase Consistency</span>
-			</td>
-			<td>
-				<select id="PostProcessing_CheckDigitIncreaseConsistency_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_PostProcessing_CheckDigitIncreaseConsistency</td>
-		</tr>
-
 		<tr style="margin-top:12px">
-			<td class="indent1" style="padding-top:25px" colspan="3">
-				<b>Parameter per number sequence:</b>
-                <select 
-					style="font-weight: bold; margin-left:15px" id="Numbers_value1" onchange="numberChanged()">
-				</select>
+			<td style="padding-top:25px"><b>Parameter per number sequence</b></td>
+			<td style="padding-top:25px" colspan="2">
+				<form class="postprocessing_per_sequence" id="postprocessing_sequence_sequencename_form">
+					<select class="classvisibility_init" style="font-weight:bold"
+							name="postprocessing.sequence.0.sequencename" id="postprocessing_sequence_0_sequencename_value"
+							onchange="sequenceSelectAfterChange('postprocessing_per_sequence', this.id);
+								setClassVisibility('classvisibility_postprocessing_maxratechecktype',
+								$('[id$=\'maxratechecktype_value\']').val() > '0');gatherChangedParameter(this.form)">
+					</select>
+				</form>
 			</td>
-		</tr>
-
-		<tr class="expert">
-			<td class="indent2">
-				<span id="PostProcessing_AllowNegativeRates_text" style="color:black;">Allow Negative Rates</span>
-			</td>
-			<td>
-				<select id="PostProcessing_AllowNegativeRates_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.AllowNegativeRates</td>
 		</tr>
 
 		<tr>
-			<td class="indent2">
-				<span id="PostProcessing_DecimalShift_text" style="color:black;">Decimal Shift</span>
-			</td>
-			<td>
-				<input required type="number" id="PostProcessing_DecimalShift_value1" value="0" step="1" min="-9" max="9"
-					oninput="(!validity.rangeUnderflow||(value=-9)) && (!validity.rangeOverflow||(value=9)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.DecimalShift</td>
-		</tr>
-
-		<tr class="expert">
-			<td class="indent2">
-				<span id="PostProcessing_AnalogDigitalTransitionStart_text" style="color:black;">Analog/Digital Transition Start</span>
-			</td>
-			<td>
-				<input required type="number" id="PostProcessing_AnalogDigitalTransitionStart_value1" step="0.1" min="6.0" max="9.9" value="9.2"
-					oninput="(!validity.rangeUnderflow||(value=6.0)) && (!validity.rangeOverflow||(value=9.9)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.AnalogDigitalTransitionStart</td>
-		</tr>
-
-		<tr>
-			<td class="indent2">
-				<span id="PostProcessing_MaxRateType_text" style="color:black;">Maximum Rate Check Type</span>
-			</td>
-			<td>
-				<select id="PostProcessing_MaxRateType_value1">
-					<option value="RatePerMin" selected>Rate Per Minute</option>
-					<option value="RatePerProcessing">Rate Per Processing</option>
-					<option value="RateOff" >No Rate Check</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.MaxRateType</td>
-		</tr>
-
-		<tr>
-			<td class="indent2">
-				<span id="PostProcessing_MaxRateValue_text" style="color:black;">Maximum Rate Value</span>
-			</td>
-			<td>
-				<input required type="number" id="PostProcessing_MaxRateValue_value1" step="any"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.MaxRateValue</td>
-		</tr>
-
-		<tr class="expert">
-			<td class="indent2">
-				<span id="PostProcessing_ExtendedResolution_text" style="color:black;">Extended Resolution</span>
-			</td>
-			<td>
-				<select id="PostProcessing_ExtendedResolution_value1">
-					<option value="true" >true</option>
-					<option value="false" selected>false</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.ExtendedResolution</td>
-		</tr>
-
-		<tr class="expert">
-			<td class="indent2">
-				<span id="PostProcessing_IgnoreLeadingNaN_text" style="color:black;">Ignore Leading NaNs</span>
-			</td>
-			<td>
-				<select id="PostProcessing_IgnoreLeadingNaN_value1">
-					<option value="true" >true</option>
-					<option value="false" selected>false</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_PostProcessing_NUMBER.IgnoreLeadingNaN</td>
-		</tr>
-
-		<tr class="expert"  id="ex13">
 			<td class="indent1">
-			    <span id="PostProcessing_SaveDebugInfo_text" style="color:black;">Save Debug Info</span>
+				<span>Decimal Shift</span>
 			</td>
 			<td>
-				<select id="PostProcessing_SaveDebugInfo_value1">
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
+				<form class="postprocessing_per_sequence" id="postprocessing_sequence_decimalshift_form">
+					<input required type="number" min="-9" max="9" value="0"
+						name="postprocessing.sequence.0.decimalshift" id="postprocessing_sequence_0_decimalshift_value"
+						onchange="(!validity.rangeUnderflow||(value=-9)) && (!validity.rangeOverflow||(value=9));
+							gatherChangedParameter(this.form, true);gatherChangedParameter(postprocessing_sequence_sequencename_form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_PostProcessing_SaveDebugInfo</td>
+			<td style="visibility:hidden">$TOOLTIP_postprocessing_sequence_decimalshift</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Analog/Digit Sync Value</span>
+			</td>
+			<td>
+				<form class="postprocessing_per_sequence" id="postprocessing_sequence_analogdigitsyncvalue_form">
+					<input required type="number" min="6.0" max="9.9" step="0.1" value="9.2"
+						name="postprocessing.sequence.0.analogdigitsyncvalue" id="postprocessing_sequence_0_analogdigitsyncvalue_value"
+						onchange="(!validity.rangeUnderflow||(value=6.0)) && (!validity.rangeOverflow||(value=9.9)) &&
+							(!validity.stepMismatch||(value=this.value));gatherChangedParameter(this.form);
+							gatherChangedParameter(postprocessing_sequence_sequencename_form)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_postprocessing_sequence_analogdigitsyncvalue</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Extended Resolution</span>
+			</td>
+			<td>
+				<form class="postprocessing_per_sequence" id="postprocessing_sequence_extendedresolution_form">
+					<select name="postprocessing.sequence.0.extendedresolution" id="postprocessing_sequence_0_extendedresolution_value"
+							onchange="gatherChangedParameter(this.form);gatherChangedParameter(postprocessing_sequence_sequencename_form)">
+						<option value="false">Disabled</option>
+						<option value="true" selected>Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_postprocessing_sequence_extendedresolution</td>
+		</tr>
+
+		<tr class="classvisibility_digit_model_class11 hidden">
+			<td class="indent1">
+				<span>Ignore Leading NaNs</span>
+			</td>
+			<td>
+				<form class="postprocessing_per_sequence" id="postprocessing_sequence_ignoreleadingnan_form">
+					<select name="postprocessing.sequence.0.ignoreleadingnan" id="postprocessing_sequence_0_ignoreleadingnan_value"
+							onchange="gatherChangedParameter(this.form);gatherChangedParameter(postprocessing_sequence_sequencename_form)">
+						<option value="false">Disabled</option>
+						<option value="true" selected>Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_postprocessing_sequence_ignoreleadingnan</td>
+		</tr>
+
+		<tr class="classvisibility_digit_model_class11 hidden">
+			<td class="indent1">
+				<span>Check Digit Increase Consistency</span>
+			</td>
+			<td>
+				<form class="postprocessing_per_sequence" id="postprocessing_sequence_checkdigitincreaseconsistency_form">
+					<select name="postprocessing.sequence.0.checkdigitincreaseconsistency" id="postprocessing_sequence_0_checkdigitincreaseconsistency_value"
+							onchange="gatherChangedParameter(this.form);gatherChangedParameter(postprocessing_sequence_sequencename_form)">
+						<option value="false">Disabled</option>
+						<option value="true" selected>Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_postprocessing_sequence_checkdigitincreaseconsistency</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Max Rate Check Type</span>
+			</td>
+			<td>
+				<form class="postprocessing_per_sequence" id="postprocessing_sequence_maxratechecktype_form">
+					<select class="classvisibility_init"
+							name="postprocessing.sequence.0.maxratechecktype" id="postprocessing_sequence_0_maxratechecktype_value"
+							onchange="setClassVisibility('classvisibility_postprocessing_maxratechecktype', this.value > '0');
+								gatherChangedParameter(this.form, true);gatherChangedParameter(postprocessing_sequence_sequencename_form)">
+						<option value="0" >No Rate Check</option>
+						<option value="1" selected>Rate Per Minute</option>
+						<option value="2">Rate Per Interval</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_postprocessing_sequence_maxratechecktype</td>
+		</tr>
+
+		<tr class="classvisibility_postprocessing_maxratechecktype">
+			<td class="indent2">
+				<span>Max Rate</span>
+			</td>
+			<td>
+				<form class="postprocessing_per_sequence" id="postprocessing_sequence_maxrate_form">
+					<input required type="number" min="0.001" step="0.001" value="0.150"
+						name="postprocessing.sequence.0.maxrate" id="postprocessing_sequence_0_maxrate_value"
+						onchange="(!validity.rangeUnderflow||(value=0.001)) && (!validity.stepMismatch||(value=this.value));
+							gatherChangedParameter(this.form);gatherChangedParameter(postprocessing_sequence_sequencename_form)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_postprocessing_sequence_maxrate</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Allow Negative Rate</span>
+			</td>
+			<td>
+				<form class="postprocessing_per_sequence" id="postprocessing_sequence_allownegativerate_form">
+					<select name="postprocessing.sequence.0.allownegativerate" id="postprocessing_sequence_0_allownegativerate_value"
+							onchange="gatherChangedParameter(this.form);gatherChangedParameter(postprocessing_sequence_sequencename_form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_postprocessing_sequence_allownegativerate</td>
+		</tr>
+
+		<tr class="expert">
+			<td class="indent1">
+				<span>Use Fallback Value</span>
+			</td>
+			<td>
+				<form class="postprocessing_per_sequence" id="postprocessing_sequence_usefallbackvalue_form">
+					<select class="classvisibility_init"
+							name="postprocessing.sequence.0.usefallbackvalue" id="postprocessing_sequence_0_usefallbackvalue_value"
+							onchange="setClassVisibility('classvisibility_postprocessing_usefallbackvalue', this.value);
+								gatherChangedParameter(this.form);gatherChangedParameter(postprocessing_sequence_sequencename_form)">
+						<option value="false">Disabled</option>
+						<option value="true" selected>Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_postprocessing_sequence_usefallbackvalue</td>
+		</tr>
+
+		<tr class="classvisibility_postprocessing_usefallbackvalue expert">
+			<td class="indent2">
+				<span>Max. Age of Fallback Value</span>
+			</td>
+			<td>
+				<form class="postprocessing_per_sequence" id="postprocessing_sequence_fallbackvalueagestartup_form">
+					<input required type="number" min="0" value="720"
+						name="postprocessing.sequence.0.fallbackvalueagestartup" id="postprocessing_sequence_0_fallbackvalueagestartup_value"
+						onchange="(!validity.rangeUnderflow||(value=0));gatherChangedParameter(this.form, true);
+							gatherChangedParameter(postprocessing_sequence_sequencename_form)">Minutes
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_postprocessing_sequence_fallbackvalueagestartup</td>
+		</tr>
+
+		<tr>
+			<td style="padding-top:25px" colspan="3">
+				<b>Debug</b>
+			</td>
+		</tr>
+
+		<tr class="expert">
+			<td class="indent1">
+			    <span>Save Debug Info</span>
+			</td>
+			<td>
+				<form id="postprocessing_debug_savedebuginfo_form">
+					<select name="postprocessing.debug.savedebuginfo" id="postprocessing_debug_savedebuginfo_value"
+							onchange="gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_postprocessing_debug_savedebuginfo</td>
 		</tr>
 	</table>
 
-	
+
 	<!-- MQTT -->
 	<table class="table">
 		<colgroup>
-			<col span="1" style="width:290px">
-			<col span="1" style="width:300px;">
+			<col span="1" style="width:310px">
+			<col span="1" style="width:310px;">
 			<col span="1">
 		</colgroup>
 
 		<tr>
-			<th colspan="3">
-				<input type="checkbox" id="Category_MQTT_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()'  >
-				<label for=Category_MQTT_enabled>MQTT</label>
+			<th>
+			    <span>MQTT</span>
 			</th>
+			<th class="section">
+				<form id="mqtt_enabled_form">
+					<select style="font-weight:bold" class="classvisibility_init" name="mqtt.enabled" id="mqtt_enabled_value"
+							onchange="setClassVisibility('classvisibility_mqtt_enabled', this.value);
+								this.value == 'true' ? ($(mqtt_authmode_value).trigger('onchange'),
+								$(mqtt_homeassistant_discoveryenabled_value).trigger('onchange')) : null;
+								gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
+			</th>
+			<th hidden>$TOOLTIP_mqtt_enabled</th>
 		</tr>
 
-		<tr class="MQTTItem">
+		<tr class="classvisibility_mqtt_enabled">
 			<td class="indent1">
-				<span id="MQTT_Uri_text" style="color:black;">URI</span>
+				<span>URI</span>
 			</td>
 			<td>
-				<input required type="text" id="MQTT_Uri_value1">
+				<form id="mqtt_uri_form">
+					<input required type="text" name="mqtt.uri" id="mqtt_uri_value" placeholder="mqtt://192.168.x.x:1883"
+						onchange="gatherChangedParameter(this.form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_MQTT_Uri</td>
+			<td style="visibility:hidden">$TOOLTIP_mqtt_uri</td>
 		</tr>
 
-		<tr class="MQTTItem">
+		<tr class="classvisibility_mqtt_enabled">
 			<td class="indent1">
-				<span id="MQTT_MainTopic_text" style="color:black;">Main Topic</span>
+				<span>Main Topic</span>
 			</td>
 			<td>
-				<input required type="text" id="MQTT_MainTopic_value1">
+				<form id="mqtt_maintopic_form">
+					<input required type="text" name="mqtt.maintopic" id="mqtt_maintopic_value" placeholder="watermeter"
+						onchange="gatherChangedParameter(this.form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_MQTT_MainTopic</td>
+			<td style="visibility:hidden">$TOOLTIP_mqtt_maintopic</td>
 		</tr>
 
-		<tr class="MQTTItem">
+		<tr class="classvisibility_mqtt_enabled">
 			<td class="indent1">
-				<span id="MQTT_ClientID_text" style="color:black;">Client ID</span>
+				<span>Client ID</span>
 			</td>
 			<td>
-				<input required type="text" id="MQTT_ClientID_value1">
+				<form id="mqtt_clientid_form">
+					<input required type="text" name="mqtt.clientid" id="mqtt_clientid_value" maxlength="23"
+						pattern="^[A-Za-z0-9]+$" placeholder="watermeter" onchange="gatherChangedParameter(this.form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_MQTT_ClientID</td>
+			<td style="visibility:hidden">$TOOLTIP_mqtt_clientid</td>
 		</tr>
 
-		<tr class="MQTTItem">
+		<tr class="classvisibility_mqtt_enabled">
 			<td class="indent1">
-				<input type="checkbox" id="MQTT_user_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "user")'  >
-				<label for=MQTT_user_enabled><span id="MQTT_user_text" style="color:black;">Username</span></label>
+				<span>Authentication</span>
 			</td>
 			<td>
-				<input type="text" id="MQTT_user_value1">
+				<form id="mqtt_authmode_form">
+					<select name="mqtt.authmode" id="mqtt_authmode_value"
+							onchange="this.value == '1' ? (setClassVisibility('classvisibility_mqtt_authmode_1', true),
+														   setClassVisibility('classvisibility_mqtt_authmode_2', false)) :
+	   								  this.value == '2' ? (setClassVisibility('classvisibility_mqtt_authmode_1', true),
+										 				   setClassVisibility('classvisibility_mqtt_authmode_2', true),
+									  						gatherChangedParameter(mqtt_tls_cacert_form),
+															gatherChangedParameter(mqtt_tls_clientcert_form),
+															gatherChangedParameter(mqtt_tls_clientkey_form)) :
+						   								  (setClassVisibility('classvisibility_mqtt_authmode_1', false),
+							   							   setClassVisibility('classvisibility_mqtt_authmode_2', false));
+								gatherChangedParameter(this.form, true);">
+						<option value="0" selected>None</option>
+						<option value="1">Basic</option>
+						<option value="2">TLS</option>
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_MQTT_user</td>
+			<td style="visibility:hidden">$TOOLTIP_mqtt_authmode</td>
 		</tr>
 
-		<tr class="MQTTItem">
-			<td class="indent1">
-				<input type="checkbox" id="MQTT_password_enabled" value="1"  onclick = 'InvertEnableItem("MQTT", "password")'  >
-				<label for=MQTT_password_enabled><span id="MQTT_password_text" style="color:black;">Password</span></label>
-			</td>
-			<td>
-				<input type="text" id="MQTT_password_value1">
-			</td>
-			<td>$TOOLTIP_MQTT_password</td>
-		</tr>
-
-		<tr class="MQTTItem expert">
-			<td class="indent1">
-				<span id="MQTT_TLSEncryption_text" style="color:black;">TLS Encryption</span>
-			</td>
-			<td>
-				<select id="MQTT_TLSEncryption_value1" onchange='setEnabled("MQTT_TLSEncryption_parameter", this.value == "true" ? true : false);'>
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_MQTT_TLSEncryption</td>
-		</tr>
-
-		<tr class="MQTTItem MQTT_TLSEncryption_parameter expert">
+		<tr class="classvisibility_mqtt_enabled classvisibility_mqtt_authmode_1">
 			<td class="indent2">
-				<span id="MQTT_TLSCACert_text">CA Certificate</span>
+				<span>Username</span>
 			</td>
 			<td>
-				<input type="text" id="MQTT_TLSCACert_value1">
+				<form id="mqtt_username_form">
+					<input type="text" name="mqtt.username" id="mqtt_username_value"
+						onchange="gatherChangedParameter(this.form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_MQTT_TLSCACert</td>
+			<td style="visibility:hidden">$TOOLTIP_mqtt_username</td>
 		</tr>
 
-		<tr class="MQTTItem MQTT_TLSEncryption_parameter expert">
+		<tr class="classvisibility_mqtt_enabled classvisibility_mqtt_authmode_1">
 			<td class="indent2">
-				<span id="MQTT_TLSClientCert_text">Client Certificate</span>
+				<span>Password</span>
 			</td>
 			<td>
-				<input type="text" id="MQTT_TLSClientCert_value1">
+				<form id="mqtt_password_form">
+					<input type="password" name="mqtt.password" id="mqtt_password_value" autocomplete="on"
+						onchange="gatherChangedParameter(this.form)">
+						<span toggle="#mqtt_password_value" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+				</form>
 			</td>
-			<td>$TOOLTIP_MQTT_TLSClientCert</td>
+			<td style="visibility:hidden">$TOOLTIP_mqtt_password</td>
 		</tr>
 
-		<tr class="MQTTItem MQTT_TLSEncryption_parameter expert">
+		<tr class="classvisibility_mqtt_enabled classvisibility_mqtt_authmode_2">
 			<td class="indent2">
-				<span id="MQTT_TLSClientKey_text">Client Key</span>
+				<span>CA Certificate</span>
 			</td>
 			<td>
-				<input type="text" id="MQTT_TLSClientKey_value1">
+				<form id="mqtt_tls_cacert_form">
+					<select class="select_large" name="mqtt.tls.cacert" id="mqtt_tls_cacert_value"
+						onchange="gatherChangedParameter(this.form)">
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_MQTT_TLSClientKey</td>
+			<td style="visibility:hidden">$TOOLTIP_mqtt_tls_cacert</td>
 		</tr>
 
-		<tr class="MQTTItem">
+		<tr class="classvisibility_mqtt_enabled classvisibility_mqtt_authmode_2">
+			<td class="indent2">
+				<span>Client Certificate</span>
+			</td>
+			<td>
+				<form id="mqtt_tls_clientcert_form">
+					<select class="select_large" name="mqtt.tls.clientcert" id="mqtt_tls_clientcert_value"
+						onchange="gatherChangedParameter(this.form)">
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_mqtt_tls_clientcert</td>
+		</tr>
+
+		<tr class="classvisibility_mqtt_enabled classvisibility_mqtt_authmode_2">
+			<td class="indent2">
+				<span>Client Key</span>
+			</td>
+			<td>
+				<form id="mqtt_tls_clientkey_form">
+					<select class="select_large" name="mqtt.tls.clientkey" id="mqtt_tls_clientkey_value"
+						onchange="gatherChangedParameter(this.form)">
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_mqtt_tls_clientkey</td>
+		</tr>
+
+		<tr class="classvisibility_mqtt_enabled">
 			<td class="indent1">
-				<span id="MQTT_RetainMessages_text" style="color:black;">Retain Messages</span>
+				<span>Process Data Notation</span>
 			</td>
 			<td>
-				<select id="MQTT_RetainMessages_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
-				</select>
+				<form id="mqtt_processdatanotation_form">
+					<select name="mqtt.processdatanotation" id="mqtt_processdatanotation_value"
+							onchange="gatherChangedParameter(this.form, true)">
+						<option value="0" selected>JSON Topic</option>
+						<option value="1">Single Topics</option>
+						<option value="2">JSON + Topics</option>
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_MQTT_RetainMessages</td>
+			<td style="visibility:hidden">$TOOLTIP_mqtt_processdatanotation</td>
 		</tr>
 
-		<tr class="MQTTItem">
-			<td class="indent1" style="padding-top:25px" colspan="3">
-				<b>Homeassistant Discovery (using MQTT)</b>
+		<tr class="classvisibility_mqtt_enabled">
+			<td class="indent1">
+				<span>Retain Process Data</span>
 			</td>
+			<td>
+				<form id="mqtt_retainprocessdata_form">
+					<select name="mqtt.retainprocessdata" id="mqtt_retainprocessdata_value"
+							onchange="gatherChangedParameter(this.form)">
+						<option value="false">Disabled</option>
+						<option value="true" selected>Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_mqtt_retainprocessdata</td>
 		</tr>
 
-		<tr class="MQTTItem">
+		<tr class="classvisibility_mqtt_enabled">
+			<td class="indent1">
+				<span>Home Assistant Discovery</span>
+			</td>
+			<td>
+				<form id="mqtt_homeassistant_discoveryenabled_form">
+					<select name="mqtt.homeassistant.discoveryenabled" id="mqtt_homeassistant_discoveryenabled_value"
+							onchange="setClassVisibility('classvisibility_mqtt_homeassistant_discoveryenabled', this.value);
+								gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_mqtt_homeassistant_discoveryenabled</td>
+		</tr>
+
+		<tr class="classvisibility_mqtt_enabled classvisibility_mqtt_homeassistant_discoveryenabled">
 			<td class="indent2">
-				<span id="MQTT_HomeassistantDiscovery_text" style="color:black;">Homeassistant Discovery</span>
+				<span id="MQTT_HADiscoveryPrefix_text">Discovery Prefix</span>
 			</td>
 			<td>
-				<select id="MQTT_HomeassistantDiscovery_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
-				</select>
+				<form id="mqtt_homeassistant_discoveryprefix_form">
+					<input required type="text" name="mqtt.homeassistant.discoveryprefix" id="mqtt_homeassistant_discoveryprefix_value"
+						placeholder="homeassistant" onchange="gatherChangedParameter(this.form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_MQTT_HomeassistantDiscovery</td>
+			<td style="visibility:hidden">$TOOLTIP_mqtt_homeassistant_discoveryprefix</td>
 		</tr>
 
-		<tr class="MQTTItem">
+		<tr class="classvisibility_mqtt_enabled classvisibility_mqtt_homeassistant_discoveryenabled">
 			<td class="indent2">
-				<span id="MQTT_MeterType_text" style="color:black;">Meter Type</span>
+				<span id="MQTT_HAStatusTopic_text">Status Topic</span>
 			</td>
 			<td>
-				<select class="select_large" id="MQTT_MeterType_value1"> <!--  See https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes -->
-					<option value="other" selected>Other (no Units)</option>
-					<option value="water_m3">Watermeter (Value: m³, Rate: m³/h)</option>
-					<option value="water_l">Watermeter (Value: l, Rate: l/h)</option>
-					<option value="water_gal">Watermeter (Value: gal, Rate: gal/h)</option>
-					<option value="water_ft3">Watermeter (Value: ft³, Rate: ft³/m)</option>
-					<option value="gas_m3">Gasmeter (Value: m³, Rate: m³/h)</option>
-					<option value="gas_ft3">Gasmeter (Value: ft³, Rate: ft³/m)</option>
-					<option value="energy_wh">Energymeter (Value: Wh, Rate: W)</option>
-					<option value="energy_kwh">Energymeter (Value: kWh, Rate: kW)</option>
-					<option value="energy_mwh">Energymeter (Value: MWh, Rate: MW)</option>
-					<option value="energy_gj">Energymeter (Value: GJ, Rate: GJ/h)</option>
-				</select>
+				<form id="mqtt_homeassistant_statustopic_form">
+					<input required type="text" name="mqtt.homeassistant.statustopic" id="mqtt_homeassistant_statustopic_value"
+						placeholder="homeassistant/status" onchange="gatherChangedParameter(this.form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_MQTT_MeterType</td>
+			<td style="visibility:hidden">$TOOLTIP_mqtt_homeassistant_statustopic</td>
+		</tr>
+
+		<tr class="classvisibility_mqtt_enabled classvisibility_mqtt_homeassistant_discoveryenabled">
+			<td class="indent2">
+				<span id="MQTT_HAMeterType_text">Meter Type</span>
+			</td>
+			<td>
+				<form id="mqtt_homeassistant_metertype_form">
+					<!--  See https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes -->
+					<select class="select_large" name="mqtt.homeassistant.metertype" id="mqtt_homeassistant_metertype_value"
+							onchange="gatherChangedParameter(this.form, true)">
+						<option value="0">None (no Units)</option>
+						<option value="1" selected>Watermeter (Value: m³, Rate: m³/h)</option>
+						<option value="2">Watermeter (Value: l, Rate: l/h)</option>
+						<option value="3">Watermeter (Value: gal, Rate: gal/h)</option>
+						<option value="4">Watermeter (Value: ft³, Rate: ft³/m)</option>
+						<option value="5">Gasmeter (Value: m³, Rate: m³/h)</option>
+						<option value="6">Gasmeter (Value: ft³, Rate: ft³/m)</option>
+						<option value="7">Energymeter (Value: Wh, Rate: W)</option>
+						<option value="8">Energymeter (Value: kWh, Rate: kW)</option>
+						<option value="9">Energymeter (Value: MWh, Rate: MW)</option>
+						<option value="10">Energymeter (Value: GJ, Rate: GJ/h)</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_mqtt_homeassistant_metertype</td>
+		</tr>
+
+		<tr class="classvisibility_mqtt_enabled classvisibility_mqtt_homeassistant_discoveryenabled">
+			<td class="indent2">
+				<span>Retain Discovery Topics</span>
+			</td>
+			<td>
+				<form id="mqtt_homeassistant_retaindiscovery_form">
+					<select name="mqtt.homeassistant.retaindiscovery" id="mqtt_homeassistant_retaindiscovery_value"
+							onchange="gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_mqtt_homeassistant_retaindiscovery</td>
 		</tr>
 	</table>
 
@@ -995,130 +1567,188 @@
 	<!-- INFLUXDB v1 -->
 	<table class="table">
 		<colgroup>
-			<col span="1" style="width:290px">
-			<col span="1" style="width:300px;">
+			<col span="1" style="width:310px">
+			<col span="1" style="width:310px;">
 			<col span="1">
 		</colgroup>
 
 		<tr>
-			<th colspan="3">
-				<input type="checkbox" id="Category_InfluxDB_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()'  >
-				<label for=Category_InfluxDB_enabled>InfluxDB v1.x</label>
+			<th>
+			    <span>InfluxDB v1.x</span>
 			</th>
+			<th class="section">
+				<form id="influxdbv1_enabled_form">
+					<select style="font-weight:bold" class="classvisibility_init" name="influxdbv1.enabled" id="influxdbv1_enabled_value"
+							onchange="setClassVisibility('classvisibility_influxdbv1_enabled', this.value);
+								this.value == 'true' ? $(influxdbv1_authmode_value).trigger('onchange') : null;
+								gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
+			</th>
+			<th hidden>$TOOLTIP_influxdbv1_enabled</th>
 		</tr>
-		
-		<tr class="InfluxDBv1Item">
+
+		<tr class="classvisibility_influxdbv1_enabled">
 			<td class="indent1">
-				<span id="InfluxDB_Uri_text" style="color:black;">URI</span>
+				<span>URI</span>
 			</td>
 			<td>
-				<input required type="text" id="InfluxDB_Uri_value1">
+				<form id="influxdbv1_uri_form">
+					<input required type="text" name="influxdbv1.uri" id="influxdbv1_uri_value" placeholder="http://192.168.x.x:8086"
+						onchange="gatherChangedParameter(this.form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_InfluxDB_Uri</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv1_uri</td>
 		</tr>
 
-        <tr class="InfluxDBv1Item">
+        <tr class="classvisibility_influxdbv1_enabled">
 			<td class="indent1">
-				<span id="InfluxDB_Database_text" style="color:black;">Database</span>
+				<span>Database</span>
 			</td>
 			<td>
-				<input required type="text" id="InfluxDB_Database_value1">
+				<form id="influxdbv1_database_form">
+					<input required type="text" name="influxdbv1.database" id="influxdbv1_database_value" placeholder="watermeter"
+						onchange="gatherChangedParameter(this.form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_InfluxDB_Database</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv1_database</td>
 		</tr>
 
-		<tr class="InfluxDBv1Item">
+		<tr class="classvisibility_influxdbv1_enabled">
 			<td class="indent1">
-				<input type="checkbox" id="InfluxDB_user_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "user")'  >
-				<label for=InfluxDB_user_enabled><span id="InfluxDB_user_text" style="color:black;">Username</span></label>
+				<span>Authentication / Security</span>
 			</td>
 			<td>
-				<input type="text" id="InfluxDB_user_value1">
+				<form id="influxdbv1_authmode_form">
+					<select name="influxdbv1.authmode" id="influxdbv1_authmode_value"
+							onload=""
+							onchange="this.value == '1' ? (setClassVisibility('classvisibility_influxdbv1_authtls', 'false'),
+														   setClassVisibility('classvisibility_influxdbv1_authbasic', 'true')) :
+									  this.value == '2' ? (setClassVisibility('classvisibility_influxdbv1_authtls', 'true'),
+									  						gatherChangedParameter(influxdbv1_tls_cacert_form),
+															gatherChangedParameter(influxdbv1_tls_clientcert_form),
+															gatherChangedParameter(influxdbv1_tls_clientkey_form)) :
+														  (setClassVisibility('classvisibility_influxdbv1_authbasic', 'false'),
+									   					   setClassVisibility('classvisibility_influxdbv1_authtls', 'false'));
+										gatherChangedParameter(this.form, true)">
+						<option value="0" selected>None</option>
+						<option value="1">Basic</option>
+						<option value="2">TLS</option>
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_InfluxDB_user</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv1_authmode</td>
 		</tr>
 
-		<tr class="InfluxDBv1Item">
+		<tr class="classvisibility_influxdbv1_enabled classvisibility_influxdbv1_authbasic classvisibility_influxdbv1_authtls">
+			<td class="indent2">
+				<span>Username</span>
+			</td>
+			<td>
+				<form id="influxdbv1_username_form">
+					<input type="text" name="influxdbv1.username" id="influxdbv1_username_value"
+						onchange="gatherChangedParameter(this.form)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv1_username</td>
+		</tr>
+
+		<tr class="classvisibility_influxdbv1_enabled classvisibility_influxdbv1_authbasic classvisibility_influxdbv1_authtls">
+			<td class="indent2">
+				<span>Password</span>
+			</td>
+			<td>
+				<form id="influxdbv1_password_form">
+					<input type="password" name="influxdbv1.password" id="influxdbv1_password_value" autocomplete="on"
+						onchange="gatherChangedParameter(this.form)">
+						<span toggle="#influxdbv1_password_value" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv1_password</td>
+		</tr>
+
+		<tr class="classvisibility_influxdbv1_enabled classvisibility_influxdbv1_authtls">
+			<td class="indent2">
+				<span>CA Certificate</span>
+			</td>
+			<td>
+				<form id="influxdbv1_tls_cacert_form">
+					<select class="select_large" name="influxdbv1.tls.cacert" id="influxdbv1_tls_cacert_value"
+						onchange="gatherChangedParameter(this.form)">
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv1_tls_cacert</td>
+		</tr>
+
+		<tr class="classvisibility_influxdbv1_enabled classvisibility_influxdbv1_authtls">
+			<td class="indent2">
+				<span>Client Certificate</span>
+			</td>
+			<td>
+				<form id="influxdbv1_tls_clientcert_form">
+					<select class="select_large" name="influxdbv1.tls.clientcert" id="influxdbv1_tls_clientcert_value"
+						onchange="gatherChangedParameter(this.form)">
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv1_tls_clientcert</td>
+		</tr>
+
+		<tr class="classvisibility_influxdbv1_enabled classvisibility_influxdbv1_authtls">
+			<td class="indent2">
+				<span>Client Key</span>
+			</td>
+			<td>
+				<form id="influxdbv1_tls_clientkey_form">
+					<select class="select_large" name="influxdbv1.tls.clientkey" id="influxdbv1_tls_clientkey_value"
+						onchange="gatherChangedParameter(this.form)">
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv1_tls_clientkey</td>
+		</tr>
+
+		<tr class="classvisibility_influxdbv1_enabled" style="margin-top:12px">
+			<td style="padding-top:25px"><b>Parameter per number sequence</b></td>
+			<td style="padding-top:25px" colspan="2">
+				<form class="influxdbv1_per_sequence" id="influxdbv1_sequence_sequencename_form">
+					<select class="classvisibility_init" style="font-weight:bold"
+							name="influxdbv1.sequence.0.sequencename" id="influxdbv1_sequence_0_sequencename_value"
+							onchange="sequenceSelectAfterChange('influxdbv1_per_sequence', this.id);gatherChangedParameter(this.form)">
+					</select>
+				</form>
+			</td>
+		</tr>
+
+		<tr class="classvisibility_influxdbv1_enabled">
 			<td class="indent1">
-				<input type="checkbox" id="InfluxDB_password_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "password")'  >
-				<label for=InfluxDB_password_enabled><span id="InfluxDB_password_text" style="color:black;">Password</span></label>
+				<span>Measurement Name</span>
 			</td>
 			<td>
-				<input type="text" id="InfluxDB_password_value1">
+				<form class="influxdbv1_per_sequence" id="influxdbv1_sequence_measurementname_form">
+					<input required type="text"
+						name="influxdbv1.sequence.0.measurementname" id="influxdbv1_sequence_0_measurementname_value" placeholder="watermeter"
+						onchange="gatherChangedParameter(this.form);gatherChangedParameter(influxdbv1_sequence_sequencename_form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_InfluxDB_password</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv1_sequence_measurementname</td>
 		</tr>
 
-		<tr class="InfluxDBv1Item expert">
+		<tr class="classvisibility_influxdbv1_enabled">
 			<td class="indent1">
-				<span id="InfluxDB_TLSEncryption_text" style="color:black;">TLS Encryption</span>
+				<span >Field Key [Actual Value]</span>
 			</td>
 			<td>
-				<select id="InfluxDB_TLSEncryption_value1" onchange='setEnabled("InfluxDB_TLSEncryption_parameter", this.value == "true" ? true : false);'>
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
+				<form class="influxdbv1_per_sequence" id="influxdbv1_sequence_fieldkey1_form">
+					<input required type="text"
+						name="influxdbv1.sequence.0.fieldkey1" id="influxdbv1_sequence_0_fieldkey1_value" placeholder="value"
+						onchange="gatherChangedParameter(this.form);gatherChangedParameter(influxdbv1_sequence_sequencename_form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_InfluxDB_TLSEncryption</td>
-		</tr>
-
-		<tr class="InfluxDBv1Item InfluxDB_TLSEncryption_parameter expert">
-			<td class="indent2">
-				<span id="InfluxDB_TLSCACert_text">CA Certificate</span>
-			</td>
-			<td>
-				<input type="text" id="InfluxDB_TLSCACert_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDB_TLSCACert</td>
-		</tr>
-
-		<tr class="InfluxDBv1Item InfluxDB_TLSEncryption_parameter expert">
-			<td class="indent2">
-				<span id="InfluxDB_TLSClientCert_text">Client Certificate</span>
-			</td>
-			<td>
-				<input type="text" id="InfluxDB_TLSClientCert_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDB_TLSClientCert</td>
-		</tr>
-
-		<tr class="InfluxDBv1Item InfluxDB_TLSEncryption_parameter expert">
-			<td class="indent2">
-				<span id="InfluxDB_TLSClientKey_text">Client Key</span>
-			</td>
-			<td>
-				<input type="text" id="InfluxDB_TLSClientKey_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDB_TLSClientKey</td>
-		</tr>
-
-		<tr class="InfluxDBv1Item" style="margin-top:12px">
-			<td class="indent1" style="padding-top:25px" colspan="3">
-				<b>Parameter per number sequence:</b>
-                <select
-					style="font-weight: bold; margin-left:15px" id="NumbersInfluxDB_value1" onchange="numberInfluxDBChanged()">
-                </select>
-			</td>
-		</tr>
-		
-		<tr class="InfluxDBv1Item">
-			<td class="indent2">
-				<span id="InfluxDB_Measurement_text" style="color:black;">Measurement</span>
-			</td>
-			<td>
-				<input required type="text" id="InfluxDB_Measurement_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDB_NUMBER.Measurement</td>
-		</tr>
-
-		<tr class="InfluxDBv1Item">
-			<td class="indent2">
-				<span id="InfluxDB_Field_text" style="color:black;">Field</span>
-			</td>
-			<td>
-				<input required type="text" id="InfluxDB_Field_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDB_NUMBER.Field</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv1_sequence_fieldkey1</td>
 		</tr>
 	</table>
 
@@ -1126,130 +1756,183 @@
 	<!-- INFLUXDB v2 -->
 	<table class="table">
 		<colgroup>
-			<col span="1" style="width:290px">
-			<col span="1" style="width:300px;">
+			<col span="1" style="width:310px">
+			<col span="1" style="width:310px;">
 			<col span="1">
 		</colgroup>
 
 		<tr>
-			<th colspan="3">
-				<input type="checkbox" id="Category_InfluxDBv2_enabled" value="1"  onclick = 'UpdateAfterCategoryCheck()'  >
-				<label for=Category_InfluxDBv2_enabled>InfluxDB v2.x</label>
+			<th>
+			    <span>InfluxDB v2.x</span>
 			</th>
+			<th class="section">
+				<form id="influxdbv2_enabled_form">
+					<select style="font-weight:bold" class="classvisibility_init" name="influxdbv2.enabled" id="influxdbv2_enabled_value"
+							onchange="setClassVisibility('classvisibility_influxdbv2_enabled', this.value);
+								this.value == 'true' ? $(influxdbv2_authmode_value).trigger('onchange') : null;
+								gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
+			</th>
+			<th hidden>$TOOLTIP_influxdbv2_enabled</th>
 		</tr>
 
-		<tr class="InfluxDBv2Item">
+		<tr class="classvisibility_influxdbv2_enabled">
 			<td class="indent1">
-				<span id="InfluxDBv2_Uri_text" style="color:black;">URI</span>
+				<span>URI</span>
 			</td>
 			<td>
-				<input required type="text" id="InfluxDBv2_Uri_value1">
+				<form id="influxdbv2_uri_form">
+					<input required type="text" name="influxdbv2.uri" id="influxdbv2_uri_value" placeholder="http://192.168.x.x:8086"
+						onchange="gatherChangedParameter(this.form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_InfluxDBv2_Uri</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv2_uri</td>
 		</tr>
 
-        <tr class="InfluxDBv2Item">
+        <tr class="classvisibility_influxdbv2_enabled">
 			<td class="indent1">
-				<span id="InfluxDBv2_Bucket_text" style="color:black;">Bucket</span>
+				<span>Bucket</span>
 			</td>
 			<td>
-				<input required type="text" id="InfluxDBv2_Bucket_value1">
+				<form id="influxdbv2_database_form">
+					<input required type="text" name="influxdbv2.bucket" id="influxdbv2_bucket_value" placeholder="watermeter"
+						onchange="gatherChangedParameter(this.form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_InfluxDBv2_Bucket</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv2_bucket</td>
 		</tr>
 
-		<tr class="InfluxDBv2Item">
+		<tr class="classvisibility_influxdbv2_enabled">
 			<td class="indent1">
-				<input type="checkbox" id="InfluxDBv2_Org_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Org")'  >
-				<label for=InfluxDBv2_Org_enabled><span id="InfluxDBv2_Org_text" style="color:black;">Organization (Org)</span></label>
+				<span>Organization</span>
 			</td>
 			<td>
-				<input type="text" id="InfluxDBv2_Org_value1">
+				<form id="influxdbv2_organization_form">
+					<input required type="text" name="influxdbv2.organization" id="influxdbv2_organization_value"
+						placeholder="organization" onchange="gatherChangedParameter(this.form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_InfluxDBv2_Org</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv2_organization</td>
 		</tr>
 
-		<tr class="InfluxDBv2Item">
+		<tr class="classvisibility_influxdbv2_enabled">
 			<td class="indent1">
-				<input type="checkbox" id="InfluxDBv2_Token_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Token")'  >
-				<label for=InfluxDBv2_Token_enabled><span id="InfluxDBv2_Token_text" style="color:black;">Token</span></label>
+				<span>Authentication / Security</span>
 			</td>
 			<td>
-				<input type="text" id="InfluxDBv2_Token_value1">
+				<form id="influxdbv2_authmode_form">
+					<select name="influxdbv2.authmode" id="influxdbv2_authmode_value"
+							onchange="this.value == '2' ? (setClassVisibility('classvisibility_influxdbv2_authmode_2', 'true'),
+															gatherChangedParameter(influxdbv2_tls_cacert_form),
+															gatherChangedParameter(influxdbv2_tls_clientcert_form),
+															gatherChangedParameter(influxdbv2_tls_clientkey_form)) :
+														  setClassVisibility('classvisibility_influxdbv2_authmode_2', 'false');
+								gatherChangedParameter(this.form, true)">
+						<option value="1" selected>Token</option>
+						<option value="2">TLS</option>
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_InfluxDBv2_Token</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv2_authmode</td>
 		</tr>
 
-		<tr class="InfluxDBv2Item expert">
+		<tr class="classvisibility_influxdbv2_enabled">
+			<td class="indent2">
+				<span>Token</span>
+			</td>
+			<td>
+				<form id="influxdbv2_token_form">
+					<input type="password" name="influxdbv2.token" id="influxdbv2_token_value" autocomplete="on"
+						onchange="gatherChangedParameter(this.form)">
+					<span toggle="#influxdbv2_token_value" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv2_token</td>
+		</tr>
+
+		<tr class="classvisibility_influxdbv2_enabled classvisibility_influxdbv2_authmode_2">
+			<td class="indent2">
+				<span>CA Certificate</span>
+			</td>
+			<td>
+				<form id="influxdbv2_tls_cacert_form">
+					<select class="select_large" name="influxdbv2.tls.cacert" id="influxdbv2_tls_cacert_value"
+						onchange="gatherChangedParameter(this.form)">
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv2_tls_cacert</td>
+		</tr>
+
+		<tr class="classvisibility_influxdbv2_enabled classvisibility_influxdbv2_authmode_2">
+			<td class="indent2">
+				<span>Client Certificate</span>
+			</td>
+			<td>
+				<form id="influxdbv2_tls_clientcert_form">
+					<select class="select_large" name="influxdbv2.tls.clientcert" id="influxdbv2_tls_clientcert_value"
+						onchange="gatherChangedParameter(this.form)">
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv2_tls_clientcert</td>
+		</tr>
+
+		<tr class="classvisibility_influxdbv2_enabled classvisibility_influxdbv2_authmode_2">
+			<td class="indent2">
+				<span>Client Key</span>
+			</td>
+			<td>
+				<form id="influxdbv2_tls_clientkey_form">
+					<select class="select_large" name="influxdbv2.tls.clientkey" id="influxdbv2_tls_clientkey_value"
+						onchange="gatherChangedParameter(this.form)">
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv2_tls_clientkey</td>
+		</tr>
+
+		<tr class="classvisibility_influxdbv2_enabled" style="margin-top:12px">
+			<td style="padding-top:25px"><b>Parameter per number sequence</b></td>
+			<td style="padding-top:25px" colspan="2">
+				<form class="influxdbv2_per_sequence" id="influxdbv2_sequence_sequencename_form">
+					<select class="classvisibility_init" style="font-weight:bold"
+							name="influxdbv2.sequence.0.sequencename" id="influxdbv2_sequence_0_sequencename_value"
+							onchange="sequenceSelectAfterChange('influxdbv2_per_sequence', this.id);gatherChangedParameter(this.form)">
+					</select>
+				</form>
+			</td>
+		</tr>
+
+		<tr class="classvisibility_influxdbv2_enabled">
 			<td class="indent1">
-				<span id="InfluxDBv2_TLSEncryption_text" style="color:black;">TLS Encryption</span>
+				<span>Measurement Name</span>
 			</td>
 			<td>
-				<select id="InfluxDBv2_TLSEncryption_value1" onchange='setEnabled("InfluxDBv2_TLSEncryption_parameter", this.value == "true" ? true : false);'>
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
+				<form class="influxdbv2_per_sequence" id="influxdbv2_sequence_measurementname_form">
+					<input required type="text"
+						name="influxdbv2.sequence.0.measurementname" id="influxdbv2_sequence_0_measurementname_value" placeholder="watermeter"
+						onchange="gatherChangedParameter(this.form);gatherChangedParameter(influxdbv2_sequence_sequencename_form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_InfluxDBv2_TLSEncryption</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv2_sequence_measurementname</td>
 		</tr>
 
-		<tr class="InfluxDBv2Item InfluxDBv2_TLSEncryption_parameter expert">
-			<td class="indent2">
-				<span id="InfluxDBv2_TLSCACert_text">CA Certificate</span>
+		<tr class="classvisibility_influxdbv2_enabled">
+			<td class="indent1">
+				<span >Field Key [Actual Value]</span>
 			</td>
 			<td>
-				<input type="text" id="InfluxDBv2_TLSCACert_value1">
+				<form class="influxdbv2_per_sequence" id="influxdbv2_sequence_fieldkey1_form">
+					<input required type="text"
+						name="influxdbv2.sequence.0.fieldkey1" id="influxdbv2_sequence_0_fieldkey1_value" placeholder="value"
+						onchange="gatherChangedParameter(this.form);gatherChangedParameter(influxdbv2_sequence_sequencename_form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_InfluxDBv2_TLSCACert</td>
-		</tr>
-
-		<tr class="InfluxDBv2Item InfluxDBv2_TLSEncryption_parameter expert">
-			<td class="indent2">
-				<span id="InfluxDBv2_TLSClientCert_text">Client Certificate</span>
-			</td>
-			<td>
-				<input type="text" id="InfluxDBv2_TLSClientCert_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDBv2_TLSClientCert</td>
-		</tr>
-
-		<tr class="InfluxDBv2Item InfluxDBv2_TLSEncryption_parameter expert">
-			<td class="indent2">
-				<span id="InfluxDBv2_TLSClientKey_text">Client Key</span>
-			</td>
-			<td>
-				<input type="text" id="InfluxDBv2_TLSClientKey_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDBv2_TLSClientKey</td>
-		</tr>
-
-		<tr class="InfluxDBv2Item" style="margin-top:12px">
-			<td class="indent1" style="padding-top:25px" colspan="3">
-				<b>Parameter per number sequence:</b>
-                <select
-					style="font-weight: bold; margin-left:15px" id="NumbersInfluxDBv2_value1" onchange="numberInfluxDBv2Changed()">
-                </select>
-			</td>
-		</tr>
-
-		<tr class="InfluxDBv2Item">
-			<td class="indent2">
-				<span id="InfluxDBv2_Measurement_text" style="color:black;">Measurement</span>
-			</td>
-			<td>
-				<input required type="text" id="InfluxDBv2_Measurement_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDBv2_NUMBER.Measurement</td>
-		</tr>
-		
-		<tr class="InfluxDBv2Item">
-			<td class="indent2">
-				<span id="InfluxDBv2_Field_text" style="color:black;">Field</span>
-			</td>
-			<td>
-				<input required type="text" id="InfluxDBv2_Field_value1">
-			</td>
-			<td>$TOOLTIP_InfluxDBv2_NUMBER.Field</td>
+			<td style="visibility:hidden">$TOOLTIP_influxdbv2_sequence_fieldkey1</td>
 		</tr>
 	</table>
 
@@ -1257,617 +1940,607 @@
 	<!-- GPIO -->
 	<table class="table">
 		<colgroup>
-			<col span="1" style="width:290px">
-			<col span="1" style="width:300px;">
+			<col span="1" style="width:310px">
+			<col span="1" style="width:310px;">
 			<col span="1">
 		</colgroup>
 
 		<tr>
-			<th colspan="3">
-				<input type="checkbox" id="Category_GPIO_enabled" value="1"  onclick='UpdateAfterCategoryCheck()'  > 
-				    <label for=Category_GPIO_enabled>GPIO (General Purpose Input / Output)</label>
+			<th>
+			    <span>GPIO (General Purpose Input/Output)</span>
 			</th>
-		</tr>
-
-		<!-- GPIO0 begin -->
-		<tr class="GPIO_IO0 GPIO_item expert">
-			<td class="indent1">
-				<input type="checkbox" id="GPIO_IO0_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO0")' >
-				<label for=GPIO_IO0_enabled><span id="GPIO_IO0_text">GPIO0 Configuration</span></label>
-			</td>
-			<td>
-					<select id="GPIO_IO0_value1">
-						<option value="input">input</option>
-						<option value="input-pullup">input pullup</option>
-						<option value="input-pulldown">input pulldown</option>
-						<option value="output">output</option>
+			<th class="section">
+				<form id="gpio_customizationenabled_form">
+					<select style="font-weight:bold" class="classvisibility_init"
+							name="gpio.customizationenabled" id="gpio_customizationenabled_value"
+							onchange="setClassVisibility('classvisibility_gpio_customizationenabled', this.value);
+								this.value == 'true' ? $('[id$=\'pinenabled_value\']').trigger('onchange') : null;
+								gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
 					</select>
-			</td>
-			<td>$TOOLTIP_GPIO_IO0</td>
+				</form>
+			</th>
+			<th hidden>$TOOLTIP_gpio_customizationenabled</th>
 		</tr>
 
-		<tr class="GPIO_IO0 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO0 GPIO_item">GPIO0 Use Interrupt</span>
+		<tr class="classvisibility_gpio_customizationenabled classexpert_gpio">
+			<td>
+				<span style="font-weight:bold">Pin Selection</span>
 			</td>
 			<td>
-					<select id="GPIO_IO0_value2">
-						<option value="disabled">disabled</option>
-						<option value="rising-edge">rising edge</option>
-						<option value="falling-edge">falling edge</option>
-						<option value="rising-and-falling">rising and falling</option>
-						<option value="low-level-trigger">low level trigger</option>
-						<option value="high-level-trigger">high level trigger</option>
-					</select>	
-				</td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO0 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO0 GPIO_item">GPIO0 PWM Duty Cycle Resolution</span>
-			</td>
-			<td>
-				<input required type="number" id="GPIO_IO0_value3" min="1" max="20"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO0 GPIO_item">Bits</span>
-			</td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO0 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO0 GPIO_item">GPIO0 Enable MQTT</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO0_value4" ></td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO0 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO0 GPIO_item">GPIO0 Enable REST API</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO0_value5" ></td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO0 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO0 GPIO_item">GPIO0 Name</span>
-			</td>
-			<td><input type="text" id="GPIO_IO0_value6" ></td>
-			<td></td>
-		</tr>
-		<!-- GPIO0 end -->
-
-		<!-- GPIO1 begin -->
-		<tr class="GPIO_IO1 GPIO_item expert">
-			<td class="indent1">
-				<input type="checkbox" id="GPIO_IO1_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO1")' >
-				<label for=GPIO_IO1_enabled><span id="GPIO_IO1_text">GPIO1 Configuration</span></label>
-			</td>
-			<td>
-					<select id="GPIO_IO1_value1">
-						<option value="input">input</option>
-						<option value="input-pullup">input pullup</option>
-						<option value="input-pulldown">input pulldown</option>
-						<option value="output">output</option>
+				<form class="form_gpio_config" id="gpio_gpiopin_gpionumber_form">
+					<select style="font-weight:bold" class="classvisibility_init"
+							name="gpio.gpiopin.0.gpionumber" id="gpio_gpiopin_0_gpionumber_value"
+							onchange="gpioPinSelectAfterChange(); gatherChangedParameter(this.form, true)">
 					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_GPIO_IO1</td>
+			<td style="visibility:hidden">$TOOLTIP_gpio_gpiopin_gpionumber</td>
 		</tr>
 
-		<tr class="GPIO_IO1 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO1 GPIO_item expert">GPIO1 Use Interrupt</span>
+		<tr class="classvisibility_gpio_customizationenabled classexpert_gpio">
+			<td>
+				<span>Pin Status</span>
 			</td>
 			<td>
-				<select id="GPIO_IO1_value2">
-					<option value="disabled">disabled</option>
-					<option value="rising-edge" disabled>rising edge</option>
-					<option value="falling-edge" disabled>falling edge</option>
-					<option value="rising-and-falling">rising and falling</option>
-					<option value="low-level-trigger">low level trigger</option>
-					<option value="high-level-trigger">high level trigger</option>
-				</select>
-			</td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO1 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO1 GPIO_item">GPIO1 PWM Duty Cycle Resolution</span>
-			</td>
-			<td><input required type="number" id="GPIO_IO1_value3" min="1" max="20"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO1 GPIO_item">Bits</span>
-			</td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO1 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO1 GPIO_item">GPIO1 Enable MQTT</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO1_value4" ></td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO1 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO1 GPIO_item">GPIO1 Enable REST API</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO1_value5" ></td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO1 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO1 GPIO_item expert">GPIO1 Name</span>
-			</td>
-			<td><input type="text" id="GPIO_IO1_value6" ></td>
-			<td></td>
-		</tr>
-		<!-- GPIO1 end -->
-
-		<!-- GPIO3 begin -->
-		<tr class="GPIO_IO3 GPIO_item expert">
-			<td class="indent1">
-				<input type="checkbox" id="GPIO_IO3_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO3")' >
-				<label for=GPIO_IO3_enabled><span id="GPIO_IO3_text">GPIO3 Configuration</span></label>
-			</td>
-			<td>
-				<select id="GPIO_IO3_value1">
-					<option value="input">input</option>
-					<option value="input-pullup">input pullup</option>
-					<option value="input-pulldown">input pulldown</option>
-					<option value="output">output</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_GPIO_IO3</td>
-		</tr>
-
-		<tr class="GPIO_IO3 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO3 GPIO_item">GPIO3 Use Interrupt</span>
-			</td>
-			<td>
-				<select id="GPIO_IO3_value2">
-					<option value="disabled">disabled</option>
-					<option value="rising-edge" disabled>rising edge</option>
-					<option value="falling-edge" disabled>falling edge</option>
-					<option value="rising-and-falling">rising and falling</option>
-					<option value="low-level-trigger">low level trigger</option>
-					<option value="high-level-trigger">high level trigger</option>
-				</select>
-			</td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO3 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO3 GPIO_item">GPIO3 PWM Duty Cycle Resolution</span>
-			</td>
-			<td><input required type="number" id="GPIO_IO3_value3" min="1" max="20"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO3 GPIO_item">Bits</span>
-			</td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO3 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO3 GPIO_item">GPIO3 Enable MQTT</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO3_value4" ></td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO3 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO3 GPIO_item">GPIO3 Enable REST API</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO3_value5" ></td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO3 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO3 GPIO_item">GPIO3 Name</span>
-			</td>
-			<td><input type="text" id="GPIO_IO3_value6" ></td>
-			<td></td>
-		</tr>
-		<!-- GPIO3 end -->
-
-		<!-- GPIO4 begin -->
-		<tr class="GPIO_item" style="border-bottom: 0px;">
-			<td class="indent1">
-				<input type="checkbox" id="GPIO_IO4_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO4")' checked>
-				<label for=GPIO_IO4_enabled><span id="GPIO_IO4_text">GPIO4 Configuration</span></label>
-			</td>
-			<td>
-				<select id="GPIO_IO4_value1">
-					<option value="input">input</option>
-					<option value="input-pullup">input pullup</option>
-					<option value="input-pulldown">input pulldown</option>
-					<option value="output">output</option>
-					<option value="built-in-led" selected>built-in led flash light</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_GPIO_IO4</td>
-		</tr>
-
-		<tr class="GPIO_item" style="border-top: 0px;">
-			<td colspan="3" style="padding-left:28px">
-				<b>IMPORTANT NOTE:</b><br>
-				If you'd like to use the built-in flash LED in parallel with other GPIO functionality,
-				you have to explicitely activate the "built-in LED flash light" option on GPIO4. The light 
-				intensity control (PWM) of the LED flash light is not functional anymore (only 100%).
-			</td>
-		</tr>
-
-		<tr class="GPIO_IO4 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO4 GPIO_item">GPIO4 Use Interrupt</span>
-			</td>
-			<td>
-				<select id="GPIO_IO4_value2">
-					<option value="disabled">disabled</option>
-					<option value="rising-edge">rising edge</option>
-					<option value="falling-edge">falling edge</option>
-					<option value="rising-and-falling">rising and falling</option>
-					<option value="low-level-trigger">low level trigger</option>
-					<option value="high-level-trigger">high level trigger</option>
-				</select>	
-			</td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO4 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO4 GPIO_item">GPIO4 PWM Duty Cycle Resolution</span>
-			</td>
-			<td><input required type="number" id="GPIO_IO4_value3" min="1" max="20"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO4 GPIO_item">Bits</span>
-			</td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO4 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO4 GPIO_item">GPIO4 Enable MQTT</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO4_value4" ></td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO4 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO4 GPIO_item">GPIO4 Enable REST API</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO4_value5" ></td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO4 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO4 GPIO_item">GPIO4 Name</span>
-			</td>
-			<td><input type="text" id="GPIO_IO4_value6" ></td>
-			<td></td>
-		</tr>
-		<!-- GPIO4 end -->
-
-		<!-- GPIO12 begin -->
-		<tr class="GPIO_item">
-			<td class="indent1">
-				<input type="checkbox" id="GPIO_IO12_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO12")' >
-				<label for=GPIO_IO12_enabled><span id="GPIO_IO12_text">GPIO12 Configuration</span></label>
-			</td>
-			<td>
-				<select id="GPIO_IO12_value1">
-					<option value="input">input</option>
-					<option value="input-pullup">input pullup</option>
-					<option value="input-pulldown">input pulldown</option>
-					<option value="output">output</option>
-					<option value="external-flash-ws281x" selected>external flash light ws281x controlled</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_GPIO_IO12</td>
-		</tr>
-
-		<tr class="GPIO_IO12 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO12 GPIO_item">GPIO12 Use Interrupt</span>
-			</td>
-			<td>
-				<select class="GPIO_IO12 GPIO_item" id="GPIO_IO12_value2">
-					<option value="disabled">disabled</option>
-					<option value="rising-edge">rising edge</option>
-					<option value="falling-edge">falling edge</option>
-					<option value="rising-and-falling">rising and falling</option>
-					<option value="low-level-trigger">low level trigger</option>
-					<option value="high-level-trigger">high level trigger</option>
-				</select>	
-			</td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO12 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO12 GPIO_item">GPIO12 PWM Duty Cycle Resolution</span>
-			</td>
-			<td><input required type="number" id="GPIO_IO12_value3" min="1" max="20"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO12 GPIO_item">Bits</span>
-			</td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO12 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO12 GPIO_item">GPIO12 Enable MQTT</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO12_value4" ></td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_IO12 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO12 GPIO_item">GPIO12 Enable REST API</span>
-			</td>
-			<td><input type="checkbox" id="GPIO_IO12_value5" ></td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO12 GPIO_item">GPIO12 Name</span>
-			</td>
-			<td><input type="text" id="GPIO_IO12_value6" ></td>
-			<td></td>
-		</tr>
-
-		<tr class="GPIO_item">
-			<td class="indent1">
-				<span class="GPIO_IO12 GPIO_item" id="GPIO_LEDType_text">LED Type (NeoPixel)</span>
-			</td>
-			<td class="GPIO_IO12 GPIO_item">
-				<select class="GPIO_IO12 GPIO_item" id="GPIO_LEDType_value1">
-					<option value="WS2812" selected>WS2812</option>
-					<option value="WS2812B">WS2812B</option>
-					<option value="SK6812">SK6812</option>
-					<option value="WS2813">WS2813</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_GPIO_LEDType</td>
-		</tr>
-
-		<tr class="GPIO_item">
-			<td class="indent1">
-				<span class="GPIO_item" id="GPIO_LEDNumbers_text">Numbers of LEDs</span>
-			</td>
-			<td>
-				<input required type="number" name="name" id="GPIO_LEDNumbers_value1"  min="1"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_GPIO_LEDNumbers</td>
-		</tr>
-
-		<tr class="GPIO_item">
-			<td class="indent1">
-				<span class="GPIO_item" id="GPIO_LEDColor_text">LED Color</span>
-			</td>
-			<td class="GPIO_item">
-				R <input required style="min-width:45px;width:45px;" type="number" class="GPIO_item" id="GPIO_LEDColor_value1"
-						 min="0" max="255" step="1" oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255)) && 
-							(!validity.stepMismatch||(value=parseInt(this.value)));">
-				G <input required style="min-width:45px;width:45px" type="number" class="GPIO_item" id="GPIO_LEDColor_value2"
-						 min="0" max="255" step="1" oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255)) && 
-							(!validity.stepMismatch||(value=parseInt(this.value)));">
-				B <input required style="min-width:45px;width:45px" type="number" class="GPIO_item" id="GPIO_LEDColor_value3"
-						 min="0" max="255" step="1" oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255)) && 
-							(!validity.stepMismatch||(value=parseInt(this.value)));">
-			</td>
-			<td>$TOOLTIP_GPIO_LEDColor</td>
-		</tr>
-		<!-- GPIO12 end -->
-
-		<!-- GPIO13 begin -->
-		<tr class="GPIO_IO13 GPIO_item expert">
-			<td class="indent1">
-				<input type="checkbox" id="GPIO_IO13_enabled" value="1"  onclick = 'InvertEnableItem("GPIO", "IO13")' >
-				<label for=GPIO_IO13_enabled><span id="GPIO_IO13_text">GPIO13 Configuration</span></label>
-			</td>
-			<td>
-					<select id="GPIO_IO13_value1">
-						<option value="input">input</option>
-						<option value="input-pullup">input pullup</option>
-						<option value="input-pulldown">input pulldown</option>
-						<option value="output">output</option>
+				<form class="form_gpio_config" id="gpio_gpiopin_pinenabled_form">
+					<select name="gpio.gpiopin.0.pinenabled" id="gpio_gpiopin_0_pinenabled_value"
+							onchange="setClassVisibility('classvisibility_gpio_gpiopin_pinenabled', this.value);
+								this.value == 'true' ? $('[id$=\'pinmode_value\']').trigger('onchange') : null;
+								gatherChangedParameter(gpio_gpiopin_gpionumber_form, true);gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
 					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_GPIO_IO13</td>
+			<td style="visibility:hidden">$TOOLTIP_gpio_gpiopin_pinenabled</td>
 		</tr>
 
-		<tr class="GPIO_IO13 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO13 GPIO_item">GPIO13 Use Interrupt</span>
+		<tr class="classvisibility_gpio_customizationenabled classvisibility_gpio_gpiopin_pinenabled classexpert_gpio">
+			<td class="indent1">
+				<span>Pin Mode</span>
+				<span id="gpio_gpiopin_pinmode_restrictedusagetext" style="display:none; color:red;"></span>
 			</td>
 			<td>
-					<select id="GPIO_IO13_value2">
-						<option value="disabled">disabled</option>
-						<option value="rising-edge" disabled>rising edge</option>
-						<option value="falling-edge" disabled>falling edge</option>
-						<option value="rising-and-falling">rising and falling</option>
-						<option value="low-level-trigger">low level trigger</option>
-						<option value="high-level-trigger">high level trigger</option>
-					</select>	
-				</td>
-			<td></td>
+				<form class="form_gpio_config" id="gpio_gpiopin_pinmode_form">
+					<select name="gpio.gpiopin.0.pinmode" id="gpio_gpiopin_0_pinmode_value"
+							onchange='gpioPinModeChanged();gatherChangedParameter(gpio_gpiopin_gpionumber_form, true);
+								gatherChangedParameter(this.form)'>
+						<option value="flashlight-default">flashlight-default</option>
+						<option value="flashlight-pwm">flashlight-pwm</option>
+						<option value="flashlight-smartled">flashlight-smartled</option>
+						<option value="flashlight-digital">flashlight-digital</option>
+						<option value="input" selected>input</option>
+						<option value="input-pullup">input-pullup</option>
+						<option value="input-pulldown">input-pulldown</option>
+						<option value="output">output</option>
+						<option value="output-pwm">output-pwm</option>
+						<option value="trigger-cycle-start">trigger-cycle-start</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_gpio_gpiopin_pinmode</td>
 		</tr>
 
-		<tr class="GPIO_IO13 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO13 GPIO_item">GPIO13 PWM Duty Cycle Resolution</span>
+		<tr class="classvisibility_gpio_customizationenabled classvisibility_gpio_gpiopin_pinenabled gpio_show_capture_mode classexpert_gpio">
+			<td class="indent1">
+				<span>Pin Capture Mode</span>
 			</td>
-			<td><input required type="number" id="GPIO_IO13_value3" min="1" max="20"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=20)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));"><span class="GPIO_IO13 GPIO_item">Bits</span></td>
-			<td></td>
+			<td>
+				<form class="form_gpio_config" id="gpio_gpiopin_capturemode_form">
+					<select name="gpio.gpiopin.0.capturemode" id="gpio_gpiopin_0_capturemode_value"
+							onchange='gpioPinModeChanged(); gatherChangedParameter(gpio_gpiopin_gpionumber_form, true);
+								gatherChangedParameter(this.form)'>
+						<option value="cyclic-polling" selected>cyclic-polling</option>
+						<option value="interrupt-rising-edge">interrupt-rising-edge</option>
+						<option value="interrupt-falling-edge">interrupt-falling-edge</option>
+						<option value="interrupt-rising-falling">interrupt-rising-falling</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_gpio_gpiopin_capturemode</td>
 		</tr>
 
-		<tr class="GPIO_IO13 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO13 GPIO_item">GPIO13 Enable MQTT</span>
+		<tr class="classvisibility_gpio_customizationenabled classvisibility_gpio_gpiopin_pinenabled gpio_show_debounce_time classexpert_gpio">
+			<td class="indent1">
+				<span>Input Debounce Time</span>
 			</td>
-			<td><input type="checkbox" id="GPIO_IO13_value4" ></td>
-			<td></td>
+			<td>
+				<form class="form_gpio_config" id="gpio_gpiopin_inputdebouncetime_form">
+					<input required type="number" min="0" max="5000" value="500"
+						name="gpio.gpiopin.0.inputdebouncetime" id="gpio_gpiopin_0_inputdebouncetime_value"
+						onchange="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=5000));
+							gatherChangedParameter(gpio_gpiopin_gpionumber_form, true);gatherChangedParameter(this.form, true)">ms
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_gpio_gpiopin_inputdebouncetime</td>
 		</tr>
 
-		<tr class="GPIO_IO13 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO13 GPIO_item">GPIO13 Enable REST API</span>
+		<tr class="classvisibility_gpio_customizationenabled classvisibility_gpio_gpiopin_pinenabled gpio_show_pwm_frequency classexpert_gpio">
+			<td class="indent1">
+				<span>Pin PWM Frequency</span>
 			</td>
-			<td><input type="checkbox" id="GPIO_IO13_value5" ></td>
-			<td></td>
+			<td>
+				<form class="form_gpio_config" id="gpio_gpiopin_pwmfrequency_form">
+					<input style="min-width:90px" required type="number" min="5" max="1000000" value="5000"
+						name="gpio.gpiopin.0.pwmfrequency" id="gpio_gpiopin_0_pwmfrequency_value"
+						onchange="(!validity.rangeUnderflow||(value=5)) && (!validity.rangeOverflow||(value=1000000));
+							gatherChangedParameter(gpio_gpiopin_gpionumber_form, true);gatherChangedParameter(this.form, true)">Hz
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_gpio_gpiopin_pwmfrequency</td>
 		</tr>
 
-		<tr class="GPIO_IO13 GPIO_item expert">
-			<td class="indent2">
-				<span class="GPIO_IO13 GPIO_item">GPIO13 Name</span>
+		<tr class="classvisibility_gpio_customizationenabled classvisibility_gpio_gpiopin_pinenabled classexpert_gpio">
+			<td class="indent1">
+				<span>Pin Expose To REST</span>
 			</td>
-			<td><input type="text" id="GPIO_IO13_value6" ></td>
-			<td></td>
+			<td>
+				<form class="form_gpio_config" id="gpio_gpiopin_exposetorest_form">
+					<select name="gpio.gpiopin.0.exposetorest" id="gpio_gpiopin_0_exposetorest_value"
+							onchange='gatherChangedParameter(gpio_gpiopin_gpionumber_form, true);gatherChangedParameter(this.form)'>
+						<option value="false">Disabled</option>
+						<option value="true" selected>Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_gpio_gpiopin_exposetorest</td>
 		</tr>
-		<!-- GPIO13 end -->
+
+		<tr class="classvisibility_gpio_customizationenabled classvisibility_gpio_gpiopin_pinenabled classexpert_gpio">
+			<td class="indent1">
+				<span>Pin Expose To MQTT</span>
+			</td>
+			<td>
+				<form class="form_gpio_config" id="gpio_gpiopin_exposetomqtt_form">
+					<select name="gpio.gpiopin.0.exposetomqtt" id="gpio_gpiopin_0_exposetomqtt_value"
+							onchange='gatherChangedParameter(gpio_gpiopin_gpionumber_form, true);gatherChangedParameter(this.form)'>
+						<option value="false">Disabled</option>
+						<option value="true" selected>Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_gpio_gpiopin_exposetomqtt</td>
+		</tr>
+
+		<tr class="classvisibility_gpio_customizationenabled classvisibility_gpio_gpiopin_pinenabled classexpert_gpio">
+			<td class="indent1">
+				<span>Pin Name</span>
+			</td>
+			<td>
+				<form class="form_gpio_config" id="gpio_gpiopin_pinname_form">
+					<input type="text" name="gpio.gpiopin.0.pinname" id="gpio_gpiopin_0_pinname_value" placeholder="gpioX"
+						onchange='gatherChangedParameter(gpio_gpiopin_gpionumber_form, true);gatherChangedParameter(this.form)'>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_gpio_gpiopin_pinname</td>
+		</tr>
+
+		<tr class="classvisibility_gpio_customizationenabled classvisibility_gpio_gpiopin_pinenabled gpio_show_smartled classexpert_gpio">
+			<td class="indent1">
+				<span>LED Type</span>
+			</td>
+			<td>
+				<form class="form_gpio_config" id="gpio_gpiopin_smartled_type_form">
+					<select name="gpio.gpiopin.0.smartled.type" id="gpio_gpiopin_0_smartled_type_value"
+							onchange='gatherChangedParameter(gpio_gpiopin_gpionumber_form, true);gatherChangedParameter(this.form, true)'>
+						<option value="0" selected>WS2812</option>
+						<option value="1">WS2812B (universal)</option>
+						<option value="2">WS2812B (newer variant)</option>
+						<option value="3">WS2812B (older variant)</option>
+						<option value="4">SK6812</option>
+						<option value="5">WS2813</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_gpio_gpiopin_smartled_type</td>
+		</tr>
+
+		<tr class="classvisibility_gpio_customizationenabled classvisibility_gpio_gpiopin_pinenabled gpio_show_smartled classexpert_gpio">
+			<td class="indent1">
+				<span>LED Quantity</span>
+			</td>
+			<td>
+				<form class="form_gpio_config" id="gpio_gpiopin_smartled_quantity_form">
+					<input required type="number" min="1" value="1"
+						name="gpio.gpiopin.0.smartled.quantity" id="gpio_gpiopin_0_smartled_quantity_value"
+						onchange="(!validity.rangeUnderflow||(value=1));gatherChangedParameter(gpio_gpiopin_gpionumber_form, true);
+							gatherChangedParameter(this.form, true)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_gpio_gpiopin_smartled_quantity</td>
+		</tr>
+
+		<tr class="classvisibility_gpio_customizationenabled classvisibility_gpio_gpiopin_pinenabled gpio_show_smartled classexpert_gpio">
+			<td class="indent1">
+				<span>LED Color</span>
+			</td>
+			<td>
+				<form class="form_gpio_config" id="gpio_gpiopin_smartled_color_form">
+					R <input required style="min-width:45px;width:45px;" type="number" min="0" max="255" value="255"
+							name="gpio.gpiopin.0.smartled.colorredchannel" id="gpio_gpiopin_0_smartled_colorredchannel_value"
+							onchange="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255));
+								gatherChangedParameter(gpio_gpiopin_gpionumber_form, true);gatherChangedParameter(this.form, true)">
+
+					G <input required style="min-width:45px;width:45px" type="number" min="0" max="255" value="255"
+							name="gpio.gpiopin.0.smartled.colorgreenchannel" id="gpio_gpiopin_0_smartled_colorgreenchannel_value"
+							onchange="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255));
+								gatherChangedParameter(gpio_gpiopin_gpionumber_form, true);gatherChangedParameter(this.form, true)">
+
+					B <input required style="min-width:45px;width:45px" type="number" min="0" max="255" value="255"
+							name="gpio.gpiopin.0.smartled.colorbluechannel" id="gpio_gpiopin_0_smartled_colorbluechannel_value"
+							onchange="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=255));
+								gatherChangedParameter(gpio_gpiopin_gpionumber_form, true);gatherChangedParameter(this.form, true)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_gpio_gpiopin_smartled_color</td>
+		</tr>
+
+		<tr class="classvisibility_gpio_customizationenabled classvisibility_gpio_gpiopin_pinenabled gpio_show_smartled gpio_show_intersity_correction classexpert_gpio">
+			<td class="indent1">
+				<span>LED Intensity Correction Factor</span>
+			</td>
+			<td>
+				<form class="form_gpio_config" id="gpio_gpiopin_intensitycorrectionfactor_form">
+				<input required type="number" min="1" max="100" value="100"
+					name="gpio.gpiopin.0.intensitycorrectionfactor" id="gpio_gpiopin_0_intensitycorrectionfactor"
+					onchange="(!validity.rangeUnderflow||(value=1)) && (!validity.rangeOverflow||(value=100));
+						gatherChangedParameter(gpio_gpiopin_gpionumber_form, true);gatherChangedParameter(this.form, true)">%
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_gpio_gpiopin_intensitycorrectionfactor</td>
+		</tr>
 	</table>
 
-	
-	<!-- Autotimer -->
+
+	<!-- Log -->
 	<table class="table">
 		<colgroup>
-			<col span="1" style="width:290px">
-			<col span="1" style="width:300px;">
+			<col span="1" style="width:310px">
+			<col span="1" style="width:310px;">
 			<col span="1">
 		</colgroup>
+		<tr>
+			<th colspan="3">Log</th>
+		</tr>
 
 		<tr>
-			<th colspan="3">Auto Timer</th>
+			<td style="padding-top:25px" colspan="3">
+				<b>Debug</b>
+			</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+			    <span>Log Level</span>
+			</td>
+			<td>
+				<form id="log_debug_loglevel_form">
+					<select name="log.debug.loglevel" id="log_debug_loglevel_value"
+							onchange="gatherChangedParameter(this.form, true)">
+							<option value="1">Error</option> <!--  matches esp_log_level_t -->
+							<option value="2" selected>Warning</option>
+							<option value="3">Info</option>
+							<option value="4">Debug</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_log_debug_loglevel</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Log Files Retention</span>
+			</td>
+			<td>
+				<form id="log_debug_logfilesretention_form">
+					<input required type="number" min="0" value="5"
+						name="log.debug.logfilesretention" id="log_debug_logfilesretention_value"
+						onchange="(!validity.rangeUnderflow||(value=0));gatherChangedParameter(this.form, true)">Days
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_log_debug_logfilesretention</td>
 		</tr>
 
 		<tr class="expert">
 			<td class="indent1">
-			    <span id="AutoTimer_AutoStart_text" style="color:black;">Automatic Process Start</span>
+				<span>Debug Files Retention</span>
 			</td>
 			<td>
-				<select id="AutoTimer_AutoStart_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
-				</select>
+				<form id="log_debug_debuglogfilesretention_form">
+					<input required type="number" min="0" value="5"
+						name="log_debug_debugfilesretention" id="log_debug_debugfilesretention_value"
+						onchange="(!validity.rangeUnderflow||(value=0));gatherChangedParameter(this.form, true)">Days
+				</form>
 			</td>
-			<td>$TOOLTIP_AutoTimer_AutoStart</td>
+			<td style="visibility:hidden">$TOOLTIP_log_debug_debugfilesretention</td>
+		</tr>
+
+		<tr>
+			<td style="padding-top:25px" colspan="3">
+				<b>Data</b>
+			</td>
 		</tr>
 
 		<tr>
 			<td class="indent1">
-			    <span id="AutoTimer_Interval_text" style="color:black;">Processing Interval</span>
+			    <span>Data Log</span>
 			</td>
 			<td>
-				<input required type="number" id="AutoTimer_Interval_value1"  min="1" step="any"
-					oninput="(!validity.rangeUnderflow||(value=1));">Minutes
+				<form id="log_data_enabled_form">
+					<select class="classvisibility_init" name="log.data.enabled" id="log_data_enabled_value"
+							onchange="setClassVisibility('classvisibility_log_data_enabled', this.value); gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_AutoTimer_Interval</td>
+			<td style="visibility:hidden">$TOOLTIP_log_data_enabled</td>
+		</tr>
+
+		<tr class="classvisibility_log_data_enabled">
+			<td class="indent2">
+				<span>Data Files Retention</span>
+			</td>
+			<td>
+				<form id="log_data_datafilesretention_form">
+					<input required type="number" min="0" value="30"
+						name="log.data.datafilesretention" id="log_data_datafilesretention_value"
+						onchange="(!validity.rangeUnderflow||(value=0));gatherChangedParameter(this.form, true)">Days
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_log_data_datafilesretention</td>
 		</tr>
 	</table>
 
 
-	<!-- Data Logging -->
+	<!-- Network -->
 	<table class="table">
 		<colgroup>
-			<col span="1" style="width:290px">
-			<col span="1" style="width:300px;">
+			<col span="1" style="width:310px">
+			<col span="1" style="width:310px;">
 			<col span="1">
 		</colgroup>
 		<tr>
-			<th colspan="3"> Logging</th>
+			<th colspan="3">Network</th>
+		</tr>
+
+		<tr>
+			<td style="padding-top:25px">
+				<b>WLAN Configuration</b>
+			</td>
+			<td colspan="2" style="padding-top:25px">
+				<span style="font-weight:bold;color:red;display:none;"
+					id="wlan_reboot_note">Reboot required to apply changes!</span>
+			</td>
+		</tr>
+<!--- //@TODO FEATURE. Not yet implemented
+		<tr class="expert">
+			<td class="indent1">
+				<span>Operation Mode</span>
+			</td>
+			<td>
+				<form id="network_wlan_opmode_enabled_form">
+					<select class="classvisibility_init" name="network.wlan.opmode" id="network_wlan_opmode_value"
+							onchange="gatherChangedParameter(this.form)">
+						<option value="-1">Off</option>
+						<option value="0" selected>On, Station Full</option>
+						<option value="1">On, Station Limited</option>
+						<option value="2">On, AP Full</option>
+						<option value="3">On, AP Limited</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_network_wlan_opmode</td>
+		</tr>
+-->
+		<tr>
+			<td class="indent1">
+				<span>SSID</span>
+			</td>
+			<td>
+				<form id="network_wlan_ssid_form">
+					<input required type="text" name="network.wlan.ssid" id="network_wlan_ssid_value" placeholder="SSID Name Access Point"
+						onchange="$('#wlan_reboot_note').show();gatherChangedParameter(this.form)">
+						<!--<span toggle="#network_wlan_ssid_value" class="fa fa-fw fa-search field-icon"></span> //@TODO FEATURE. Not yet implemented -->
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_network_wlan_ssid</td>
 		</tr>
 
 		<tr>
 			<td class="indent1">
-				<span id="DataLogging_DataLogActive_text" style="color:black;">Data Logging</span>
+				<span>Password</span>
 			</td>
 			<td>
-				<select id="DataLogging_DataLogActive_value1">
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
-				</select>
+				<form class="wrapper" id="network_wlan_password_form">
+					<input type="password" name="network.wlan.password" id="network_wlan_password_value" autocomplete="on"
+						onchange="$('#wlan_reboot_note').show();gatherChangedParameter(this.form)">
+						<span toggle="#network_wlan_password_value" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+				</form>
 			</td>
-			<td>$TOOLTIP_DataLogging_DataLogActive</td>
+			<td style="visibility:hidden">$TOOLTIP_network_wlan_password</td>
 		</tr>
 
 		<tr>
 			<td class="indent1">
-				<span id="DataLogging_DataFilesRetention_text" style="color:black;">Data Files Retention</span>
+				<span>Hostname</span>
 			</td>
 			<td>
-				<input required type="number" id="DataLogging_DataFilesRetention_value1"  min="0" step="1"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Days
+				<form id="network_wlan_hostname_form">
+					<input required type="text" name="network.hostname" id="network_wlan_hostname_value" placeholder="watermeter"
+						onchange="$('#wlan_reboot_note').show();gatherChangedParameter(this.form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_DataLogging_DataFilesRetention</td>
-		</tr>
-	</table>
-
-
-	<!-- Debug Logging -->
-	<table class="table">
-		<colgroup>
-			<col span="1" style="width:290px">
-			<col span="1" style="width:300px;">
-			<col span="1">
-		</colgroup>
-
-		<tr>
-			<th colspan="3">Debug</th>
+			<td style="visibility:hidden">$TOOLTIP_network_wlan_hostname</td>
 		</tr>
 
 		<tr>
 			<td class="indent1">
-				<span id="Debug_LogLevel_text" style="color:black;">Log File Log Level</span>
+				<span>Network Configuration</span>
 			</td>
 			<td>
-				<select id="Debug_LogLevel_value1">
-					<option value="1">ERROR</option> <!--  matches esp_log_level_t -->
-					<option value="2" selected>WARNING</option>
-					<option value="3">INFO</option>
-					<option value="4">DEBUG</option>
-				</select>
+				<form id="network_wlan_ipv4_networkconfig_form">
+					<select class="classvisibility_init" name="network.wlan.ipv4.networkconfig" id="network_wlan_ipv4_networkconfig_value"
+							onchange="setClassVisibility('classvisibility_network_wlan_ipv4_networkconfig', this.value == 1);
+								$('#wlan_reboot_note').show();gatherChangedParameter(this.form, true)">
+						<option value="0" selected>DHCP</option>
+						<option value="1">Static</option>
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_Debug_LogLevel</td>
+			<td style="visibility:hidden">$TOOLTIP_network_wlan_ipv4_networkconfig</td>
 		</tr>
 
-		<tr>
-			<td class="indent1">
-				<span id="Debug_LogfilesRetention_text" style="color:black;">Log Files Retention</span>
+		<tr class="classvisibility_network_wlan_ipv4_networkconfig">
+			<td class="indent2">
+				<span>IP Address</span>
 			</td>
 			<td>
-				<input required type="number" id="Debug_LogfilesRetention_value1"  min="0" step="1"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Days
+				<form id="network_wlan_ipv4_ipaddress_form">
+					<input required type="text" ip-mask name="network.wlan.ipv4.ipaddress" id="network_wlan_ipv4_ipaddress_value"
+						placeholder="192.168.xxx.xxx" onchange="$('#wlan_reboot_note').show();gatherChangedParameter(this.form)">
+				</form>
 			</td>
-			<td>$TOOLTIP_Debug_LogfilesRetention</td>
+			<td style="visibility:hidden">$TOOLTIP_network_wlan_ipv4_ipaddress</td>
+		</tr>
+
+		<tr class="classvisibility_network_wlan_ipv4_networkconfig">
+			<td class="indent2">
+				<span>Subnet Mask</span>
+			</td>
+			<td>
+				<form id="network_wlan_ipv4_subnetmask_form">
+					<input required type="text" ip-mask name="network.wlan.ipv4.subnetmask" id="network_wlan_ipv4_subnetmask_value"
+						placeholder="255.255.255.0" onchange="$('#wlan_reboot_note').show();gatherChangedParameter(this.form)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_network_wlan_ipv4_subnetmask</td>
+		</tr>
+
+		<tr class="classvisibility_network_wlan_ipv4_networkconfig">
+			<td class="indent2">
+				<span>Gateway Address</span>
+			</td>
+			<td>
+				<form id="network_wlan_ipv4_gatewayaddress_form">
+					<input required type="text" ip-mask name="network.wlan.ipv4.gatewayaddress" id="network_wlan_ipv4_gatewayaddress_value"
+						placeholder="192.168.xxx.xxx" onchange="$('#wlan_reboot_note').show();gatherChangedParameter(this.form)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_network_wlan_ipv4_gatewayaddress</td>
+		</tr>
+
+		<tr class="classvisibility_network_wlan_ipv4_networkconfig">
+			<td class="indent2">
+				<span>DNS Server</span>
+			</td>
+			<td>
+				<form id="network_wlan_ipv4_dnsserver_form">
+					<input type="text" ip-mask name="network.wlan.ipv4.dnsserver" id="network_wlan_ipv4_dnsserver_value"
+						placeholder="192.168.xxx.xxx" onchange="$('#wlan_reboot_note').show();gatherChangedParameter(this.form)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_network_wlan_ipv4_dnsserver</td>
 		</tr>
 
 		<tr class="expert">
 			<td class="indent1">
-				<span id="Debug_DebugFilesRetention_text" style="color:black;">Debug Files Retention</span>
+				<span>Roaming</span>
 			</td>
 			<td>
-				<input required type="number" id="Debug_DebugFilesRetention_value1"  min="0" step="1"
-					oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Days
+				<form id="network_wlan_wlanroaming_enabled_form">
+					<select class="classvisibility_init" name="network.wlan.wlanroaming.enabled" id="network_wlan_wlanroaming_enabled_value"
+							onchange="setClassVisibility('classvisibility_network_wlan_wlanroaming_enabled', this.value); gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_Debug_DebugFilesRetention</td>
+			<td style="visibility:hidden">$TOOLTIP_network_wlan_wlanroaming_enabled</td>
+		</tr>
+
+		<tr class="classvisibility_network_wlan_wlanroaming_enabled expert">
+			<td class="indent2">
+				<span>RSSI Threshold</span>
+			</td>
+			<td>
+				<form id="network_wlan_wlanroaming_rssithreshold_form">
+					<input required type="number" min="-100" max="0" value="-75"
+						name="network.wlan.wlanroaming.rssithreshold" id="network_wlan_wlanroaming_rssithreshold_value"
+						onchange="(!validity.rangeUnderflow||(value=-100)) && (!validity.rangeOverflow||(value=0));
+							gatherChangedParameter(this.form, true)">dBm
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_network_wlan_wlanroaming_rssithreshold</td>
+		</tr>
+
+		<tr>
+			<td style="padding-top:25px" colspan="3">
+				<b>Time Configuration</b>
+			</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Time Zone</span>
+				<p></p><p></p>
+			</td>
+			<td>
+				<form id="network_time_timezone_form">
+					<input required type="text" name="network.time.timezone" id="network_time_timezone_value"
+						placeholder="CET-1CEST,M3.5.0,M10.5.0/3" onchange="gatherChangedParameter(this.form)">
+				</form>
+				<p>Use <a href="timezones.html" target="_blank">timezones</a> to find your settings</p>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_network_time_timezone</td>
+		</tr>
+
+		<tr>
+			<td class="indent1">
+				<span>Time Synchronization</span>
+			</td>
+			<td>
+				<form id="network_time_ntp_timesyncenabled_form">
+					<select class="classvisibility_init" name="network.time.ntp.timesyncenabled" id="network_time_ntp_timesyncenabled_value"
+							onchange="setClassVisibility('classvisibility_network_time_ntp_timesyncenabled', this.value);
+										gatherChangedParameter(this.form)">
+						<option value="false">Disabled</option>
+						<option value="true" selected>Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_network_time_ntp_timesyncenabled</td>
+		</tr>
+
+		<tr class="classvisibility_network_time_ntp_timesyncenabled">
+			<td class="indent2">
+				<span>Time Server (NTP)</span>
+			</td>
+			<td>
+				<form id="network_time_ntp_timeserver_form">
+					<input type="text" name="network.time.ntp.timeserver" id="network_time_ntp_timeserver_value"
+						placeholder="pool.ntp.org" onchange="gatherChangedParameter(this.form)">
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_network_time_ntp_timeserver</td>
+		</tr>
+
+		<tr class="classvisibility_network_time_ntp_timesyncenabled expert">
+			<td class="indent2">
+				<span>Process Start Interlock</span>
+			</td>
+			<td>
+				<form id="network_time_ntp_processstartinterlock_form">
+					<select name="network.time.ntp.processstartinterlock" id="network_time_ntp_processstartinterlock_value"
+							onchange="gatherChangedParameter(this.form)">
+						<option value="false">Disabled</option>
+						<option value="true" selected>Enabled</option>
+					</select>
+				</form>
+			</td>
+			<td style="visibility:hidden">$TOOLTIP_network_time_ntp_processstartinterlock</td>
 		</tr>
 	</table>
 
@@ -1875,79 +2548,37 @@
 	<!-- System -->
 	<table class="table">
 		<colgroup>
-			<col span="1" style="width:290px">
-			<col span="1" style="width:300px;">
+			<col span="1" style="width:310px">
+			<col span="1" style="width:310px;">
 			<col span="1">
 		</colgroup>
 		<tr>
 			<th colspan="3">System</th>
 		</tr>
 
-		<tr>
-			<td class="indent1">
-				<input type="checkbox" id="System_TimeServer_enabled" value="1"  onclick = 'InvertEnableItem("System", "TimeServer")' checked >
-				<label for=System_TimeServer_enabled><span id="System_TimeServer_text" style="color:black;">Time Server (NTP)</span></label>
-			</td>
-			<td>
-				<input required type="text" id="System_TimeServer_value1">
-			</td>
-			<td>$TOOLTIP_System_TimeServer</td>
-		</tr>
-
-		<tr>
-			<td class="indent1">
-				<span id="System_TimeZone_text" style="color:black;">Time Zone</span>
-				<p></p><p></p>
-			</td>
-			<td>
-				<input required type="text" id="System_TimeZone_value1">
-				<p>Use <a href="timezones.html" target="_blank">timezones</a> to find your settings</p>
-			</td>
-			<td>$TOOLTIP_System_TimeZone</td>
-		</tr>
-
 		<tr class="expert">
 			<td class="indent1">
-				<span id="System_Hostname_text" style="color:black;">Hostname</span>
+				<span>CPU Frequency</span>
 			</td>
 			<td>
-				<input required type="text" id="System_Hostname_value1">
+				<form id="system_cpufrequency_form">
+					<select name="system.cpufrequency" id="system_cpufrequency_value"
+							onchange="gatherChangedParameter(this.form, true)">
+						<option value="160" selected>160 MHz</option>
+						<option value="240">240 MHz</option>
+					</select>
+			</form>
 			</td>
-			<td>$TOOLTIP_System_Hostname</td>
-		</tr>
-
-		<tr class="expert">
-			<td class="indent1">
-				<input type="checkbox" id="System_RSSIThreshold_enabled" value="1"  onclick = 'InvertEnableItem("System", "RSSIThreshold")'  >
-				<label for=System_RSSIThreshold_enabled><span id="System_RSSIThreshold_text" style="color:black;">WIFI Roaming RSSI Threshold</span></label>
-			</td>
-			<td>
-				<input required type="number" name="name" id="System_RSSIThreshold_value1" min="-100" max="0" step="1"
-					oninput="(!validity.rangeUnderflow||(value=-100)) && (!validity.rangeOverflow||(value=0)) && 
-						(!validity.stepMismatch||(value=parseInt(this.value)));">dBm
-			</td>
-			<td>$TOOLTIP_System_RSSIThreshold</td>
-		</tr>
-
-		<tr class="expert">
-			<td class="indent1">
-				<span id="System_CPUFrequency_text" style="color:black;">CPU Frequency</span>
-			</td>
-			<td>
-				<select id="System_CPUFrequency_value1">
-					<option value="160" selected>160 MHz</option>
-					<option value="240">240 MHz</option>
-				</select>
-			</td>
-			<td>$TOOLTIP_System_CPUFrequency</td>
+			<td style="visibility:hidden">$TOOLTIP_system_cpufrequency</td>
 		</tr>
 	</table>
+
 
 	<!-- WebUI -->
 	<table class="table">
 		<colgroup>
-			<col span="1" style="width:290px">
-			<col span="1" style="width:300px;">
+			<col span="1" style="width:310px">
+			<col span="1" style="width:310px;">
 			<col span="1">
 		</colgroup>
 		<tr>
@@ -1955,902 +2586,410 @@
 		</tr>
 
 		<tr>
-			<td class="indent1" style="padding-top:25px" colspan="3">
+			<td style="padding-top:25px" colspan="3">
 				<b>Overview</b>
 			</td>
 		</tr>
 
 		<tr>
-			<td class="indent2">
-				<span id="WebUI_OverviewAutoRefresh_text" style="color:black;">Auto Refresh</span>
+			<td class="indent1">
+				<span>Page Auto Refresh</span>
 			</td>
 			<td>
-				<select id="WebUI_OverviewAutoRefresh_value1" onchange='setEnabled("WebUI_OverviewAutoRefresh_parameter", this.value == "true" ? true : false);'>
-					<option value="true" selected>true</option>
-					<option value="false" >false</option>
-				</select>
+				<form id="webui_autorefresh_overviewpage_enabled_form">
+					<select class="classvisibility_init"
+							name="webui.autorefresh.overviewpage.enabled" id="webui_autorefresh_overviewpage_enabled_value"
+							onchange="setClassVisibility('classvisibility_webui_autorefresh_overviewpage_enabled', this.value);
+								gatherChangedParameter(this.form)">
+						<option value="false">Disabled</option>
+						<option value="true" selected>Enabled</option>
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_WebUI_OverviewAutoRefresh</td>
+			<td style="visibility:hidden">$TOOLTIP_webui_autorefresh_overviewpage_enabled</td>
 		</tr>
 
-		<tr class="WebUI_OverviewAutoRefresh_parameter">
+		<tr class="classvisibility_webui_autorefresh_overviewpage_enabled">
 			<td class="indent2">
-				<span id="WebUI_OverviewAutoRefreshTime_text" style="color:black;">Auto Refresh Time</span>
+				<span>Refresh Time</span>
 			</td>
 			<td>
-				<input required type="number" id="WebUI_OverviewAutoRefreshTime_value1"  min="1" step="1"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Seconds
+				<form id="webui_autorefresh_overviewpage_refreshtime_form">
+					<input required type="number" min="1" value="5"
+						name="webui.autorefresh.overviewpage.refreshtime" id="webui_autorefresh_overviewpage_refreshtime_value"
+						onchange="(!validity.rangeUnderflow||(value=1));gatherChangedParameter(this.form, true)">Seconds
+				</form>
 			</td>
-			<td>$TOOLTIP_WebUI_OverviewAutoRefreshTime</td>
+			<td style="visibility:hidden">$TOOLTIP_webui_autorefresh_overviewpage_refreshtime</td>
 		</tr>
 
 		<tr>
-			<td class="indent1" style="padding-top:25px" colspan="3">
+			<td style="padding-top:25px" colspan="3">
 				<b>Data Graph</b>
 			</td>
 		</tr>
 
 		<tr>
-			<td class="indent2">
-				<span id="WebUI_DataGraphAutoRefresh_text" style="color:black;">Auto Refresh</span>
+			<td class="indent1">
+				<span>Page Auto Refresh</span>
 			</td>
 			<td>
-				<select id="WebUI_DataGraphAutoRefresh_value1" onchange='setEnabled("WebUI_DataGraphAutoRefresh_parameter", this.value == "true" ? true : false);'>
-					<option value="true">true</option>
-					<option value="false" selected>false</option>
-				</select>
+				<form id="webui_autorefresh_datagraphpage_enabled_form">
+					<select class="classvisibility_init"
+							name="webui.autorefresh.datagraphpage.enabled" id="webui_autorefresh_datagraphpage_enabled_value"
+							onchange="setClassVisibility('classvisibility_webui_autorefresh_datagraphpage_enabled', this.value);
+								gatherChangedParameter(this.form)">
+						<option value="false" selected>Disabled</option>
+						<option value="true">Enabled</option>
+					</select>
+				</form>
 			</td>
-			<td>$TOOLTIP_WebUI_DataGraphAutoRefresh</td>
+			<td style="visibility:hidden">$TOOLTIP_webui_autorefresh_datagraphpage_enabled</td>
 		</tr>
 
-		<tr class="WebUI_DataGraphAutoRefresh_parameter">
+		<tr class="classvisibility_webui_autorefresh_datagraphpage_enabled">
 			<td class="indent2">
-				<span id="WebUI_DataGraphAutoRefreshTime_text" style="color:black;">Auto Refresh Time</span>
+				<span>Refresh Time</span>
 			</td>
 			<td>
-				<input required type="number" id="WebUI_DataGraphAutoRefreshTime_value1"  min="1" step="1"
-					oninput="(!validity.rangeUnderflow||(value=1)) && (!validity.stepMismatch||(value=parseInt(this.value)));">Seconds
+				<form id="webui_autorefresh_datagraphpage_refreshtime_form">
+					<input required type="number" min="1" value="60"
+						name="webui.autorefresh.datagraphpage.refreshtime" id="webui_autorefresh_datagraphpage_refreshtime_value"
+						onchange="(!validity.rangeUnderflow||(value=1));gatherChangedParameter(this.form, true)">Seconds
+				</form>
 			</td>
-			<td>$TOOLTIP_WebUI_DataGraphAutoRefreshTime</td>
+			<td style="visibility:hidden">$TOOLTIP_webui_autorefresh_datagraphpage_refreshtime</td>
 		</tr>
 	</table>
 
 	<table style="padding-top:10px">
 		<tr>
 			<td>
-				<button class="button" onclick="saveTextAsFile()">Save And Apply</button>
+				<button class="button" id="button_saveConfig" onclick="saveConfigData()">Save And Apply</button>
 			</td>
 		</tr>
 	</table>
 </div>
 
 
-<script src="common.js?v=$COMMIT_HASH"></script> 
-<script src="readconfigcommon.js?v=$COMMIT_HASH"></script>  
-<script src="readconfigparam.js?v=$COMMIT_HASH"></script>  
+<script src="global_common.js?v=$COMMIT_HASH"></script>
+<script src="global_data.js?v=$COMMIT_HASH"></script>
+<script src="mask.ip-input.js?v=$COMMIT_HASH"></script>
 <script>
-	var canvas = document.getElementById('canvas'),
-		domainname = getDomainname(),
-		param,
-		category,
-		NUNBERSAkt = -1,
-		NUMBERS;
-
-
-	function InitIndivParameter()
+	// Enable IP input validation
+	$(document).ready(function()
 	{
-		NUMBERS = getNumberSequences();
-
-		var _index = document.getElementById("Numbers_value1");
-		while (_index.length)
-			_index.remove(0);
-
-		var _indexInflux = document.getElementById("NumbersInfluxDBv2_value1");
-		while (_indexInflux.length)
-			_indexInflux.remove(0);
-
-		var _indexInfluxv1 = document.getElementById("NumbersInfluxDB_value1");
-		while (_indexInflux.length)
-		_indexInfluxv1.remove(0);
-
-		for (var i = 0; i < NUMBERS.length; ++i){
-			var option = document.createElement("option");
-			option.text = NUMBERS[i]["name"];
-			option.value = i;
-			_index.add(option);
-
-			var optionInflux = document.createElement("option");
-			optionInflux.text = NUMBERS[i]["name"];
-			optionInflux.value = i;
-			_indexInflux.add(optionInflux);
-
-			var optionInfluxv1 = document.createElement("option");
-			optionInfluxv1.text = NUMBERS[i]["name"];
-			optionInfluxv1.value = i;
-			_indexInfluxv1.add(optionInfluxv1);
-
-		}
-		_index.selectedIndex = 0; 
-		_indexInflux.selectedIndex = 0;
-		_indexInfluxv1.selectedIndex = 0;
-	}
+		$('[ip-mask]').ipAddress();
+	});
 
 
-	function getParameterByName(name, url = window.location.href) {
-		name = name.replace(/[\[\]]/g, '\\$&');
-		var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-			results = regex.exec(url);
+	// Toggle password view
+	$(".toggle-password").click(function()
+	{
+		//$(this).toggleClass("fa-eye fa-eye-slash"); // No symbol toggle
+		let input = $($(this).attr("toggle"));
 
-		if (!results) return null;
-		if (!results[2]) return '';
-		return decodeURIComponent(results[2].replace(/\+/g, ' '));
-	}	
-
-
-	// Read parameter out of the variables and display in WebUI config page
-	function WriteParameter(_param, _category, _cat, _name, _optional, _number = -1){
-		let anzpara;
-		try {
-			anzpara = _param[_cat][_name].anzParam;	
-		}
-		catch (error) {
-			firework.launch("Parameter '" + _name + "' in category '" + _cat + "' is unknown!", 'danger', 30000);
-			return;
-		}
-
-		if (_number > -1) {
-			if ((NUMBERS[_number] == undefined) || (NUMBERS[_number][_cat] == undefined) ||  (NUMBERS[_number][_cat][_name] == undefined))
-				return;
-
-			if (_optional) {
-				document.getElementById(_cat+"_"+_name+"_enabled").checked = NUMBERS[_number][_cat][_name]["enabled"];
-				for (var j = 1; j <= anzpara; ++j) {
-					document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !NUMBERS[_number][_cat][_name]["enabled"];	
-				}		
-			}
-			document.getElementById(_cat+"_"+_name+"_text").style.color = "black"
-			setEnabled(_cat+"_"+_name, true);
-
-			for (var j = 1; j <= anzpara; ++j) {
-				let element = document.getElementById(_cat+"_"+_name+"_value"+j);
-				if (element.tagName.toLowerCase() == "select") {
-					var textToFind = NUMBERS[_number][_cat][_name]["value"+j];
-					if (textToFind == undefined)
-						continue;
-
-					_isFound = false;
-					element.selectedIndex = -1;
-					for (var i = 0; i < element.options.length; i++) {
-						if (element.options[i].value.toLowerCase() === textToFind.toLowerCase()) {
-							element.selectedIndex = i;
-							_isFound = true;
-							break;
-						}
-					}
-					if (!_isFound)
-					{
-						_zw_txt = "Section '" + _cat + "' / Parameter '" + _name + "': Invalid value: '" + textToFind + "'. Please correct before saving!";
-						firework.launch(_zw_txt, 'danger', 30000);
-					}
-				}
-				else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
-					element.checked = NUMBERS[_number][_cat][_name]["value"+j] == "true";
-				}
-				else {
-					element.value = NUMBERS[_number][_cat][_name]["value"+j];
-				}
-			}
+		if (input.attr("type") == "password") {
+			input.attr("type", "text");
 		}
 		else {
-			if (_optional) {
-				document.getElementById(_cat+"_"+_name+"_enabled").checked = _param[_cat][_name]["enabled"];
-				for (var j = 1; j <= anzpara; ++j) {
-					document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_param[_cat][_name]["enabled"];	
-				}		
-			}
-			document.getElementById(_cat+"_"+_name+"_text").style.color = "black"
-			setEnabled(_cat+"_"+_name, true);
+			input.attr("type", "password");
+		}
+	});
 
-			for (var j = 1; j <= anzpara; ++j) {
-				let element = document.getElementById(_cat+"_"+_name+"_value"+j);
-				if (element.tagName.toLowerCase() == "select") {
-					var textToFind = _param[_cat][_name]["value"+j];
-					if (textToFind == undefined)
-						continue;
-					
-					_isFound = false;
-					element.selectedIndex = -1;
-					for (var i = 0; i < element.options.length; i++) {
-						if (element.options[i].value.toLowerCase() === textToFind.toLowerCase()) {
-							element.selectedIndex = i;
-							_isFound = true;
-							break;
-						}
-					}
-					if (!_isFound)
-					{
-						_zw_txt = "Section '" + _cat + "' / Parameter '" + _name + "': Invalid value: '" + textToFind + "'. Please correct before saving!";
-						firework.launch(_zw_txt, 'danger', 30000);
-					}
-				}
-				else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
-					element.checked = _param[_cat][_name]["value"+j] == "true";
+	function initGpioSection()
+	{
+		getGpioPins();
+	}
+
+
+	function getGpioPins()
+	{
+		let gpioPinSelection = $("[id$='gpionumber_value']").find("option").remove().end();
+
+		let firstEnabledPinFound = false;
+		let idx = 0;
+		for (let i = 0; i < jsonConfig.gpio.gpiopin.length; ++i) {
+			gpioPinSelection.append(new Option("GPIO" + jsonConfig.gpio.gpiopin[i].gpionumber,
+				jsonConfig.gpio.gpiopin[i].gpionumber));
+
+			if (!firstEnabledPinFound && jsonConfig.gpio.gpiopin[i].pinenabled) {
+				firstEnabledPinFound = true;
+				idx = i;
+			}
+		}
+
+		gpioPinSelection.prop('selectedIndex', idx);
+		gpioPinSelectAfterChange(true);
+		getGpioPinUsage(parseInt(gpioPinSelection[0].value));
+		gpioPinModeChanged(); // Show GPIO mapping in 'Take Image' section
+	}
+
+
+	function getGpioPinUsage(gpioNumberSelected)
+	{
+		let gpioPinModeSel = document.querySelector("[id$='pinmode_value']");
+
+		// Check all pins to find selected pin
+		for (let i = 0; i < jsonConfig.gpio.gpiopin.length; i++) {
+			if (jsonConfig.gpio.gpiopin[i].gpionumber == gpioNumberSelected) {
+				if (jsonConfig.gpio.gpiopin[i].gpiousage.substring(0,10) == "flashlight") { // Special case: Default flashlight GPIO
+					// Show option "flashlight-default"
+					gpioPinModeSel.options[0].removeAttribute("hidden");
 				}
 				else {
-					element.value = _param[_cat][_name]["value"+j];
-				}
-			}	
-		}
-
-		///////////////// am Ende, falls Kategorie als gesamtes nicht ausgewählt --> deaktivieren
-		if (_category[_cat]["enabled"] == false) 
-		{
-			if (_optional) {
-				document.getElementById(_cat+"_"+_name+"_enabled").disabled = true;
-				for (var j = 1; j <= anzpara; ++j) {
-					document.getElementById(_cat+"_"+_name+"_value"+j).disabled = true;
-				}	
-			}
-			document.getElementById(_cat+"_"+_name+"_text").style="color: gray;"
-			setEnabled(_cat+"_"+_name, false);
-		}
-
-		EnDisableItem(_category[_cat]["enabled"], _param, _category, _cat, _name, _optional, _number);
-	}
-
-
-	function InvertEnableItem(_cat, _param)
-	{
-		_zw = _cat + "_" + _param + "_enabled";
-		_isOn = document.getElementById(_zw).checked;
-
-		_color = "rgb(122, 122, 122)";
-		if (_isOn) {
-			_color = "black";
-		}
-
-		_zw = _cat + "_" + _param + "_text";
-		document.getElementById(_zw).disabled = !_isOn;
-		document.getElementById(_zw).style.color = _color;
-
-		setEnabled(_cat + "_" + _param, _isOn);
-
-		for (var j = 1; j <= param[_cat][_param]["anzParam"]; ++j) {
-				document.getElementById(_cat+"_"+_param+"_value"+j).disabled = !_isOn;	
-				document.getElementById(_cat+"_"+_param+"_value"+j).style.color = _color;
-		}
-	}
-
-
-	function setEnabled(className, enabled) {
-		_color = "rgb(122, 122, 122)";
-		if (enabled) {
-			_color = "black";
-		}
-
-		let elements = document.getElementsByClassName(className);
-		for (i = 0; i < elements.length; i++) {
-			if (enabled) {
-				elements[i].classList.remove("disabled");
-			} else {
-				elements[i].classList.add("disabled");
-			}
-
-			let inputs = elements[i].getElementsByTagName("input");
-			for (j = 0; j < inputs.length; j++) {
-				if (inputs[j].id.endsWith("_enabled"))
-					continue;
-
-				inputs[j].style.color = _color;
-				if (enabled) {
-					inputs[j].removeAttribute("disabled");
-				} else {
-					inputs[j].setAttribute("disabled", "disabled");
-				}
-			}
-		}
-	}
-
-
-	function setVisible(className, visible) {
-		let elements = document.getElementsByClassName(className);
-		for (i = 0; i < elements.length; i++) {
-			if (visible) {
-				elements[i].classList.remove("hidden");
-			} else {
-				elements[i].classList.add("hidden");
-			}
-		}
-	}
-
-
-	function EnDisableItem(_status, _param, _category, _cat, _name, _optional, _number = -1)
-	{
-		_status = _category[_cat]["enabled"];
-
-		_color = "rgb(122, 122, 122)";
-		if (_status) {
-			_color = "black";
-		}
-
-		if (_optional) {
-			document.getElementById(_cat+"_"+_name+"_enabled").disabled = !_status;
-			document.getElementById(_cat+"_"+_name+"_enabled").style.color = _color;	
-		}
-
-		if (_number == -1){
-			if (!_param[_cat][_name]["enabled"]) {
-				_status = false;
-				_color = "rgb(122, 122, 122)";
-			}
-		}
-		else
-			if (!NUMBERS[_number][_cat][_name]["enabled"]) {
-					_status = false;
-					_color = "rgb(122, 122, 122)";
+					// Hide option "flashlight-default"
+					gpioPinModeSel.options[0].setAttribute('hidden', 'true');
 				}
 
-
-		document.getElementById(_cat+"_"+_name+"_text").disabled = !_status;
-		document.getElementById(_cat+"_"+_name+"_text").style.color = _color;
-
-		setEnabled(_cat+"_"+_name, _status);
-
-		for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
-				document.getElementById(_cat+"_"+_name+"_value"+j).disabled = !_status;	
-				document.getElementById(_cat+"_"+_name+"_value"+j).style.color = _color;	
-		}
-	}
-
-
-	// Read parameter from WebUI config page and store in variables
-	function ReadParameter(_param, _cat, _name, _optional, _number = -1)
-	{
-		if (_number > -1) {
-			if (_cat == "Digits")
-				_cat = "digit";
-			if (_cat == "Analog")
-				_cat = "analog";
-
-			if ((NUMBERS[_number] == undefined) || (NUMBERS[_number][_cat] == undefined) ||  (NUMBERS[_number][_cat][_name] == undefined))
-				return;
-
-			if (_optional) {	// If checkbox is avaiable -> set by selection
-				NUMBERS[_number][_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
-			}
-			else {				// If no checkbox is available -> always enabled
-				NUMBERS[_number][_cat][_name]["enabled"] = true;
-			}
-
-			for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
-				let element = document.getElementById(_cat+"_"+_name+"_value"+j);
-				if (element.tagName.toLowerCase() == "select") {
-					NUMBERS[_number][_cat][_name]["value"+j] = element.selectedIndex > -1 ? element.options[element.selectedIndex].value : "";
-				}
-				else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
-					NUMBERS[_number][_cat][_name]["value"+j] = element.checked;
+				// Show expert view / text for restricted pins
+				if (jsonConfig.gpio.gpiopin[i].gpiousage.substring(0,10) == "restricted") {
+					$(".classexpert_gpio").each(function() {$(this).addClass("expert")});
+					$("#gpio_gpiopin_pinmode_restrictedusagetext")
+					.text("[Default: " + jsonConfig.gpio.gpiopin[i].gpiousage.substring(12).replace(/\-/g, " ") + "]")
+					.show();
 				}
 				else {
-					if ((NUMBERS[_number][_cat][_name].checkRegExList != null) && (NUMBERS[_number][_cat][_name].checkRegExList[j-1] != null)) {
-						if (!element.value.match(NUMBERS[_cat][_name].checkRegExList[j-1])) {
-							element.classList.add("invalid-input");
-						} else {
-							element.classList.remove("invalid-input");
-						}
-					}
-					NUMBERS[_number][_cat][_name]["value"+j] = element.value;
+					$(".classexpert_gpio").each(function() {$(this).removeClass("expert")});
+					$("#gpio_gpiopin_pinmode_restrictedusagetext").hide();
 				}
-			}
-		}
-		else
-		{	
-			if (_optional) {	// If checkbox is avaiable -> set by selection
-				_param[_cat][_name]["enabled"] = document.getElementById(_cat+"_"+_name+"_enabled").checked;			
-			}
-			else {				// If no checkbox is available -> always enabled
-				_param[_cat][_name]["enabled"] = true;
-			}
 
-			for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
-				let element = document.getElementById(_cat+"_"+_name+"_value"+j);
-				if (element.tagName.toLowerCase() == "select") {
-					_param[_cat][_name]["value"+j] = element.selectedIndex > -1 ? element.options[element.selectedIndex].value : "";
-				}
-				else if ((element.getAttribute("type") != null) && (element.getAttribute("type").toLowerCase() == "checkbox")) {
-					_param[_cat][_name]["value"+j] = element.checked;
-				}
-				else {
-					if ((_param[_cat][_name].checkRegExList != null) && (_param[_cat][_name].checkRegExList[j-1] != null)) {
-						if (!element.value.match(_param[_cat][_name].checkRegExList[j-1])) {
-							element.classList.add("invalid-input");
-						} else {
-							element.classList.remove("invalid-input");
-						}
-					}
-					_param[_cat][_name]["value"+j] = element.value;
-				}
-			}		
+				break;
+			}
 		}
 	}
 
 
-	function UpdateInputIndividual(sel)
+	function gpioPinModeChanged()
 	{
-		if (NUNBERSAkt != -1)
+		let pwm = false;
+		let smartled = false;
+		for (let i = 0 ; i < jsonConfig.gpio.gpiopin.length; ++i) {
+			if (jsonConfig.gpio.gpiopin[i].gpiousage == "flashlight-pwm")
+				pwm = true;
+			if (jsonConfig.gpio.gpiopin[i].gpiousage == "flashlight-smartled")
+				smartled = true;
+
+			if (document.getElementById("gpio_customizationenabled_value").value == 'true') {
+				document.getElementById("takeimage_flashlightgpiomapping_value").innerText = "Customized [GPIO Section]";
+			}
+			else {
+				if (jsonConfig.gpio.gpiopin[i].gpiousage.substring(0,10) == "flashlight") {
+					document.getElementById("takeimage_flashlightgpiomapping_value").innerText =
+						"Default [GPIO" + jsonConfig.gpio.gpiopin[i].gpionumber + "]";
+				}
+			}
+		}
+
+		// Pin disabled, stopp here (code above needed to show flashlight mapping indicator)
+		if (document.querySelectorAll('[id$="pinenabled_value"]')[0].value == 'false')
+			return;
+
+		let elPinMode = document.querySelectorAll('[id$="pinmode_value"]')[0];
+		let elPinCaptureMode = document.querySelectorAll('[id$="capturemode_value"]')[0];
+
+		if ((pwm && elPinMode.value == "flashlight-default") ||
+			elPinMode.value == "flashlight-pwm" ||
+			elPinMode.value == "output-pwm"
+		)
+			setClassVisibility("gpio_show_pwm_frequency", true);
+		else
+			setClassVisibility("gpio_show_pwm_frequency", false);
+
+		if (elPinMode.value == "input" ||
+			elPinMode.value == "input-pullup" ||
+			elPinMode.value == "input-pulldown")
 		{
-			ReadParameter(param, "PostProcessing", "DecimalShift", false, NUNBERSAkt);
-			ReadParameter(param, "PostProcessing", "AnalogDigitalTransitionStart", false, NUNBERSAkt);
-			ReadParameter(param, "PostProcessing", "MaxRateValue", false, NUNBERSAkt);
-			ReadParameter(param, "PostProcessing", "MaxRateType", false, NUNBERSAkt);
-			ReadParameter(param, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt);
-			ReadParameter(param, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt);
-			ReadParameter(param, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
-			ReadParameter(param, "InfluxDB", "Field", false, NUNBERSAkt);
-			ReadParameter(param, "InfluxDBv2", "Field", false, NUNBERSAkt);
-			ReadParameter(param, "InfluxDB", "Measurement", false, NUNBERSAkt);
-			ReadParameter(param, "InfluxDBv2", "Measurement", false, NUNBERSAkt);
+			setClassVisibility("gpio_show_capture_mode", true);
+
+			if (elPinCaptureMode.value != "cyclic-polling")
+				setClassVisibility("gpio_show_debounce_time", true);
+			else
+				setClassVisibility("gpio_show_debounce_time", false);
+		}
+		else {
+			setClassVisibility("gpio_show_capture_mode", false);
+			setClassVisibility("gpio_show_debounce_time", false);
 		}
 
-		if (sel)
-			NUNBERSAkt = sel.selectedIndex;
+		if (elPinMode.value  == "flashlight-smartled" ||
+			(smartled && elPinMode.value == "flashlight-default")
+		)
+			setClassVisibility("gpio_show_smartled", true);
 		else
-			NUNBERSAkt = 0;
-
-		WriteParameter(param, category, "PostProcessing", "DecimalShift", false, NUNBERSAkt);
-		WriteParameter(param, category, "PostProcessing", "AnalogDigitalTransitionStart", false, NUNBERSAkt);
-		WriteParameter(param, category, "PostProcessing", "MaxRateValue", false, NUNBERSAkt);
-		WriteParameter(param, category, "PostProcessing", "MaxRateType", false, NUNBERSAkt);
-		WriteParameter(param, category, "PostProcessing", "ExtendedResolution", false, NUNBERSAkt);
-		WriteParameter(param, category, "PostProcessing", "IgnoreLeadingNaN", false, NUNBERSAkt);
-		WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
-		WriteParameter(param, category, "InfluxDB", "Field", false, NUNBERSAkt);
-		WriteParameter(param, category, "InfluxDBv2", "Field", false, NUNBERSAkt);
-		WriteParameter(param, category, "InfluxDB", "Measurement", false, NUNBERSAkt);
-		WriteParameter(param, category, "InfluxDBv2", "Measurement", false, NUNBERSAkt);
-	}
+			setClassVisibility("gpio_show_smartled", false);
 
 
-	function UpdateInput() {
-		document.getElementById("Category_Digits_enabled").checked = category["Digits"]["enabled"];
-		setVisible("DigitItem", category["Digits"]["enabled"]);
-
-		document.getElementById("Category_Analog_enabled").checked = category["Analog"]["enabled"];
-		setVisible("AnalogItem", category["Analog"]["enabled"]);
-
-		document.getElementById("Category_MQTT_enabled").checked = category["MQTT"]["enabled"];
-		setVisible("MQTTItem", category["MQTT"]["enabled"]);
-
-		document.getElementById("Category_GPIO_enabled").checked = category["GPIO"]["enabled"];
-		setVisible("GPIO_item", category["GPIO"]["enabled"]);
-
-		document.getElementById("Category_InfluxDB_enabled").checked = category["InfluxDB"]["enabled"];
-		setVisible("InfluxDBv1Item", category["InfluxDB"]["enabled"]);
-
-		document.getElementById("Category_InfluxDBv2_enabled").checked = category["InfluxDBv2"]["enabled"];
-		setVisible("InfluxDBv2Item", category["InfluxDBv2"]["enabled"]);
-
-		WriteParameter(param, category, "TakeImage", "RawImagesLocation", true);
-		WriteParameter(param, category, "TakeImage", "RawImagesRetention", true);
-		WriteParameter(param, category, "TakeImage", "Demo", false);
-		WriteParameter(param, category, "TakeImage", "WaitBeforeTakingPicture", false);
-		WriteParameter(param, category, "TakeImage", "CameraFrequency", false);
-		WriteParameter(param, category, "TakeImage", "ImageQuality", false);
-		WriteParameter(param, category, "TakeImage", "Brightness", false);
-		WriteParameter(param, category, "TakeImage", "Contrast", false);
-		WriteParameter(param, category, "TakeImage", "Saturation", false);
-		WriteParameter(param, category, "TakeImage", "LEDIntensity", false);
-		WriteParameter(param, category, "TakeImage", "ImageSize", false);
-		WriteParameter(param, category, "TakeImage", "FixedExposure", false);
-
-		WriteParameter(param, category, "Alignment", "SearchFieldX", false);		
-		WriteParameter(param, category, "Alignment", "SearchFieldY", false);		
-		WriteParameter(param, category, "Alignment", "AlignmentAlgo", false);
-		WriteParameter(param, category, "Alignment", "FlipImageSize", false);
-		WriteParameter(param, category, "Alignment", "InitialRotate", false);
-		WriteParameter(param, category, "Alignment", "InitialMirror", false);
-		WriteParameter(param, category, "Alignment", "SaveDebugInfo", false);
-
-		WriteParameter(param, category, "Digits", "CNNGoodThreshold", false);
-		WriteParameter(param, category, "Digits", "ROIImagesLocation", true);		
-		WriteParameter(param, category, "Digits", "ROIImagesRetention", true);		
-		
-		WriteParameter(param, category, "Analog", "ROIImagesLocation", true);		
-		WriteParameter(param, category, "Analog", "ROIImagesRetention", true);		
-		
-		WriteParameter(param, category, "PostProcessing", "FallbackValueUse", false);		
-		WriteParameter(param, category, "PostProcessing", "FallbackValueAgeStartup", false);		
-		WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", false);
-		WriteParameter(param, category, "PostProcessing", "SaveDebugInfo", false);	
-
-		WriteParameter(param, category, "MQTT", "Uri", false);	
-		WriteParameter(param, category, "MQTT", "MainTopic", false);	
-		WriteParameter(param, category, "MQTT", "ClientID", false);	
-		WriteParameter(param, category, "MQTT", "user", true);	
-		WriteParameter(param, category, "MQTT", "password", true);
-		WriteParameter(param, category, "MQTT", "TLSEncryption", false);
-		WriteParameter(param, category, "MQTT", "TLSCACert", false);
-		WriteParameter(param, category, "MQTT", "TLSClientCert", false);
-		WriteParameter(param, category, "MQTT", "TLSClientKey", false);
-		WriteParameter(param, category, "MQTT", "RetainMessages", false);
-		WriteParameter(param, category, "MQTT", "HomeassistantDiscovery", false);
-		WriteParameter(param, category, "MQTT", "MeterType", false);
-		
-		WriteParameter(param, category, "InfluxDB", "Uri", false);	
-		WriteParameter(param, category, "InfluxDB", "Database", false);	
-		WriteParameter(param, category, "InfluxDB", "user", true);	
-		WriteParameter(param, category, "InfluxDB", "password", true);
-		WriteParameter(param, category, "InfluxDB", "TLSEncryption", false);
-		WriteParameter(param, category, "InfluxDB", "TLSCACert", false);
-		WriteParameter(param, category, "InfluxDB", "TLSClientCert", false);
-		WriteParameter(param, category, "InfluxDB", "TLSClientKey", false);
-
-		WriteParameter(param, category, "InfluxDBv2", "Uri", false);	
-		WriteParameter(param, category, "InfluxDBv2", "Bucket", false);	
-		WriteParameter(param, category, "InfluxDBv2", "Org", true);	
-		WriteParameter(param, category, "InfluxDBv2", "Token", true);
-		WriteParameter(param, category, "InfluxDBv2", "TLSEncryption", false);
-		WriteParameter(param, category, "InfluxDBv2", "TLSCACert", false);
-		WriteParameter(param, category, "InfluxDBv2", "TLSClientCert", false);
-		WriteParameter(param, category, "InfluxDBv2", "TLSClientKey", false);	
-
-		WriteParameter(param, category, "GPIO", "IO0", true);
-		WriteParameter(param, category, "GPIO", "IO1", true);
-		WriteParameter(param, category, "GPIO", "IO3", true);
-		WriteParameter(param, category, "GPIO", "IO4", true);
-		WriteParameter(param, category, "GPIO", "IO12", true);
-		WriteParameter(param, category, "GPIO", "IO13", true);
-		WriteParameter(param, category, "GPIO", "LEDType", false);
-		WriteParameter(param, category, "GPIO", "LEDNumbers", false);
-		WriteParameter(param, category, "GPIO", "LEDColor", false);
-
-		WriteParameter(param, category, "AutoTimer", "AutoStart", false);	
-		WriteParameter(param, category, "AutoTimer", "Interval", false);
-
-		WriteParameter(param, category, "DataLogging", "DataLogActive", false);	
-		WriteParameter(param, category, "DataLogging", "DataFilesRetention", false);	
-
-		WriteParameter(param, category, "Debug", "LogLevel", false);
-		WriteParameter(param, category, "Debug", "LogfilesRetention", false);
-		WriteParameter(param, category, "Debug", "DebugFilesRetention", false);
-
-		WriteParameter(param, category, "System", "TimeServer", true);
-		WriteParameter(param, category, "System", "TimeZone", false);
-		WriteParameter(param, category, "System", "Hostname", false);
-		WriteParameter(param, category, "System", "RSSIThreshold", true);
-		WriteParameter(param, category, "System", "CPUFrequency", false);
-
-		WriteParameter(param, category, "WebUI", "OverviewAutoRefresh", false);
-		WriteParameter(param, category, "WebUI", "OverviewAutoRefreshTime", false);
-		WriteParameter(param, category, "WebUI", "DataGraphAutoRefresh", false);
-		WriteParameter(param, category, "WebUI", "DataGraphAutoRefreshTime", false);
-
-		WriteModelFiles();
-
-		// Visualize subparameter of a parameter
-		setEnabled("MQTT_TLSEncryption_parameter", document.getElementById("MQTT_TLSEncryption_value1").value == "true" ? true : false);
-		setEnabled("InfluxDB_TLSEncryption_parameter", document.getElementById("InfluxDB_TLSEncryption_value1").value == "true" ? true : false);
-		setEnabled("InfluxDBv2_TLSEncryption_parameter", document.getElementById("InfluxDBv2_TLSEncryption_value1").value == "true" ? true : false);
-		setEnabled("WebUI_OverviewAutoRefresh_parameter", document.getElementById("WebUI_OverviewAutoRefresh_value1").value == "true" ? true : false);
-		setEnabled("WebUI_DataGraphAutoRefresh_parameter", document.getElementById("WebUI_DataGraphAutoRefresh_value1").value == "true" ? true : false);
-	}
-
-
-	function WriteModelFiles()
-	{
-		var _indexDig = document.getElementById("Digits_Model_value1");
-		var _indexAna = document.getElementById("Analog_Model_value1");
-		while (_indexDig.length)
-			_indexDig.remove(0);
-		while (_indexAna.length)
-			_indexAna.remove(0);
-
-		for (var i = 0; i < tflite_list.length; ++i) {
-			var optionDig = document.createElement("option");
-			var optionAna = document.createElement("option");
-			
-			var text = tflite_list[i].replace("/config/", "");
-
-            if (tflite_list[i].includes("/dig")) { // Its a digit model, only show in the digital list box
-				optionDig.text = text.substring(0, text.lastIndexOf('.'));
-				optionDig.value = tflite_list[i];
-				_indexDig.add(optionDig);
-			}
-			else if (tflite_list[i].includes("/ana")) { // Its a analog model, only show in the analog list box
-				optionAna.text = text.substring(0, text.lastIndexOf('.'));
-				optionAna.value = tflite_list[i];
-				_indexAna.add(optionAna);
-			}
-			else { // all other files, show in both list boxes
-				optionDig.text = optionAna.text = text.substring(0, text.lastIndexOf('.'));
-				optionDig.value = optionAna.value = tflite_list[i];
-				_indexDig.add(optionDig);
-				_indexAna.add(optionAna);
-			}
-		}
-
-		WriteParameter(param, category, "Analog", "Model", false);		
-		WriteParameter(param, category, "Digits", "Model", false);		
-	}
-
-
-	function ReadParameterAll()
-	{
-		category["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
-		category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
-		category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
-		category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
-		category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBv2_enabled").checked;
-		category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
-		
-		ReadParameter(param, "TakeImage", "RawImagesLocation", true);
-		ReadParameter(param, "TakeImage", "RawImagesRetention", true);
-		ReadParameter(param, "TakeImage", "Demo", false);
-		ReadParameter(param, "TakeImage", "WaitBeforeTakingPicture", false);
-		ReadParameter(param, "TakeImage", "CameraFrequency", false);
-		ReadParameter(param, "TakeImage", "ImageQuality", false);
-		ReadParameter(param, "TakeImage", "Brightness", false);
-		ReadParameter(param, "TakeImage", "Contrast", false);
-		ReadParameter(param, "TakeImage", "Saturation", false);
-		ReadParameter(param, "TakeImage", "LEDIntensity", false);
-		ReadParameter(param, "TakeImage", "ImageSize", false);
-		ReadParameter(param, "TakeImage", "FixedExposure", false);
-
-		ReadParameter(param, "Alignment", "SearchFieldX", false);	
-		ReadParameter(param, "Alignment", "SearchFieldY", false);
-		ReadParameter(param, "Alignment", "AlignmentAlgo", false);
-		ReadParameter(param, "Alignment", "FlipImageSize", false);
-		ReadParameter(param, "Alignment", "InitialRotate", false);
-		ReadParameter(param, "Alignment", "InitialMirror", false);
-		ReadParameter(param, "Alignment", "SaveDebugInfo", false);
-
-		ReadParameter(param, "Digits", "Model", false);
-		ReadParameter(param, "Digits", "CNNGoodThreshold", false);
-		ReadParameter(param, "Digits", "ROIImagesLocation", true);
-		ReadParameter(param, "Digits", "ROIImagesRetention", true);
-
-		ReadParameter(param, "Analog", "Model", false);
-		ReadParameter(param, "Analog", "ROIImagesLocation", true);
-		ReadParameter(param, "Analog", "ROIImagesRetention", true);
-
-		ReadParameter(param, "PostProcessing", "FallbackValueUse", false);
-		ReadParameter(param, "PostProcessing", "FallbackValueAgeStartup", false);
-		ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", false);
-		ReadParameter(param, "PostProcessing", "SaveDebugInfo", false);
-
-		ReadParameter(param, "MQTT", "Uri", false);
-		ReadParameter(param, "MQTT", "MainTopic", false);
-		ReadParameter(param, "MQTT", "ClientID", false);
-		ReadParameter(param, "MQTT", "user", true);
-		ReadParameter(param, "MQTT", "password", true);
-		ReadParameter(param, "MQTT", "TLSEncryption", false);
-		ReadParameter(param, "MQTT", "TLSCACert", false);
-		ReadParameter(param, "MQTT", "TLSClientCert", false);
-		ReadParameter(param, "MQTT", "TLSClientKey", false);
-		ReadParameter(param, "MQTT", "RetainMessages", false);
-		ReadParameter(param, "MQTT", "HomeassistantDiscovery", false);
-		ReadParameter(param, "MQTT", "MeterType", false);
-
-		ReadParameter(param, "InfluxDB", "Uri", false);
-		ReadParameter(param, "InfluxDB", "Database", false);
-		ReadParameter(param, "InfluxDB", "user", true);
-		ReadParameter(param, "InfluxDB", "password", true);
-		ReadParameter(param, "InfluxDB", "TLSEncryption", false);
-		ReadParameter(param, "InfluxDB", "TLSCACert", false);
-		ReadParameter(param, "InfluxDB", "TLSClientCert", false);
-		ReadParameter(param, "InfluxDB", "TLSClientKey", false);
-
-		ReadParameter(param, "InfluxDBv2", "Uri", false);
-		ReadParameter(param, "InfluxDBv2", "Bucket", false);
-		ReadParameter(param, "InfluxDBv2", "Org", true);
-		ReadParameter(param, "InfluxDBv2", "Token", true);
-		ReadParameter(param, "InfluxDBv2", "TLSEncryption", false);
-		ReadParameter(param, "InfluxDBv2", "TLSCACert", false);
-		ReadParameter(param, "InfluxDBv2", "TLSClientCert", false);
-		ReadParameter(param, "InfluxDBv2", "TLSClientKey", false);
-
-		ReadParameter(param, "GPIO", "IO0", true);
-		ReadParameter(param, "GPIO", "IO1", true);
-		ReadParameter(param, "GPIO", "IO3", true);
-		ReadParameter(param, "GPIO", "IO4", true);
-		ReadParameter(param, "GPIO", "IO12", true);
-		ReadParameter(param, "GPIO", "IO13", true);
-		ReadParameter(param, "GPIO", "LEDType", false);
-		ReadParameter(param, "GPIO", "LEDNumbers", false);
-		ReadParameter(param, "GPIO", "LEDColor", false);
-		// Folgende Zeilen sind für Abwärtskompatibität < v9.0.0 notwendig (manchmal parameter auskommentiert)
-		param["GPIO"]["LEDType"]["enabled"] = true;
-		param["GPIO"]["LEDNumbers"]["enabled"] = true;
-		param["GPIO"]["LEDColor"]["enabled"] = true;
-		param["GPIO"]["LEDType"]["found"] = true;
-		param["GPIO"]["LEDNumbers"]["found"] = true;
-		param["GPIO"]["LEDColor"]["found"] = true;
-
-		ReadParameter(param, "AutoTimer", "AutoStart", false);
-		ReadParameter(param, "AutoTimer", "Interval", false);
-		
-		ReadParameter(param, "DataLogging", "DataLogActive", false);
-		ReadParameter(param, "DataLogging", "DataFilesRetention", false);
-
-		ReadParameter(param, "Debug", "LogLevel", false);
-		ReadParameter(param, "Debug", "LogfilesRetention", false);
-		ReadParameter(param, "Debug", "DebugFilesRetention", false);
-
-		ReadParameter(param, "System", "TimeServer", true);
-		ReadParameter(param, "System", "TimeZone", false);
-		ReadParameter(param, "System", "Hostname", false);
-		ReadParameter(param, "System", "RSSIThreshold", true);
-		ReadParameter(param, "System", "CPUFrequency", false);
-
-		ReadParameter(param, "WebUI", "OverviewAutoRefresh", false);
-		ReadParameter(param, "WebUI", "OverviewAutoRefreshTime", false);
-		ReadParameter(param, "WebUI", "DataGraphAutoRefresh", false);
-		ReadParameter(param, "WebUI", "DataGraphAutoRefreshTime", false);
-
-		var sel = document.getElementById("Numbers_value1");
-		UpdateInputIndividual(sel);
-	}
-
-
-	function FormatDecimalValue(_param, _cat, _name) {
-		for (var j = 1; j <= _param[_cat][_name]["anzParam"]; ++j) {
-			var _val = _param[_cat][_name]["value"+j];
-			_val = _val.replace(",", ".");
-			_param[_cat][_name]["value"+j] = _val;
-		}
-	}
-
-
-	function UpdateAfterCategoryCheck() {
-		ReadParameterAll();
-		category["Analog"]["enabled"] = document.getElementById("Category_Analog_enabled").checked;
-		category["Digits"]["enabled"] = document.getElementById("Category_Digits_enabled").checked;
-		category["MQTT"]["enabled"] = document.getElementById("Category_MQTT_enabled").checked;
-		category["InfluxDB"]["enabled"] = document.getElementById("Category_InfluxDB_enabled").checked;
-		category["InfluxDBv2"]["enabled"] = document.getElementById("Category_InfluxDBv2_enabled").checked;
-		category["GPIO"]["enabled"] = document.getElementById("Category_GPIO_enabled").checked;
-
-		UpdateInput();
-		var sel = document.getElementById("Numbers_value1");
-		UpdateInputIndividual(sel);
-	}
-
-
-	function UpdateExpertModus()
-	{
-	//	var _style = 'display:none;';
-		var _style_pur = 'none';
-		var _hidden = true;
-		if (document.getElementById("ExpertModus_enabled").checked) {
-	//		_style = '';
-			_style_pur = '';
-			_hidden = false;
-			document.getElementById("Edit_Config_Direct").style.display = "";
-			firework.launch("Expert view activated. Please use wisely", 'warning', 3000, true);
-		}
+		if (elPinMode.value .substring(0,10) == "flashlight" &&
+			elPinMode.value  != "flashlight-digital"
+		)
+			setClassVisibility("gpio_show_intersity_correction", true);
 		else
-		{
-			document.getElementById("Edit_Config_Direct").style.display = "none"; 
+			setClassVisibility("gpio_show_intersity_correction", false);
+	}
+
+
+	function gpioPinSelectAfterChange(init = false)
+	{
+		let gpioPinSelect = $("[id$='gpionumber_value']")[0];
+
+		// Rename elements to match new selection
+		$(".form_gpio_config").children().each(function() {
+			this.name = this.name.split(".gpiopin.")[0] + ".gpiopin." +
+				(gpioPinSelect.selectedIndex).toString() + "." + this.name.split(".gpiopin.")[1].substring(2);
+				this.id = this.name.replace(/\./g, '_') + "_value";
+		});
+
+		// Reload content
+		let jsonConfigModified = deepMergeObjects(jsonConfig, jsonConfigModifiedDelta);
+		let jsonConfigModifiedKeyified = jsonObjectKeyify(jsonConfigModified)
+		parseCurrentParametrization(jsonConfigModifiedKeyified);
+		if(!init) {
+			$("[id$='pinenabled_value']")[0].onchange(); // Eval pin enabled state
+			getGpioPinUsage(gpioPinSelect.value);
 		}
+	}
 
-		const expert = document.querySelectorAll(".expert");
-		for (var i = 0; i < expert.length; i++) {
-			expert[i].style.display = _style_pur;
-	//		document.getElementById(expert[i].id).style = _style;
-		}
 
-		// Enable / Disable die Optionen in den Menues für die Auswahl. Falls kein Expertenmodus soll nur ein Wert (built-in-led oder externan-flash-ws281x) möglich sein
-		Array.from(document.querySelector("#GPIO_IO4_value1").options).forEach(function(option_element) {
-			if (option_element.value != "built-in-led")
-				option_element.hidden = _hidden;
-		});	
+	function sequenceSelectAfterChange(classEl, selectEl)
+	{
+		// Rename elements to match new selection
+		let idx = $("#" + selectEl).prop("selectedIndex").toString();
+		$("." + classEl).children().each(function() {
+			this.name = this.name.split(".sequence.")[0] + ".sequence." +
+			idx + "." + this.name.split(/[.]+/).pop();
+			this.id = this.name.replace(/\./g, '_') + "_value";
+		});
 
-		Array.from(document.querySelector("#GPIO_IO12_value1").options).forEach(function(option_element) {
-			if (option_element.value != "external-flash-ws281x")
-				option_element.hidden = _hidden;
+		// Reload content
+		let jsonConfigModified = deepMergeObjects(jsonConfig, jsonConfigModifiedDelta);
+		let jsonConfigModifiedKeyified = jsonObjectKeyify(jsonConfigModified)
+		parseCurrentParametrization(jsonConfigModifiedKeyified);
+	}
+
+
+	function fillSequenceSelectionOptions()
+	{
+		$("[id$='sequencename_value']").each(function() {
+			$(this).find('option').remove().end();
+
+			for (let i = 0; i < jsonConfig.numbersequences.sequence.length; ++i)
+				$(this).append(new Option(jsonConfig.numbersequences.sequence[i].sequencename,
+					jsonConfig.numbersequences.sequence[i].sequencename));
 		});
 	}
 
 
-	function saveTextAsFile()
+	function fillModelSelectionOptions(modelFileListObj)
 	{
-		ReadParameterAll();
-		if (document.getElementsByClassName("invalid-input").length > 0) {
-			firework.launch("Settings cannot be saved. Please check your entries!", 'danger', 30000);
-			return;
+		let digitModelSelection = $("#digit_model_value").find("option").remove().end();
+		let analogModelSelection = $("#analog_model_value").find("option").remove().end();
+
+		let modelFileArray = modelFileListObj.files.sort(); // Convert to array and sort
+
+		for (let i = 0; i < modelFileArray.length; ++i) {
+			if (modelFileArray[i].startsWith("dig")) { // Digit model, only show in the digit selection
+				digitModelSelection.append(new Option(modelFileArray[i].substring(0, modelFileArray[i].lastIndexOf('.')), modelFileArray[i]));
+			}
+			else if (modelFileArray[i].startsWith("ana")) { // Analog model, only show in the analog selection
+				analogModelSelection.append(new Option(modelFileArray[i].substring(0, modelFileArray[i].lastIndexOf('.')), modelFileArray[i]));
+			}
+			else { // Unknown, show in both selections
+				digitModelSelection.append(new Option(modelFileArray[i].substring(0, modelFileArray[i].lastIndexOf('.')), modelFileArray[i]));
+				analogModelSelection.append(new Option(modelFileArray[i].substring(0, modelFileArray[i].lastIndexOf('.')), modelFileArray[i]));
+			}
 		}
+	}
 
-		if (confirm("Are you sure you want to save the configuration?")) {
-			ReadParameterAll();
-			WriteConfigININew();
-			SaveConfigToServer(domainname);
 
+	function fillCertSelectionOptions(certFileListObj)
+	{
+		let cacertSelection = $("select[name$=cacert]").find("option").remove().end();
+		let clientcertSelection = $("select[name$=clientcert]").find("option").remove().end();
+		let clientkeySelection = $("select[name$=clientkey]").find("option").remove().end();
+
+		let certFileArray = certFileListObj.files.sort(); // Convert to array and sort
+
+		// Add empty selection
+		cacertSelection.append(new Option("None", ""));
+		clientcertSelection.append(new Option("None", ""));
+		clientkeySelection.append(new Option("None", ""));
+
+		for (let i = 0; i < certFileArray.length; ++i) {
+			cacertSelection.append(new Option(certFileArray[i], certFileArray[i]));
+			clientcertSelection.append(new Option(certFileArray[i], certFileArray[i]));
+			clientkeySelection.append(new Option(certFileArray[i], certFileArray[i]));
+		}
+	}
+
+
+	function saveConfigData()
+	{
+		if (confirm("Are you sure you want to save and apply the new configuration?")) {
 			firework.launch('Save and apply configuration...', 'success', 2000, true);
-			setTimeout(function() {
-				reload_config();
-			}, 200);    
+
+			saveConfig(JSON.stringify(jsonConfigModifiedDelta)).then(() => {
+				setTimeout(function() {
+					reloadConfig();
+					setTimeout(function() {
+						init();
+					}, 500);
+				}, 500);
+			});
 		}
 	}
 
 
-	function editConfigDirect() {
-		if (confirm("Proceed to switch the view? Unsaved changes get lost")) {
-			var stringota = getDomainname() + "/edit_config.html?v=$COMMIT_HASH";
-			window.location = stringota;
-			window.location.href = stringota;
-			window.location.assign(stringota);
-			window.location.replace(stringota);
-		}	
-	}
-
-
-	function numberChanged()
+	function loadConfigData(modelFileListObj, certFileListObj)
 	{
-		var sel = document.getElementById("Numbers_value1");
-		_neu = sel.selectedIndex;
-		UpdateInputIndividual(sel);
+		fillModelSelectionOptions(modelFileListObj);
+		fillCertSelectionOptions(certFileListObj);
+
+		let jsonConfigKeyified = [];            // Config: array as key-value pairs
+		[jsonConfig, jsonConfigKeyified] = getConfigFromStorage(2); // Get config
+		parseCurrentParametrization(jsonConfigKeyified);
+
+		fillSequenceSelectionOptions();
+		initGpioSection();
+
+		triggerClassElementOnChange("classvisibility_init");
+		jsonConfigModifiedDelta = {}; // Reset modified parameter container after subparameter visibilty is set
+
+		$("#wlan_reboot_note").hide(); // Hide reboot note
+		$("#divloading").hide(); // Hide loading indicator
+		$("#divcontent").show(); // Show parameter content
 	}
 
 
-	function numberInfluxDBChanged()
-	{
-		var sel = document.getElementById("NumbersInfluxDB_value1");
-		_neu = sel.selectedIndex;
-		UpdateInputIndividual(sel);
-	}
-
-
-	function numberInfluxDBv2Changed()
-	{
-		var sel = document.getElementById("NumbersInfluxDBv2_value1");
-		_neu = sel.selectedIndex;
-		UpdateInputIndividual(sel);
-	}
-
-
-	/* hash #description open the details part of the page */
-	function openDescription() 
+	// hash #description open the details part of the page
+	function openDescription()
 	{
 		if(window.location.hash) {
-			var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
+			let hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
 			if(hash == 'description')
 				document.getElementById("desc_details").open = true;
 		}
 	}
 
 
-	function loadConfigData()
-	{
-		ParseConfig();
-		param = getConfigParameters();
-		category = getConfigCategory();
-		InitIndivParameter();
-
-		UpdateInput();
-		UpdateInputIndividual();
-		UpdateExpertModus();
-
-		document.getElementById("divloading").style.display = 'none'; // Hide loading indicator
-		document.getElementById("divcontent").style.display = ''; 	// Show parameter content
-	}
-	
-
 	async function init()
 	{
 		openDescription();
 
-		// Ensure TFLite file list and config.ini is loaded before parsing data
-		Promise.all([fetchTFLITEList(), loadConfig()])
-			.then(() => loadConfigData())
+		// Ensure tflite file list, cert file list and config is loaded before parsing data
+		Promise.all([getTfliteFileList(), getCertFileList(), loadConfig(2)])
+			.then(([modelFileListObj, certFileListObj]) => loadConfigData(modelFileListObj, certFileListObj))
 			.catch((error) => {
 				firework.launch('Failed loading data for configuration page. Please repeat or check logs', 'danger', 30000);
 				console.error("Failed loading data for configuration page. Error: " + error.message);
 			});
+
 	}
 
 
 	init();
 
 </script>
-	
+
 </body>
 </html>
