@@ -259,9 +259,9 @@ jobs:
       run: |
         echo "Updating files ..."
 
-        cp -f "./"AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"/firmware.bin" "./firmware/${{ matrix.plat }}/bootloader.bin"
-        cp -f "./"AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"/partitions.bin" "./firmware/${{ matrix.plat }}/partitions.bin"
-        cp -f "./"AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"/firmware.bin" "./firmware/${{ matrix.plat }}/firmware.bin"
+        cp -f "./AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}/firmware.bin" "./firmware/${{ matrix.plat }}/bootloader.bin"
+        cp -f "./AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}/partitions.bin" "./firmware/${{ matrix.plat }}/partitions.bin"
+        cp -f "./AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}/firmware.bin" "./firmware/${{ matrix.plat }}/firmware.bin"
 
         echo "Updating version strings (index.html, manifest) ..."
         sed -i -E 's/Firmware: .*./\Firmware: <b\>${{ needs.prepare-release.outputs.version }}\<\/b\>/g' index.html
