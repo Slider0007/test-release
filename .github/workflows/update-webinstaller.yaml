@@ -25,12 +25,6 @@ jobs:
       with:
         ref: gh-pages
 
-    - name: Set variables
-      id: vars
-      run: |
-        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-        echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
-
     - name: Pull artifacts
       id: pull_artifacts
       uses: dsaltares/fetch-gh-release-asset@master
@@ -43,13 +37,17 @@ jobs:
     - name: Prepare data
       run: |
         echo "Updating firmware files..."
-        rm -rf ./firmware/${{ matrix.plat }}/
-
+        ls
+        rm -f "./firmware/${{ matrix.plat }}/bootloader.bin"
+        rm -f "./firmware/${{ matrix.plat }}/partitions.bin"
+        rm -f "./firmware/${{ matrix.plat }}/firmware.bin"
+        ls
         unzip ./artifacts/AI-on-the-edge-device__manual-setup__${{ matrix.plat }}__*.zip -d "./artifacts/"
+        ls
         cp -f "./artifacts/firmware.bin" "./firmware/${{ matrix.plat }}/bootloader.bin"
         cp -f "./artifacts/partitions.bin" "./firmware/${{ matrix.plat }}/partitions.bin"
         cp -f "./artifacts/firmware.bin" "./firmware/${{ matrix.plat }}/firmware.bin"
-
+        ls
         echo "Updating index and manifest file..."
         sed -i 's/$VERSION/${{ steps.pull_artifacts.outputs.version }}/g' index.html
         sed -i 's/$VERSION/${{ steps.pull_artifacts.outputs.version }}/g' manifest_${{ matrix.plat }}.json
