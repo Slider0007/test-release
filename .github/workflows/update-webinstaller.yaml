@@ -37,7 +37,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         regex: true
-        file: "AI-on-the-edge-device.*.zip"
+        file: "AI-on-the-edge-device__manual-setup__${{ matrix.plat }}.*.zip"
         target: './artifacts/'
 
     - name: Prepare data
@@ -50,7 +50,7 @@ jobs:
         ls
         unzip AI-on-the-edge-device__manual-setup__${{ matrix.plat }}__*.zip
         ls
-        cp -f "*.bin" "/firmware/${{ matrix.plat }}/"
+        cp -f "**/*.bin" "/firmware/${{ matrix.plat }}/"
         cd ..
         ls
         echo "Updating index and manifest file..."
