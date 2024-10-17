@@ -6,7 +6,6 @@ This project demonstrates edge computing using a low-cost, AI-capable Espressif 
 
 Let's explore how to make **AI on the Edge** a reality!
 
-
 ## Key features
 - Tensorflow Lite (TFLite) integration – including easy-to-use wrapper
 - Inline image processing (Image taking, Image alignment, ROI extraction, Post processing)
