@@ -1,0 +1,15 @@
+{
+    "name": "AI-on-the-Edge Device",
+    "version": "$VERSION",
+    "new_install_prompt_erase": false,
+    "builds": [
+        {
+            "chipFamily": "ESP32",
+            "parts": [
+                { "path": "firmware/esp32cam/bootloader.bin", "offset": 4096 },
+                { "path": "firmware/esp32cam/partitions.bin", "offset": 32768 },
+                { "path": "firmware/esp32cam/firmware.bin", "offset": 65536 }
+            ]
+        }
+    ]
+}
