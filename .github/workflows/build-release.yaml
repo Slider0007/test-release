@@ -258,9 +258,10 @@ jobs:
     - name: Prepare data
       run: |
         echo "Updating files ..."
-        cd ./artifacts
-        ls
-        cd ..
+
+        rm -rf "./firmware/${{ matrix.plat }}/"
+        mkdir -p "./firmware/${{ matrix.plat }}/"
+        
         cp -f ./artifacts/bootloader.bin ./firmware/${{ matrix.plat }}/bootloader.bin
         cp -f ./artifacts/partitions.bin ./firmware/${{ matrix.plat }}/partitions.bin
         cp -f ./artifacts/firmware.bin ./firmware/${{ matrix.plat }}/firmware.bin
