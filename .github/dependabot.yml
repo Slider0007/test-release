@@ -11,9 +11,3 @@ updates:
       interval: "monthly"
     pull-request-branch-name:
       separator: "-"
-  - package-ecosystem: "gitsubmodule"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-    pull-request-branch-name:
-      separator: "-"
