@@ -6,6 +6,7 @@ body:
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
+        For discussions and requests please use the discussion section!
   - type: textarea
     attributes:
       label: Description
