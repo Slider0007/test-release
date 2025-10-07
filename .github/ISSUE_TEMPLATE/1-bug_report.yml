@@ -5,8 +5,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
-        For discussions and requests please use the discussion section!
+        **Thank you for taking the time to submit this bug report!**
+        For general discussions or any other requests, please start a conversation in the “Discussions” tab.
   - type: textarea
     attributes:
       label: Description
