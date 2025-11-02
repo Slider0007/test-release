@@ -4,6 +4,11 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
 jobs:
 #########################################################################################
 ## Create release - PART 1: Prepare Release PR / Create release tag
@@ -282,3 +287,4 @@ jobs:
           & git commit -m "${{ matrix.plat }}: Update firmware files to ${{ needs.prepare-release.outputs.tag_name }}"
           & git push --force
         }
+
