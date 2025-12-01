@@ -164,7 +164,7 @@ jobs:
           });
     
           const exists = artifacts.data.artifacts.some(a =>
-            a.name === "aiote_support-files_SLFork_${{ github.ref_name }}_${{ github.sha }}"
+            a.name === "aiote_support-files_SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
           );
     
           core.setOutput("exists", exists ? "true" : "false");
@@ -189,7 +189,7 @@ jobs:
     - name: Upload updated debug artifact
       uses: actions/upload-artifact@v5
       with:
-        name: "aiote_support-files_SLFork_${{ github.ref_name }}_${{ github.sha }}"
+        name: "aiote_support-files_SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
         path: ./debug
 
 
@@ -311,6 +311,7 @@ jobs:
           & git commit -m "${{ matrix.plat }}: Update firmware files to ${{ needs.prepare-release.outputs.tag_name }}"
           & git push --force
         }
+
 
 
 
