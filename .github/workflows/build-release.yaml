@@ -191,6 +191,7 @@ jobs:
       with:
         name: "aiote_support-files_SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
         path: ./debug
+        overwrite: true
 
 
 #########################################################################################
@@ -311,6 +312,7 @@ jobs:
           & git commit -m "${{ matrix.plat }}: Update firmware files to ${{ needs.prepare-release.outputs.tag_name }}"
           & git push --force
         }
+
 
 
 
