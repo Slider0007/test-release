@@ -144,34 +144,52 @@ jobs:
 
     #########################################################################################
     ## Prepare package with additional files for debugging purpose
-    #
-    # Package contents (combined from all platforms):
-    # - firmware_<platform>.elf (from each platform)
-    # - sdkconfig.<platform> (from each platform)
-    # - dependencies.lock
+    ##
+    ## Package contents (combined from all platforms):
+    ## - firmware_<platform>.elf
+    ## - sdkconfig.<platform>
+    ## - dependencies.lock
     #########################################################################################
-
-    # Step 1: Download existing debug files from previous matrix runs
-    - name: Download previous debug files
-      uses: actions/download-artifact@v5
-      continue-on-error: true
+    
+    # Step 1: Check if artifact exists
+    - name: Check for existing artifact
+      id: check_artifact
+      uses: actions/github-script@v7
       with:
-        name: "aiote_dev-support_${{ github.ref_name }}_${{ github.sha }}"
+        script: |
+          const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            run_id: context.runId,
+          });
+    
+          const exists = artifacts.data.artifacts.some(a =>
+            a.name === "aiote_support-files_SLFork_${{ github.ref_name }}_${{ github.sha }}"
+          );
+    
+          core.setOutput("exists", exists ? "true" : "false");
+    
+    # Step 2: Download existing debug files
+    - name: Download actual debug artifact
+      if: steps.check_artifact.outputs.exists == 'true'
+      uses: actions/download-artifact@v5
+      with:
+        name: "aiote_support-files_SLFork_${{ github.ref_name }}_${{ github.sha }}"
         path: ./debug
-
-    # Step 2: Add current platform files to debug workspace
+    
+    # Step 3: Add current platform files
     - name: Add current platform files to debug workspace
       run: |
-        mkdir -p ./debug
-        cp -f "./code/.pio/build/${{ matrix.plat }}/firmware.elf" "debug/${{ matrix.plat }}/firmware.elf"
-        cp -f "./code/sdkconfig.${{ matrix.plat }}" "debug/${{ matrix.plat }}/sdkconfig.${{ matrix.plat }}"
-        cp -f "./code/dependencies.lock" "debug/${{ matrix.plat }}/dependencies.lock"
-
-    # Step 3: Upload updated debug workspace with final name
-    - name: Upload debug artifact
+        mkdir -p "./debug/${{ matrix.plat }}"
+        cp "./code/.pio/build/${{ matrix.plat }}/firmware.elf" "debug/${{ matrix.plat }}/firmware.elf"
+        cp "./code/sdkconfig.${{ matrix.plat }}"               "debug/${{ matrix.plat }}/sdkconfig.${{ matrix.plat }}"
+        cp "./code/dependencies.lock"                          "debug/${{ matrix.plat }}/dependencies.lock"
+    
+    # Step 4: Upload merged artifact
+    - name: Upload updated debug artifact
       uses: actions/upload-artifact@v5
       with:
-        name: "aiote_dev-support_${{ github.ref_name }}_${{ github.sha }}"
+        name: "aiote_support-files_SLFork_${{ github.ref_name }}_${{ github.sha }}"
         path: ./debug
 
 
@@ -293,6 +311,7 @@ jobs:
           & git commit -m "${{ matrix.plat }}: Update firmware files to ${{ needs.prepare-release.outputs.tag_name }}"
           & git push --force
         }
+
 
 
 
