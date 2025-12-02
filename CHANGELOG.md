@@ -3,7 +3,7 @@
 ## [16.0.0-SLFork](https://github.com/Slider0007/test-release/compare/v16.2.0-SLFork...v16.0.0-SLFork) (2024-10-17)
 
 
-### ⚠ BREAKING CHANGES
+### ⚠ BREAKING CHANGES - TEST
 
 * **config-handling:** Complete rework of internal config parameter and sequence data handling ([#165](https://github.com/Slider0007/test-release/issues/165))
 * **GPIO:** Complete rework of GPIO handler & Add additional features for GPIOs ([#154](https://github.com/Slider0007/test-release/issues/154))
