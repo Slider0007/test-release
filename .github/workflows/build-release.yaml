@@ -172,8 +172,15 @@ jobs:
   
       steps:
         - uses: actions/checkout@v4
+
+        # Step 1: Set variables
+        - name: Set variables
+          id: vars
+          run: |
+            echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+            echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
   
-        # Step 1: List all artifacts and extract only debug-* names
+        # Step 2: List all artifacts and extract only debug-* names
         - name: Get list of debug artifacts
           id: list
           uses: actions/github-script@v7
@@ -190,7 +197,7 @@ jobs:
   
               core.setOutput("names", JSON.stringify(debugArtifacts));
   
-        # Step 2: Download each aiote_support-files* artifact
+        # Step 3: Download each aiote_support-files* artifact
         - name: Download debug artifacts
           env:
             GH_TOKEN: ${{ github.token }}
@@ -199,15 +206,41 @@ jobs:
             names=$(echo '${{ steps.list.outputs.names }}' | jq -r '.[]')
             for name in $names; do
               echo "Downloading $name"
-              gh run download ${{ github.run_id }} --name "$name" --dir combined/"$name"
+              gh run download ${{ github.run_id }} --name "$name" --dir combined/
             done
   
-        # Step 3: Upload final combined ZIP
-        - name: Upload combined ZIP
+        # Step 4: Upload final combined ZIP
+        - name: Upload aggregated package
           uses: actions/upload-artifact@v5
           with:
-            name: "aiote_support-files__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
+            name: "aiote_support-files_SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
             path: ./combined
+
+        # Step 5: Delete per-platform artifacts (cleanup)
+        - name: Delete per-platform debug artifacts
+          uses: actions/github-script@v7
+          with:
+            script: |
+              const names = JSON.parse(process.env.NAMES);
+    
+              const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: context.runId,
+              });
+    
+              for (const a of artifacts.data.artifacts) {
+                if (names.includes(a.name)) {
+                  console.log(`Deleting artifact: ${a.name}`);
+                  await github.rest.actions.deleteArtifact({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    artifact_id: a.id,
+                  });
+                }
+              }
+          env:
+            NAMES: ${{ steps.list.outputs.names }}
 
 
 #########################################################################################
@@ -328,6 +361,7 @@ jobs:
           & git commit -m "${{ matrix.plat }}: Update firmware files to ${{ needs.prepare-release.outputs.tag_name }}"
           & git push --force
         }
+
 
 
 
