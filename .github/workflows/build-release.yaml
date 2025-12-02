@@ -2,6 +2,8 @@ name: Build and Release
 
 on:
   push:
+      branches-ignore:
+        - release-please--branches--develop
   pull_request:
 
 jobs:
@@ -45,13 +47,13 @@ jobs:
     steps:
     - name: Checkout branch
       if: ${{ ! needs.prepare-release.outputs.release_created }}
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         submodules: recursive
 
     - name: Checkout tag # checkout tagged version when build a release for this tag
       if: ${{ needs.prepare-release.outputs.release_created }}
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         ref: ${{ needs.prepare-release.outputs.tag_name }}
         submodules: recursive
@@ -143,13 +145,15 @@ jobs:
         path: ./artifact
 
     #########################################################################################
-    ## Create package with additional files for debugging purpose
-    #
-    # Package contents:
-    # - firmware.elf
-    # - sdkconfig.${{ matrix.plat }}
+    ## Prepare package with additional files for debugging purpose (debug-files)
+    ##
+    ## Package contents (combined from all platforms):
+    ## - firmware.elf
+    ## - sdkconfig.<platform>
+    ## - dependencies.lock
     #########################################################################################
-    - name: Debug files package - Prepare artifact
+     
+    - name: Debug package - Prepare artifact
       run: |
         rm -rf ./debug
         mkdir -p ./debug
@@ -160,8 +164,89 @@ jobs:
     - name: Debug files package - Upload artifact
       uses: actions/upload-artifact@v5
       with:
-        name: "AI-on-the-edge-device__${{ matrix.plat }}__debug-files__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
+        name: "debug-files_${{ matrix.plat }}"
         path: ./debug
+
+  #########################################################################################
+  ## Combine all debug-files artifacts to one artifact
+  ##
+  ## Important: This needs to run after all matrix build runs are completed
+  ######################################################################################### 
+  aggregate-debug-files-artifacts:
+      needs: build
+      runs-on: ubuntu-latest
+  
+      steps:
+        - uses: actions/checkout@v6
+
+        # Step 1: Set variables
+        - name: Set variables
+          id: vars
+          run: |
+            echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+            echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
+  
+        # Step 2: List all artifacts and extract only debug-files* artifacts
+        - name: Get list of debug-files artifacts
+          id: list
+          uses: actions/github-script@v7
+          with:
+            script: |
+              const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: context.runId,
+              });
+              const debugArtifacts = artifacts.data.artifacts
+                .filter(a => a.name.startsWith("debug-files"))
+                .map(a => a.name);
+  
+              core.setOutput("names", JSON.stringify(debugArtifacts));
+  
+        # Step 3: Download all debug-files* artifacts
+        - name: Download debug-files artifacts
+          env:
+            GH_TOKEN: ${{ github.token }}
+          run: |
+            mkdir -p combined
+            names=$(echo '${{ steps.list.outputs.names }}' | jq -r '.[]')
+            for name in $names; do
+              echo "Downloading $name"
+              gh run download ${{ github.run_id }} --name "$name" --dir combined/
+            done
+  
+        # Step 4: Upload final combined ZIP
+        - name: Upload aggregated support-files package
+          uses: actions/upload-artifact@v5
+          with:
+            name: "aiote_support-files_SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
+            path: ./combined
+
+        # Step 5: Delete per-platform artifacts (cleanup)
+        - name: Delete all debug-files artifacts
+          env:
+            NAMES: ${{ steps.list.outputs.names }}
+          uses: actions/github-script@v7
+          with:
+            script: |
+              const names = JSON.parse(process.env.NAMES);
+    
+              const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: context.runId,
+              });
+    
+              for (const a of artifacts.data.artifacts) {
+                if (names.includes(a.name)) {
+                  console.log(`Deleting artifact: ${a.name}`);
+                  await github.rest.actions.deleteArtifact({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    artifact_id: a.id,
+                  });
+                }
+              }
 
 
 #########################################################################################
@@ -190,7 +275,7 @@ jobs:
 
     steps:
     - name: Checkout tag
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         ref: ${{ needs.prepare-release.outputs.tag_name }}
 
@@ -201,7 +286,7 @@ jobs:
         echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
     - name: Pull artifacts
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
 
     - name: Prepare artifacts for release
       run: |
@@ -245,12 +330,12 @@ jobs:
 
     steps:
     - name: Checkout branch gh-pages-webinstaller
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         ref: gh-pages-webinstaller
 
     - name: Pull artifact
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: "AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ needs.upload-release-artifacts.outputs.branch }}_${{ needs.upload-release-artifacts.outputs.sha_short }}"
         path: './artifacts/'
@@ -282,3 +367,6 @@ jobs:
           & git commit -m "${{ matrix.plat }}: Update firmware files to ${{ needs.prepare-release.outputs.tag_name }}"
           & git push --force
         }
+
+
+

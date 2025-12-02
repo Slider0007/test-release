@@ -1,5 +1,16 @@
 # Changelog
 
+## [16.0.3-SLFork](https://github.com/Slider0007/test-release/compare/v16.0.2-SLFork...v16.0.3-SLFork) (2025-12-02)
+
+
+### Other Changes
+
+* **deps:** Bump actions/checkout from 4 to 5 ([#83](https://github.com/Slider0007/test-release/issues/83)) ([5e26eb4](https://github.com/Slider0007/test-release/commit/5e26eb4e40a8f291f63d89a24cf3c58a98544626))
+* **deps:** Bump actions/download-artifact from 4 to 5 ([3bf3a8e](https://github.com/Slider0007/test-release/commit/3bf3a8e1af3fc05b5857b94be242b15425782c09))
+* **deps:** Bump actions/download-artifact from 4 to 5 ([#82](https://github.com/Slider0007/test-release/issues/82)) ([638a651](https://github.com/Slider0007/test-release/commit/638a65167ba1b63968f2eb7724b96e73f681d357))
+* **deps:** Bump actions/github-script from 7 to 8 ([#89](https://github.com/Slider0007/test-release/issues/89)) ([321de8c](https://github.com/Slider0007/test-release/commit/321de8c2c91649e818394a0386e5cbc99e7cf209))
+* **deps:** Bump actions/setup-python from 5 to 6 ([#90](https://github.com/Slider0007/test-release/issues/90)) ([131041d](https://github.com/Slider0007/test-release/commit/131041d88dcddbaa0d4fb773925d37ed0ba4fc10))
+
 ## [16.0.2-SLFork](https://github.com/Slider0007/test-release/compare/v16.0.1-SLFork...v16.0.2-SLFork) (2024-10-17)
 
 
