@@ -22,7 +22,6 @@ jobs:
       - uses: googleapis/release-please-action@v4
         id: release
         with:
-          target-branch: build-workflow
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
 
@@ -281,4 +280,5 @@ jobs:
           & git commit -m "${{ matrix.plat }}: Update firmware files to ${{ needs.prepare-release.outputs.tag_name }}"
           & git push --force
         }
+
 
