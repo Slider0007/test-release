@@ -192,6 +192,8 @@ jobs:
   
         # Step 2: Download each aiote_support-files* artifact
         - name: Download debug artifacts
+          env:
+            GH_TOKEN: ${{ github.token }}
           run: |
             mkdir -p combined
             names=$(echo '${{ steps.list.outputs.names }}' | jq -r '.[]')
@@ -200,11 +202,7 @@ jobs:
               gh run download ${{ github.run_id }} --name "$name" --dir combined/"$name"
             done
   
-        # Step 3: Create one combined ZIP
-        - name: Create combined ZIP
-          run: zip -r aiote_support-files__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}.zip combined
-  
-        # Step 4: Upload final combined ZIP
+        # Step 3: Upload final combined ZIP
         - name: Upload combined ZIP
           uses: actions/upload-artifact@v5
           with:
@@ -330,6 +328,7 @@ jobs:
           & git commit -m "${{ matrix.plat }}: Update firmware files to ${{ needs.prepare-release.outputs.tag_name }}"
           & git push --force
         }
+
 
 
 
