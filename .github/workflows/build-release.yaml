@@ -139,7 +139,7 @@ jobs:
         cp ./sd-card/config/models/*.tflite ./artifact/config/models/ 2>/dev/null || true
 
     - name: Firmware package - Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: "AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
         path: ./artifact
@@ -155,12 +155,13 @@ jobs:
      
     - name: Debug package - Prepare artifact
       run: |
-        mkdir -p "./debug/${{ matrix.plat }}"
-        cp "./code/.pio/build/${{ matrix.plat }}/firmware.elf" "debug/${{ matrix.plat }}/firmware.elf"
-        cp "./code/sdkconfig.${{ matrix.plat }}"               "debug/${{ matrix.plat }}/sdkconfig.${{ matrix.plat }}"
-        cp "./code/dependencies.lock"                          "debug/${{ matrix.plat }}/dependencies.lock"
-    
-    - name: Upload debug-files artifact
+        rm -rf ./debug
+        mkdir -p ./debug
+
+        cp -f "./code/.pio/build/${{ matrix.plat }}/firmware.elf" "debug/firmware.elf"
+        cp -f "./code/sdkconfig.${{ matrix.plat }}" "debug/sdkconfig.${{ matrix.plat }}"
+
+    - name: Debug files package - Upload artifact
       uses: actions/upload-artifact@v5
       with:
         name: "debug-files_${{ matrix.plat }}"
