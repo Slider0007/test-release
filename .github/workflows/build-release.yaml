@@ -152,16 +152,16 @@ jobs:
     ## - sdkconfig.<platform>
     ## - dependencies.lock
     #########################################################################################
-     
+
     - name: Debug package - Prepare artifact
       run: |
-        rm -rf ./debug
-        mkdir -p ./debug
+        mkdir -p "./debug/${{ matrix.plat }}"
+        cp "./code/.pio/build/${{ matrix.plat }}/firmware.elf" "debug/${{ matrix.plat }}/firmware.elf"
+        cp "./code/sdkconfig.${{ matrix.plat }}"               "debug/${{ matrix.plat }}/sdkconfig.${{ matrix.plat }}"
+        cp "./code/dependencies.lock"                          "debug/${{ matrix.plat }}/dependencies.lock"
+    
+    - name: Upload debug-files artifact
 
-        cp -f "./code/.pio/build/${{ matrix.plat }}/firmware.elf" "debug/firmware.elf"
-        cp -f "./code/sdkconfig.${{ matrix.plat }}" "debug/sdkconfig.${{ matrix.plat }}"
-
-    - name: Debug files package - Upload artifact
       uses: actions/upload-artifact@v5
       with:
         name: "debug-files_${{ matrix.plat }}"
@@ -175,9 +175,9 @@ jobs:
   aggregate-debug-files-artifacts:
       needs: build
       runs-on: ubuntu-latest
-  
+
       steps:
-        - uses: actions/checkout@v6
+        - uses: actions/checkout@v4
 
         # Step 1: Set variables
         - name: Set variables
@@ -202,7 +202,7 @@ jobs:
                 .map(a => a.name);
   
               core.setOutput("names", JSON.stringify(debugArtifacts));
-  
+
         # Step 3: Download all debug-files* artifacts
         - name: Download debug-files artifacts
           env:
@@ -236,7 +236,7 @@ jobs:
                 repo: context.repo.repo,
                 run_id: context.runId,
               });
-    
+
               for (const a of artifacts.data.artifacts) {
                 if (names.includes(a.name)) {
                   console.log(`Deleting artifact: ${a.name}`);
@@ -367,6 +367,7 @@ jobs:
           & git commit -m "${{ matrix.plat }}: Update firmware files to ${{ needs.prepare-release.outputs.tag_name }}"
           & git push --force
         }
+
 
 
 
