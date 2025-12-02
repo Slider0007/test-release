@@ -150,35 +150,8 @@ jobs:
     ## - sdkconfig.<platform>
     ## - dependencies.lock
     #########################################################################################
-    
-    # Step 1: Check if artifact exists
-    - name: Check for existing artifact
-      id: check_artifact
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            run_id: context.runId,
-          });
-    
-          const exists = artifacts.data.artifacts.some(a =>
-            a.name === "aiote_support-files_SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
-          );
-    
-          core.setOutput("exists", exists ? "true" : "false");
-    
-    # Step 2: Download existing debug files
-    - name: Download actual debug artifact
-      if: steps.check_artifact.outputs.exists == 'true'
-      uses: actions/download-artifact@v5
-      with:
-        name: "aiote_support-files_SLFork_${{ github.ref_name }}_${{ github.sha }}"
-        path: ./debug
-    
-    # Step 3: Add current platform files
-    - name: Add current platform files to debug workspace
+     
+    - name: Debug package - Prepare artifact
       run: |
         mkdir -p "./debug/${{ matrix.plat }}"
         cp "./code/.pio/build/${{ matrix.plat }}/firmware.elf" "debug/${{ matrix.plat }}/firmware.elf"
@@ -186,12 +159,57 @@ jobs:
         cp "./code/dependencies.lock"                          "debug/${{ matrix.plat }}/dependencies.lock"
     
     # Step 4: Upload merged artifact
-    - name: Upload updated debug artifact
+    - name: Upload debug artifact
       uses: actions/upload-artifact@v5
       with:
-        name: "aiote_support-files_SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
+        name: "support-files_${{ matrix.plat }}"
         path: ./debug
-        overwrite: true
+
+  
+  aggregate-debug-artifacts:
+      needs: build
+      runs-on: ubuntu-latest
+  
+      steps:
+        - uses: actions/checkout@v4
+  
+        # Step 1: List all artifacts and extract only debug-* names
+        - name: Get list of debug artifacts
+          id: list
+          uses: actions/github-script@v7
+          with:
+            script: |
+              const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: context.runId,
+              });
+              const debugArtifacts = artifacts.data.artifacts
+                .filter(a => a.name.startsWith("support-files"))
+                .map(a => a.name);
+  
+              core.setOutput("names", JSON.stringify(debugArtifacts));
+  
+        # Step 2: Download each aiote_support-files* artifact
+        - name: Download debug artifacts
+          run: |
+            mkdir -p combined
+            names=$(echo '${{ steps.list.outputs.names }}' | jq -r '.[]')
+            for name in $names; do
+              echo "Downloading $name"
+              gh run download ${{ github.run_id }} --name "$name" --dir combined/"$name"
+            done
+  
+        # Step 3: Create one combined ZIP
+        - name: Create combined ZIP
+          run: zip -r aiote_support-files__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}.zip combined
+  
+        # Step 4: Upload final combined ZIP
+        - name: Upload combined ZIP
+          uses: actions/upload-artifact@v5
+          with:
+            name: "aiote_support-files__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
+            path: ./combined
 
 
 #########################################################################################
@@ -312,6 +330,7 @@ jobs:
           & git commit -m "${{ matrix.plat }}: Update firmware files to ${{ needs.prepare-release.outputs.tag_name }}"
           & git push --force
         }
+
 
 
 
