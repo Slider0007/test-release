@@ -1,7 +1,7 @@
 name: Build and Release
 
 on:
-  push:
+  push: 
   pull_request:
 
 jobs:
@@ -281,3 +281,4 @@ jobs:
           & git commit -m "${{ matrix.plat }}: Update firmware files to ${{ needs.prepare-release.outputs.tag_name }}"
           & git push --force
         }
+
