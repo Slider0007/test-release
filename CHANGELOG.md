@@ -1,5 +1,13 @@
 # Changelog
 
+## [16.1.0-SLFork](https://github.com/Slider0007/test-release/compare/v16.0.3-SLFork...v16.1.0-SLFork) (2025-12-02)
+
+
+### Other Changes
+
+* **deps:** Bump actions/download-artifact from 5 to 6 ([#93](https://github.com/Slider0007/test-release/issues/93)) ([9269d57](https://github.com/Slider0007/test-release/commit/9269d57cbe75d5b9022a820b8f3103eb7ce5f7fb))
+* **deps:** Bump actions/upload-artifact from 4 to 5 ([#92](https://github.com/Slider0007/test-release/issues/92)) ([04e383e](https://github.com/Slider0007/test-release/commit/04e383e3574651b5b91fd2fddfd87cb0c90ac951))
+
 ## [16.0.3-SLFork](https://github.com/Slider0007/test-release/compare/v16.0.2-SLFork...v16.0.3-SLFork) (2025-12-02)
 
 
