@@ -1,5 +1,12 @@
 # Changelog
 
+## [16.1.1-SLFork](https://github.com/Slider0007/test-release/compare/v16.1.0-SLFork...v16.1.1-SLFork) (2026-05-13)
+
+
+### Other Changes
+
+* **deps:** Bump actions/cache from 4 to 5 ([#98](https://github.com/Slider0007/test-release/issues/98)) ([f49bb70](https://github.com/Slider0007/test-release/commit/f49bb70e3f1f95f087f625099ddfb137aac3a6b7))
+
 ## [16.1.0-SLFork](https://github.com/Slider0007/test-release/compare/v16.0.3-SLFork...v16.1.0-SLFork) (2025-12-02)
 
 
