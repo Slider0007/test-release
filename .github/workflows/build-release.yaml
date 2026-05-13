@@ -139,7 +139,7 @@ jobs:
     - name: Debug files package - Upload artifact
       uses: actions/upload-artifact@v7
       with:
-        name: "aioted_debug-support__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
+        name: "aioted_debug-files__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
         path: ./debug
 
 
@@ -156,7 +156,7 @@ jobs:
     needs: [prepare-release, build]
     if: ${{ needs.prepare-release.outputs.release_created }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         plat:
          - esp32cam
@@ -220,7 +220,7 @@ jobs:
     - name: Pull all debug artifacts
       uses: actions/download-artifact@v8
       with:
-        pattern: "aioted_debug-support__*__SLFork_${{ needs.upload-release-artifacts.outputs.branch }}_${{ needs.upload-release-artifacts.outputs.sha_short }}"
+        pattern: "aioted_debug-files__*__SLFork_${{ needs.upload-release-artifacts.outputs.branch }}_${{ needs.upload-release-artifacts.outputs.sha_short }}"
         path: ./debug
         merge-multiple: false
  
@@ -230,7 +230,7 @@ jobs:
         cd debug
         # Each platform's files land in their own subdirectory named after the artifact;
         # zip them all together, preserving the per-platform folder structure.
-        zip -r ../release/aioted_debug-support_SLFork_v${{ needs.prepare-release.outputs.version }}.zip .
+        zip -r ../release/aioted__debug-files_developer-only__SLFork_v${{ needs.prepare-release.outputs.version }}.zip .
         cd ..
  
     - name: Upload combined debug artifact to release tag
