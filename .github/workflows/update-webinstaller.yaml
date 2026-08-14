@@ -3,6 +3,9 @@ name: Update Web Installer
 on:
   workflow_dispatch:
 
+permissions:
+  actions: read
+  contents: write
 
 jobs:
   update-webinstaller:
@@ -12,19 +15,29 @@ jobs:
       fail-fast: false
       matrix:
         plat:
-         - esp32cam
-         - xiao-esp32s3-sense
-
-    # Sets permissions of the GITHUB_TOKEN to allow downloading artifacts
-    permissions:
-      actions: read
-      contents: write
+          - esp32cam
+          - xiao-esp32s3-sense
+          - freenove-esp32s3-n8r8
+          - freenove-esp32s3-n16r8
+          - waveshare-esp32s3-eth
 
     steps:
     - name: Checkout branch gh-pages-webinstaller
       uses: actions/checkout@v6
       with:
         ref: gh-pages-webinstaller
+
+    - name: Fetch Latest GitHub Release Info
+      id: release_info
+      run: |
+        RELEASE_JSON=$(curl -sH "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/${{ github.repository }}/releases/latest")
+
+        TAG_NAME=$(echo "$RELEASE_JSON" | jq -r '.tag_name')
+        IS_PRERELEASE=$(echo "$RELEASE_JSON" | jq -r '.prerelease')
+
+        echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+        echo "prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
 
     - name: Pull artifact from latest release
       id: pull_artifacts
@@ -37,22 +50,54 @@ jobs:
 
     - name: Prepare data
       run: |
-        echo "Updating files ..."
+        echo "Updating files for platform ${{ matrix.plat }}..."
+
+        ZIP_FILE=$(ls ./artifacts/AI-on-the-edge-device__${{ matrix.plat }}__SLFork_*.zip | head -n 1)
+        FILENAME=$(basename "$ZIP_FILE")
+
+        # Compute file size and sha256 checksum
+        SIZE_BYTES=$(stat -c%s "$ZIP_FILE")
+        SHA256_HASH=$(sha256sum "$ZIP_FILE" | awk '{print $1}')
+        DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ steps.release_info.outputs.tag_name }}/$FILENAME"
 
         rm -rf "./firmware/${{ matrix.plat }}/"
         mkdir -p "./firmware/${{ matrix.plat }}/"
 
-        unzip ./artifacts/AI-on-the-edge-device__${{ matrix.plat }}__SLFork_*.zip -d ./artifacts/
+        unzip "$ZIP_FILE" -d ./artifacts/
 
-        cp -f ./artifacts/firmware.bin ./firmware/${{ matrix.plat }}/bootloader.bin
+        cp -f ./artifacts/bootloader.bin ./firmware/${{ matrix.plat }}/bootloader.bin
         cp -f ./artifacts/partitions.bin ./firmware/${{ matrix.plat }}/partitions.bin
         cp -f ./artifacts/firmware.bin ./firmware/${{ matrix.plat }}/firmware.bin
 
-        echo "Updating version strings (index.html, manifest) ..."
+        echo "Update version string for webinstaller..."
         sed -i -E 's/Firmware: .*./\Firmware: <b\>${{ steps.pull_artifacts.outputs.version }}\<\/b\>/g' index.html
         sed -i -E 's/"version":.*.,/"version": "${{ steps.pull_artifacts.outputs.version }}",/g' manifest_${{ matrix.plat }}.json
 
-    - name: Commit data to branch gh-pages-webinstaller
+        echo "Prepare data for release manifest..."
+        mkdir -p ./metadata_fragments
+        jq -n \
+          --arg tag "${{ steps.pull_artifacts.outputs.version }}" \
+          --argjson prerelease "${{ steps.release_info.outputs.prerelease }}" \
+          --arg build_date_utc "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+          --arg sha256 "$SHA256_HASH" \
+          --argjson size_bytes "$SIZE_BYTES" \
+          --arg download_url "$DOWNLOAD_URL" \
+          '{
+            tag: $tag,
+            prerelease: $prerelease,
+            build_date_utc: $build_date_utc,
+            sha256: $sha256,
+            size_bytes: $size_bytes,
+            download_url: $download_url
+          }' > ./metadata_fragments/${{ matrix.plat }}.json
+
+    - name: Upload platform fragment artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: fragment-${{ matrix.plat }}
+        path: ./metadata_fragments/${{ matrix.plat }}.json
+
+    - name: Commit binaries to branch gh-pages-webinstaller
       shell: pwsh
       run: |
         & git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -64,3 +109,53 @@ jobs:
           & git commit -m "${{ matrix.plat }}: Update firmware files to ${{ steps.pull_artifacts.outputs.version }}"
           & git push
         }
+
+  generate-release-manifest:
+    needs: update-webinstaller
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout branch gh-pages-webinstaller
+      uses: actions/checkout@v6
+      with:
+        ref: gh-pages-webinstaller
+
+    - name: Download all metadata fragment artifacts
+      uses: actions/download-artifact@v8
+      with:
+        path: ./all_fragments/
+
+    - name: Create release manifest
+      run: |
+        NOW_UTC=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+
+        # Initialize root manifest schema
+        jq -n \
+          --arg manifest_version "1.0" \
+          --arg name "AI-on-the-edge-device" \
+          --arg full_name "${{ github.repository }}" \
+          --arg updated_at_utc "$NOW_UTC" \
+          '{
+            manifest_version: $manifest_version,
+            name: $name,
+            full_name: $full_name,
+            updated_at_utc: $updated_at_utc,
+            firmware: {}
+          }' > manifest.json
+
+        # Merge board JSON fragments into the firmware object
+        for frag in ./all_fragments/fragment-*/*.json; do
+          if [ -f "$frag" ]; then
+            BOARD_KEY=$(basename "$frag" .json)
+            echo "Integrating target: $BOARD_KEY"
+            jq --slurpfile boardData "$frag" \
+              --arg boardKey "$BOARD_KEY" \
+              '.firmware[$boardKey] = $boardData[0]' manifest.json > manifest.tmp.json && mv manifest.tmp.json manifest.json
+          fi
+        done
+
+    - name: Commit release manifest
+      run: |
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add manifest.json
+        git diff --quiet && git diff --staged --quiet || (git commit -m "docs(manifest): update release manifest.json" && git push)
