@@ -1,7 +1,7 @@
 {
   "tag": "v16.1.1-SLFork",
   "prerelease": false,
-  "build_date_utc": "2026-08-14T10:17:19Z",
+  "build_date_utc": "2026-08-14T10:25:37Z",
   "sha256": "7ed816b3b324e50515b525889afa16a3646928b2ef23ca9949db18e5384b159a",
   "size_bytes": 2968468,
   "download_url": "https://github.com/Slider0007/test-release/releases/download/v16.1.1-SLFork/AI-on-the-edge-device__esp32cam__SLFork_v16.1.1.zip"
