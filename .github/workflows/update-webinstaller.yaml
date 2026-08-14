@@ -17,9 +17,6 @@ jobs:
         plat:
           - esp32cam
           - xiao-esp32s3-sense
-          - freenove-esp32s3-n8r8
-          - freenove-esp32s3-n16r8
-          - waveshare-esp32s3-eth
 
     steps:
     - name: Checkout branch gh-pages-webinstaller
@@ -124,7 +121,7 @@ jobs:
       with:
         path: ./all_fragments/
 
-    - name: Create release manifest
+    - name: Create release-manifest
       run: |
         NOW_UTC=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
 
@@ -140,7 +137,7 @@ jobs:
             full_name: $full_name,
             updated_at_utc: $updated_at_utc,
             firmware: {}
-          }' > manifest.json
+          }' > release-manifest.json
 
         # Merge board JSON fragments into the firmware object
         for frag in ./all_fragments/fragment-*/*.json; do
@@ -149,13 +146,13 @@ jobs:
             echo "Integrating target: $BOARD_KEY"
             jq --slurpfile boardData "$frag" \
               --arg boardKey "$BOARD_KEY" \
-              '.firmware[$boardKey] = $boardData[0]' manifest.json > manifest.tmp.json && mv manifest.tmp.json manifest.json
+              '.firmware[$boardKey] = $boardData[0]' release-manifest.json > release-manifest.tmp.json && mv release-manifest.tmp.json release-manifest.json
           fi
         done
 
-    - name: Commit release manifest
+    - name: Commit release-manifest
       run: |
         git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add manifest.json
-        git diff --quiet && git diff --staged --quiet || (git commit -m "docs(manifest): update release manifest.json" && git push)
+        git add release-manifest.json
+        git diff --quiet && git diff --staged --quiet || (git commit -m "docs(manifest): update release-manifest" && git push)
