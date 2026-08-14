@@ -124,18 +124,20 @@ jobs:
     - name: Create release-manifest
       run: |
         NOW_UTC=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+        REPO_NAME="${GITHUB_REPOSITORY#*/}"
+        REPO_URL="https://github.com/${{ github.repository }}"
 
         # Initialize root manifest schema
         jq -n \
           --arg manifest_version "1.0" \
-          --arg name "AI-on-the-edge-device" \
-          --arg full_name "${{ github.repository }}" \
-          --arg updated_at_utc "$NOW_UTC" \
+          --arg repo_name "$REPO_NAME" \
+          --arg repo_url "$REPO_URL" \
+          --arg manifest_created_utc "$NOW_UTC" \
           '{
             manifest_version: $manifest_version,
-            name: $name,
-            full_name: $full_name,
-            updated_at_utc: $updated_at_utc,
+            repo_name: $repo_name,
+            repo_url: $repo_url,
+            manifest_created_utc: $manifest_created_utc,
             firmware: {}
           }' > release-manifest.json
 
