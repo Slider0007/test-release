@@ -1,7 +1,7 @@
 {
   "tag": "v16.1.1-SLFork",
   "prerelease": false,
-  "build_date_utc": "2026-08-14T10:17:31Z",
+  "build_date_utc": "2026-08-14T10:25:56Z",
   "sha256": "58aceb2eb0f042e646facc6d6c0e5ad25284dd2c7d6c77825fde223fec82b61b",
   "size_bytes": 2938319,
   "download_url": "https://github.com/Slider0007/test-release/releases/download/v16.1.1-SLFork/AI-on-the-edge-device__xiao-esp32s3-sense__SLFork_v16.1.1.zip"
