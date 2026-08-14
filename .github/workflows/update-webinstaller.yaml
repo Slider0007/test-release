@@ -130,14 +130,14 @@ jobs:
         # Initialize root manifest schema
         jq -n \
           --arg manifest_version "1.0" \
+          --arg manifest_created_utc "$NOW_UTC" \
           --arg repo_name "$REPO_NAME" \
           --arg repo_url "$REPO_URL" \
-          --arg manifest_created_utc "$NOW_UTC" \
           '{
             manifest_version: $manifest_version,
+            manifest_created_utc: $manifest_created_utc,
             repo_name: $repo_name,
             repo_url: $repo_url,
-            manifest_created_utc: $manifest_created_utc,
             firmware: {}
           }' > release-manifest.json
 
