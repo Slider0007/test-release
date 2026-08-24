@@ -1,5 +1,44 @@
 # Changelog
 
+## [16.1.2-SLFork](https://github.com/Slider0007/test-release/compare/v16.1.1-SLFork...v16.1.2-SLFork) (2026-08-24)
+
+### 💿 Installation / Migration Notes
+
+#### A. Initial Installation
+  --> Recommended: **Web Installer**
+ - Follow instructions listed on [Web Installer Page](https://slider0007.github.io/AI-on-the-edge-device/)
+ - Alternative method: [Manual Installation](https://github.com/Slider0007/AI-on-the-edge-device/blob/develop/docs/Installation/DeviceProvisioning/Manual.md)
+
+#### B. Update from previous releases (17.x)
+--> Recommended: **OTA Update**
+- Download board specific firmware package
+- Perform OTA update
+
+#### C. Migration from previous major release (16.x)
+--> Recommended: **OTA Update**
+- Download board specific firmware package from GitHub release page
+- Perform OTA update (ignore file name mismatch warning)
+- Verify migrated device configuration
+  - Check migrated configuration briefly (majority of the parameter are migrated)
+  - Reconfigure GPIO section (if it was configured before, no automatic migration)
+- Update reference image and alignment marker (Mandatory due to multiple new camera features and adaptions)
+- Lots of (breaking) changes are made to existing APIs. A manual reconfiguration is most likely required. Check API documentation
+  - [REST API Overview](https://github.com/Slider0007/AI-on-the-edge-device/blob/develop/docs/API/REST/_OVERVIEW.md), [REST API Migration Notes](https://github.com/Slider0007/AI-on-the-edge-device/blob/develop/docs/API/REST/xxx_migration_notes.md)
+  - [MQTT API Overview](https://github.com/Slider0007/AI-on-the-edge-device/blob/develop/docs/API/MQTT/_OVERVIEW.md), [MQTT Migration Notes](https://github.com/Slider0007/AI-on-the-edge-device/blob/develop/docs/API/MQTT/xxx_migration_notes.md)
+- Check PR descriptions in `BREAKING CHANGES` section of release v17.0.0-SLFork and/or [documentation](https://github.com/Slider0007/AI-on-the-edge-device/tree/develop/docs) for further information
+
+### Other Changes
+
+* **deps:** Bump actions/checkout from 6 to 7 ([#105](https://github.com/Slider0007/test-release/issues/105)) ([87df66f](https://github.com/Slider0007/test-release/commit/87df66faa7195bb4d30082cf51f3ccd1c0904751))
+* **deps:** Bump actions/setup-python from 6 to 7 ([#106](https://github.com/Slider0007/test-release/issues/106)) ([07ed28b](https://github.com/Slider0007/test-release/commit/07ed28b0b1198d95c0cd0aa73225857368b8da72))
+
+## [16.1.1-SLFork](https://github.com/Slider0007/test-release/compare/v16.1.0-SLFork...v16.1.1-SLFork) (2026-05-13)
+
+
+### Other Changes
+
+* **deps:** Bump actions/cache from 4 to 5 ([#98](https://github.com/Slider0007/test-release/issues/98)) ([f49bb70](https://github.com/Slider0007/test-release/commit/f49bb70e3f1f95f087f625099ddfb137aac3a6b7))
+
 ## [16.1.0-SLFork](https://github.com/Slider0007/test-release/compare/v16.0.3-SLFork...v16.1.0-SLFork) (2025-12-02)
 
 

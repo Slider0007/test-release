@@ -2,9 +2,12 @@ name: Build and Release
 
 on:
   push:
-      branches-ignore:
-        - release-please--branches--develop
+    branches-ignore:
+      - 'release-please--*'
   pull_request:
+    branches-ignore:
+      - 'release-please--*'
+  workflow_dispatch:
 
 jobs:
 #########################################################################################
@@ -21,7 +24,7 @@ jobs:
       version: "${{steps.release.outputs.major}}.${{steps.release.outputs.minor}}.${{steps.release.outputs.patch}}"
       tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v5
         id: release
         with:
           target-branch: develop
@@ -31,8 +34,6 @@ jobs:
 
 #########################################################################################
 ## Build Firmware
-#
-# Build firmware and create artifact packages
 #########################################################################################
   build:
     runs-on: ubuntu-latest
@@ -47,13 +48,13 @@ jobs:
     steps:
     - name: Checkout branch
       if: ${{ ! needs.prepare-release.outputs.release_created }}
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         submodules: recursive
 
     - name: Checkout tag # checkout tagged version when build a release for this tag
       if: ${{ needs.prepare-release.outputs.release_created }}
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         ref: ${{ needs.prepare-release.outputs.tag_name }}
         submodules: recursive
@@ -65,7 +66,7 @@ jobs:
         echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
     #- name: Cache pip & platformIO cache files
-    #  uses: actions/cache@v4
+    #  uses: actions/cache@v5
     #  with:
     #    path: |
     #        ~/.cache/pip
@@ -73,51 +74,27 @@ jobs:
     #    key: platformio-${{ github.run_id }}
     #    restore-keys: platformio # This matches above key as it is only used as a prefix. It restores the nearest cache
 
-    - name: Cache PIO build files
-      if: ${{ ! needs.prepare-release.outputs.release_created }} # do not use cached data when building a release
-      uses: actions/cache@v4
-      with:
-        path: ./code/.pio
-        key: build-${{ matrix.plat }}-${{ github.run_id }}
-        restore-keys: build-${{ matrix.plat }} # This matches above key as it is only used as a prefix. It restores the nearest cache
-
     - name: Setup python environment
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
         python-version: '3.11'
 
     - name: Install PlatformIO environment
       run: |
         python -m pip install --upgrade pip
+        pip install markdown
         pip install --upgrade platformio
 
     - name: Build firmware
       run: cd code; platformio run -e ${{ matrix.plat }}
 
-    - name: Prepare WebUI (Generate parameter tooltips, API docs and update hash)
-      run: |
-        python -m pip install markdown
-        python ./tools/parameter-tooltip-generator/generate-param-doc-tooltips.py
-
-        python ./tools/docs-generator/generate-api-docs.py
-
-        rm -rf ./html
-        mkdir ./html
-        cp -r ./sd-card/html/* ./html/
-
-        echo "Update hash..."
-        cd ./html; find . -type f -exec sed -i 's/$COMMIT_HASH/${{ steps.vars.outputs.sha_short }}/g' {} \;
-
-
     #########################################################################################
-    ## Create firmware package
-    # - Inital flashing using web installer, device's access point or serial console
-    # - OTA update using WebUI
+    ## Prepare firmware package
     #
     # Package contents:
     #  - Firmware binaries (firmware.bin, partitions.bin, bootloader.bin)
-    #  - WebUI Files (/html/* (inkl. subfolders))
-    #  - Config Files (/config/templates/*, /config/models/*.tflite)
+    #  - WebUI files (/html/* (inkl. subfolders))
+    #  - Config files (/config/templates/*, /config/models/*.tflite)
     #########################################################################################
     - name: Firmware package - Prepare artifact
       run: |
@@ -126,9 +103,12 @@ jobs:
         cp -f "./code/.pio/build/${{ matrix.plat }}/firmware.bin" "./artifact/firmware.bin"
         cp -f "./code/.pio/build/${{ matrix.plat }}/bootloader.bin" "./artifact/bootloader.bin"
         cp -f "./code/.pio/build/${{ matrix.plat }}/partitions.bin" "./artifact/partitions.bin"
-        cp -f "./docs/Installation/Firmware/${{ matrix.plat }}.md" "./artifact/readme.md"
 
-        cp -r ./html ./artifact/
+        if [ -d "./sd-card/html_compiled" ]; then
+            cp -r ./sd-card/html_compiled ./artifact/html
+        else
+            cp -r ./sd-card/html ./artifact/html
+        fi
 
         rm -rf ./artifact/config/
         mkdir -p ./artifact/config
@@ -139,32 +119,31 @@ jobs:
         cp ./sd-card/config/models/*.tflite ./artifact/config/models/ 2>/dev/null || true
 
     - name: Firmware package - Upload artifact
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: "AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
         path: ./artifact
 
     #########################################################################################
-    ## Prepare package with additional files for debugging purpose (debug-files)
-    ##
-    ## Package contents (combined from all platforms):
-    ## - firmware.elf
-    ## - sdkconfig.<platform>
-    ## - dependencies.lock
+    ## Prepare package with additional files for debugging purpose
+    #
+    # Package contents:
+    # - firmware.elf
+    # - sdkconfig.${{ matrix.plat }}
     #########################################################################################
-
-    - name: Debug package - Prepare artifact
+    - name: Debug files package - Prepare artifact
       run: |
-        mkdir -p "./debug/${{ matrix.plat }}"
-        cp "./code/.pio/build/${{ matrix.plat }}/firmware.elf" "debug/${{ matrix.plat }}/firmware.elf"
-        cp "./code/sdkconfig.${{ matrix.plat }}"               "debug/${{ matrix.plat }}/sdkconfig.${{ matrix.plat }}"
-        cp "./code/dependencies.lock"                          "debug/${{ matrix.plat }}/dependencies.lock"
-    
-    - name: Upload debug-files artifact
+        rm -rf ./debug
+        mkdir -p ./debug
 
-      uses: actions/upload-artifact@v6
+        cp -f "./code/.pio/build/${{ matrix.plat }}/firmware.elf" "debug/firmware.elf"
+        cp -f "./code/sdkconfig.${{ matrix.plat }}" "debug/sdkconfig.${{ matrix.plat }}"
+        cp -f "./code/dependencies.lock" "debug/dependencies.lock"
+
+    - name: Debug files package - Upload artifact
+      uses: actions/upload-artifact@v7
       with:
-        name: "debug-files_${{ matrix.plat }}"
+        name: "aioted_debug-files__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
         path: ./debug
 
   #########################################################################################
@@ -252,7 +231,7 @@ jobs:
 #########################################################################################
 ## Create release - PART 2: Upload release related artifacts
 #
-# Artifacts will gets uploaded to newly created release tag.
+# Artifacts will be uploaded to newly created release tag
 #########################################################################################
   upload-release-artifacts:
     runs-on: ubuntu-latest
@@ -275,7 +254,7 @@ jobs:
 
     steps:
     - name: Checkout tag
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         ref: ${{ needs.prepare-release.outputs.tag_name }}
 
@@ -286,7 +265,7 @@ jobs:
         echo "branch=$(echo ${{ github.ref_name }} | tr / __)" >> $GITHUB_OUTPUT
 
     - name: Pull artifacts
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v8
 
     - name: Prepare artifacts for release
       run: |
@@ -295,9 +274,6 @@ jobs:
         cd "AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
         zip -r ../release/AI-on-the-edge-device__${{ matrix.plat }}__SLFork_v${{ needs.prepare-release.outputs.version }}.zip *
         cd ..
-        cd "AI-on-the-edge-device__${{ matrix.plat }}__debug-files__SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
-        zip -r ../release/AI-on-the-edge-device__${{ matrix.plat }}__debug-files__SLFork_v${{ needs.prepare-release.outputs.version }}.zip *
-        cd ..
 
     - name: Upload artifacts to release tag
       env:
@@ -305,6 +281,48 @@ jobs:
       run:
         gh release upload ${{ needs.prepare-release.outputs.tag_name }} release/*
 
+#########################################################################################
+## Create release - PART 3: Combine all debug files into one artifact and upload
+#
+# All per-platform debug artifacts are merged into a single zip and uploaded to the release
+#########################################################################################
+  upload-release-debug-artifact:
+    runs-on: ubuntu-latest
+    needs: [prepare-release, build, upload-release-artifacts]
+    if: ${{ needs.prepare-release.outputs.release_created }}
+ 
+    # Sets permissions of the GITHUB_TOKEN to allow uploading to the release
+    permissions:
+      actions: read
+      contents: write
+ 
+    steps:
+    - name: Checkout tag
+      uses: actions/checkout@v7
+      with:
+        ref: ${{ needs.prepare-release.outputs.tag_name }}
+ 
+    - name: Pull all debug artifacts
+      uses: actions/download-artifact@v8
+      with:
+        pattern: "aioted_debug-files__*__SLFork_${{ needs.upload-release-artifacts.outputs.branch }}_${{ needs.upload-release-artifacts.outputs.sha_short }}"
+        path: ./debug
+        merge-multiple: false
+ 
+    - name: Combine and zip all debug artifacts
+      run: |
+        mkdir -p release
+        cd debug
+        # Each platform's files land in their own subdirectory named after the artifact;
+        # zip them all together, preserving the per-platform folder structure.
+        zip -r ../release/aioted__debug-files_developer-only__SLFork_v${{ needs.prepare-release.outputs.version }}.zip .
+        cd ..
+ 
+    - name: Upload combined debug artifact to release tag
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run:
+        gh release upload ${{ needs.prepare-release.outputs.tag_name }} release/*
 
 #########################################################################################
 ## Update web installer (branch: gh-pages-webinstaller)
@@ -330,12 +348,12 @@ jobs:
 
     steps:
     - name: Checkout branch gh-pages-webinstaller
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         ref: gh-pages-webinstaller
 
     - name: Pull artifact
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v8
       with:
         name: "AI-on-the-edge-device__${{ matrix.plat }}__SLFork_${{ needs.upload-release-artifacts.outputs.branch }}_${{ needs.upload-release-artifacts.outputs.sha_short }}"
         path: './artifacts/'
@@ -343,10 +361,10 @@ jobs:
     - name: Prepare data
       run: |
         echo "Updating files ..."
-
-        rm -rf "./firmware/${{ matrix.plat }}/"
-        mkdir -p "./firmware/${{ matrix.plat }}/"
-        
+        cd ./artifacts
+        ls
+        cd ..
+        mkdir -p ./firmware/${{ matrix.plat }}
         cp -f ./artifacts/bootloader.bin ./firmware/${{ matrix.plat }}/bootloader.bin
         cp -f ./artifacts/partitions.bin ./firmware/${{ matrix.plat }}/partitions.bin
         cp -f ./artifacts/firmware.bin ./firmware/${{ matrix.plat }}/firmware.bin
@@ -365,9 +383,5 @@ jobs:
         if ($LASTEXITCODE -ne 0)
         {
           & git commit -m "${{ matrix.plat }}: Update firmware files to ${{ needs.prepare-release.outputs.tag_name }}"
-          & git push --force
+          & git push
         }
-
-
-
-
