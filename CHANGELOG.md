@@ -1,5 +1,13 @@
 # Changelog
 
+## [16.1.2-SLFork](https://github.com/Slider0007/test-release/compare/v16.1.1-SLFork...v16.1.2-SLFork) (2026-08-24)
+
+
+### Other Changes
+
+* **deps:** Bump actions/checkout from 6 to 7 ([#105](https://github.com/Slider0007/test-release/issues/105)) ([87df66f](https://github.com/Slider0007/test-release/commit/87df66faa7195bb4d30082cf51f3ccd1c0904751))
+* **deps:** Bump actions/setup-python from 6 to 7 ([#106](https://github.com/Slider0007/test-release/issues/106)) ([07ed28b](https://github.com/Slider0007/test-release/commit/07ed28b0b1198d95c0cd0aa73225857368b8da72))
+
 ## [16.1.1-SLFork](https://github.com/Slider0007/test-release/compare/v16.1.0-SLFork...v16.1.1-SLFork) (2026-05-13)
 
 
