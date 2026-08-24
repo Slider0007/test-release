@@ -2,6 +2,30 @@
 
 ## [16.1.2-SLFork](https://github.com/Slider0007/test-release/compare/v16.1.1-SLFork...v16.1.2-SLFork) (2026-08-24)
 
+### 💿 Installation / Migration Notes
+
+#### A. Initial Installation
+  --> Recommended: **Web Installer**
+ - Follow instructions listed on [Web Installer Page](https://slider0007.github.io/AI-on-the-edge-device/)
+ - Alternative method: [Manual Installation](https://github.com/Slider0007/AI-on-the-edge-device/blob/develop/docs/Installation/DeviceProvisioning/Manual.md)
+
+#### B. Update from previous releases (17.x)
+--> Recommended: **OTA Update**
+- Download board specific firmware package
+- Perform OTA update
+
+#### C. Migration from previous major release (16.x)
+--> Recommended: **OTA Update**
+- Download board specific firmware package from GitHub release page
+- Perform OTA update (ignore file name mismatch warning)
+- Verify migrated device configuration
+  - Check migrated configuration briefly (majority of the parameter are migrated)
+  - Reconfigure GPIO section (if it was configured before, no automatic migration)
+- Update reference image and alignment marker (Mandatory due to multiple new camera features and adaptions)
+- Lots of (breaking) changes are made to existing APIs. A manual reconfiguration is most likely required. Check API documentation
+  - [REST API Overview](https://github.com/Slider0007/AI-on-the-edge-device/blob/develop/docs/API/REST/_OVERVIEW.md), [REST API Migration Notes](https://github.com/Slider0007/AI-on-the-edge-device/blob/develop/docs/API/REST/xxx_migration_notes.md)
+  - [MQTT API Overview](https://github.com/Slider0007/AI-on-the-edge-device/blob/develop/docs/API/MQTT/_OVERVIEW.md), [MQTT Migration Notes](https://github.com/Slider0007/AI-on-the-edge-device/blob/develop/docs/API/MQTT/xxx_migration_notes.md)
+- Check PR descriptions in `BREAKING CHANGES` section of release v17.0.0-SLFork and/or [documentation](https://github.com/Slider0007/AI-on-the-edge-device/tree/develop/docs) for further information
 
 ### Other Changes
 
