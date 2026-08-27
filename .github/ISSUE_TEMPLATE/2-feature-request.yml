@@ -1,7 +1,7 @@
-name: '💡 Feature Request'
-description: Use this form if you have an idea or wish for a new feature / enhancement
-title: '[Feature]: '
-labels: ['enhancement']
+name: 💡 Feature Request
+description: File a new feature / enhancement
+title: [Feature]: 
+labels: enhancement
 body:
   - type: markdown
     attributes:
@@ -12,7 +12,7 @@ body:
         - [ ] Is there already another similar issue? Check existing [issues](https://github.com/Slider0007/AI-on-the-edge-device/issues).
         - [ ] Is there already another similar discussion? Check existing [discussions]https://github.com/Slider0007/AI-on-the-edge-device/discussions?discussions_q=).
 
-- type: textarea
+  - type: textarea
     id: feature-description
     attributes:
       label: The Feature
