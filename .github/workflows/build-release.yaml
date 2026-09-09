@@ -5,14 +5,10 @@ on:
     branches:
       - develop
       - 'release/v*'
-    branches-ignore:
-      - 'release-please--*'
   pull_request:
     branches:
       - develop
       - 'release/v*'
-    branches-ignore:
-      - 'release-please--*'
   workflow_dispatch:
 
 jobs:
