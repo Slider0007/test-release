@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - develop
-      - 'release/v*'
+      - 'release/*'
   pull_request:
     branches:
       - develop
-      - 'release/v*'
+      - 'release/*'
   workflow_dispatch:
 
 jobs:
