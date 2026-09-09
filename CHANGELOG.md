@@ -1,5 +1,12 @@
 # Changelog
 
+## [16.1.3-SLFork](https://github.com/Slider0007/test-release/compare/v16.1.2-SLFork...v16.1.3-SLFork) (2026-09-09)
+
+
+### Bug Fixes
+
+* **image:** Delete images/idea.jpg ([87d78a8](https://github.com/Slider0007/test-release/commit/87d78a8598927ec5c1309bfcba8dc10d3c14dd58))
+
 ## [16.1.2-SLFork](https://github.com/Slider0007/test-release/compare/v16.1.1-SLFork...v16.1.2-SLFork) (2026-08-24)
 
 ### 💿 Installation / Migration Notes
