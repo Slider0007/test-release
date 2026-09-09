@@ -1,5 +1,12 @@
 # Changelog
 
+## [16.1.3-SLFork](https://github.com/Slider0007/test-release/compare/v16.1.2-SLFork...v16.1.3-SLFork) (2026-09-09)
+
+
+### Other Changes
+
+* **deps:** Bump actions/github-script from 8 to 9 ([#104](https://github.com/Slider0007/test-release/issues/104)) ([1203e8f](https://github.com/Slider0007/test-release/commit/1203e8fc1b09a1ef85859f25f4d8ce1c47f55012))
+
 ## [16.1.2-SLFork](https://github.com/Slider0007/test-release/compare/v16.1.1-SLFork...v16.1.2-SLFork) (2026-08-24)
 
 ### 💿 Installation / Migration Notes
