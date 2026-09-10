@@ -1,5 +1,18 @@
 # Changelog
 
+## [16.1.3-SLFork](https://github.com/Slider0007/test-release/compare/v16.1.2-SLFork...v16.1.3-SLFork) (2026-09-10)
+
+
+### Bug Fixes
+
+* **123:** Delete images/Flash_Settings.png ([#121](https://github.com/Slider0007/test-release/issues/121)) ([c41b7fa](https://github.com/Slider0007/test-release/commit/c41b7fa34b328d54431ea0604a55a4dcd164ff09))
+
+
+### Other Changes
+
+* **deps:** Bump actions/github-script from 8 to 9 ([#104](https://github.com/Slider0007/test-release/issues/104)) ([1203e8f](https://github.com/Slider0007/test-release/commit/1203e8fc1b09a1ef85859f25f4d8ce1c47f55012))
+* **deps:** Bump actions/upload-artifact from 5 to 6 ([#101](https://github.com/Slider0007/test-release/issues/101)) ([36c8a76](https://github.com/Slider0007/test-release/commit/36c8a76e44e8588ab9a7df0e82cacf4013804759))
+
 ## [16.1.2-SLFork](https://github.com/Slider0007/test-release/compare/v16.1.1-SLFork...v16.1.2-SLFork) (2026-08-24)
 
 ### 💿 Installation / Migration Notes
