@@ -1,5 +1,22 @@
 # Changelog
 
+## [17.0.0-SLFork](https://github.com/Slider0007/test-release/compare/v16.1.2-SLFork...v17.0.0-SLFork) (2026-09-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **test:** Delete images/icon directory
+
+### Bug Fixes
+
+* **test:** Delete images/icon directory ([27b7f81](https://github.com/Slider0007/test-release/commit/27b7f813bf8cd024874e661038b05b0bd6bf5527))
+
+
+### Other Changes
+
+* **deps:** Bump actions/github-script from 8 to 9 ([#104](https://github.com/Slider0007/test-release/issues/104)) ([1203e8f](https://github.com/Slider0007/test-release/commit/1203e8fc1b09a1ef85859f25f4d8ce1c47f55012))
+* **deps:** Bump actions/upload-artifact from 5 to 6 ([#101](https://github.com/Slider0007/test-release/issues/101)) ([36c8a76](https://github.com/Slider0007/test-release/commit/36c8a76e44e8588ab9a7df0e82cacf4013804759))
+
 ## [16.1.2-SLFork](https://github.com/Slider0007/test-release/compare/v16.1.1-SLFork...v16.1.2-SLFork) (2026-08-24)
 
 ### 💿 Installation / Migration Notes
