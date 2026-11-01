@@ -196,7 +196,7 @@ jobs:
   
         # Step 4: Upload final combined ZIP
         - name: Upload aggregated support-files package
-          uses: actions/upload-artifact@v6
+          uses: actions/upload-artifact@v7
           with:
             name: "aiote_support-files_SLFork_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}"
             path: ./combined
