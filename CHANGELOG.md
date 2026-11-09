@@ -1,5 +1,22 @@
 # Changelog
 
+## [17.0.0-SLFork](https://github.com/Slider0007/test-release/compare/v16.0.0-SLFork...v17.0.0-SLFork) (2026-11-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* **version index:** Version handling ([#133](https://github.com/Slider0007/test-release/issues/133))
+* **version handling:** Streamline version handling ([#133](https://github.com/Slider0007/test-release/issues/133))
+
+### Bug Fixes
+
+* **version index:** Version handling ([#133](https://github.com/Slider0007/test-release/issues/133)) ([b008809](https://github.com/Slider0007/test-release/commit/b0088091e2083625449b3a305eee9857bca73164))
+
+
+### Refactoring / Style Changes
+
+* **version handling:** Streamline version handling ([#133](https://github.com/Slider0007/test-release/issues/133)) ([b008809](https://github.com/Slider0007/test-release/commit/b0088091e2083625449b3a305eee9857bca73164))
+
 ## [16.0.0-SLFork](https://github.com/Slider0007/test-release/compare/v16.0.0-SLFork...v16.0.0-SLFork) (2026-11-07)
 
 
