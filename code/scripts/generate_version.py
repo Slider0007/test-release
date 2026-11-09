@@ -32,9 +32,11 @@ Both generated files (version.cpp, version.txt) should be in .gitignore.
 
 import json
 import os
+import re
 import subprocess
 import sys
 from datetime import datetime, timezone
+import unicodedata
 
 Import("env")  # noqa: F821  (provided by PlatformIO/SCons)
 
@@ -100,9 +102,17 @@ def write_if_changed(path, content):
 
 
 def fit_version(base, suffix, limit=IDF_VERSION_MAX):
-    """Truncate `base`, never the suffix (rev / dirty flag)."""
-    room = max(limit - len(suffix), 0)
-    return (base[:room] + suffix)[:limit]
+    """Truncate `base`, never the suffix (rev / dirty flag), based on UTF-8 byte length."""
+    suffix_bytes = suffix.encode("utf-8")
+    max_base_bytes = max(limit - len(suffix_bytes), 0)
+
+    # Encode base to UTF-8 and slice to max allowed bytes
+    base_bytes = base.encode("utf-8")[:max_base_bytes]
+
+    # Decode safely, ignoring any trailing partial multi-byte character sequence
+    decoded_base = base_bytes.decode("utf-8", errors="ignore")
+
+    return (decoded_base + suffix)[:limit]
 
 
 def norm(p):
@@ -121,13 +131,15 @@ def is_dirty(project_dir, ignore_paths):
     stat-only changes don't give false positives."""
     top = git(project_dir, "rev-parse", "--show-toplevel")
     if top.returncode != 0:
-        return False
+        warn(f"git rev-parse --show-toplevel failed: {top.stderr.strip()}")
+        return "ERROR"
     toplevel = top.stdout.strip()
 
     res = git(project_dir, "status", "--porcelain", "-z", "-uall")
     if res.returncode != 0:
         warn(f"git status failed: {res.stderr.strip()}")
-        return False
+        # Return a sentinel value or True so we don't treat an error as clean
+        return "ERROR"
 
     ignore = {norm(p) for p in ignore_paths}
     parts = res.stdout.split("\0")
@@ -152,7 +164,7 @@ def is_dirty(project_dir, ignore_paths):
 
 def apply_github_pr_info(info):
     """On GitHub pull_request runs HEAD is a detached synthetic merge commit.
-    Use the PR's source branch and real head SHA instead."""
+    Keep the checked-out commit revision for version uniqueness, but record the PR number."""
     if os.environ.get("GITHUB_EVENT_NAME") not in ("pull_request", "pull_request_target"):
         return
 
@@ -166,7 +178,7 @@ def apply_github_pr_info(info):
     try:
         with open(event_path, "r", encoding="utf-8-sig") as f:
             pr_data = json.load(f)["pull_request"]
-        info["rev"] = pr_data["head"]["sha"][:7]
+        # Retain info["rev"] from the checked-out merge commit to avoid duplicate version tags across PR updates
         info["pr"] = str(pr_data["number"])
     except (KeyError, TypeError, OSError, ValueError) as e:
         warn(f"could not read PR info from event payload: {e}")
@@ -202,12 +214,29 @@ def collect_git_info(project_dir, ignore_paths):
         # GitHub PR: replace merge-commit branch/rev with the PR's own
         apply_github_pr_info(info)
 
-        if is_dirty(project_dir, ignore_paths):
+        # Check dirty status
+        dirty_status = is_dirty(project_dir, ignore_paths)
+        if dirty_status == "ERROR":
+            msg = "git status check failed; unable to verify clean repository state"
+            if os.environ.get("STRICT_VERSION") == "1":
+                sys.stderr.write(f"VERSION INFO: [ERROR] {msg}\n")
+                env.Exit(1)
+            warn(msg)
+            info["dirty"] = "+"  # Fallback to dirty when status check fails in non-strict builds
+        elif dirty_status:
             info["dirty"] = "+"
     except Exception as e:  # noqa: BLE001
         warn(f"git metadata extraction failed: {e}")
     dprint(f"git info: {info}")
     return info
+
+
+def render_cpp(v):
+    replacements = {f"@{key}@": c_escape(val) for key, val in v.items()}
+    if not replacements:
+        return CPP_TEMPLATE
+    pattern = "|".join(re.escape(key) for key in replacements)
+    return re.sub(pattern, lambda match: replacements[match.group(0)], CPP_TEMPLATE)
 
 
 # --------------------------------------------------------------------------
@@ -237,7 +266,11 @@ const char* const FW_VERSION = "@FW_VERSION@";
 // sits at the fixed offset the bootloader/OTA/esptool expect.
 const esp_app_desc_t esp_app_desc __attribute__((section(".rodata_desc"), used)) = {
     .magic_word = ESP_APP_DESC_MAGIC_WORD,
+#ifdef CONFIG_BOOTLOADER_APP_SECURE_VERSION
+    .secure_version = CONFIG_BOOTLOADER_APP_SECURE_VERSION,
+#else
     .secure_version = 0,
+#endif
     .version = "@IDF_APP_VERSION@",
     .project_name = "@PROJECT_NAME@",
     .time = __TIME__,
@@ -256,14 +289,6 @@ const esp_app_desc_t esp_app_desc __attribute__((section(".rodata_desc"), used))
 };
 """
 
-
-def render_cpp(v):
-    out = CPP_TEMPLATE
-    for key, val in v.items():
-        out = out.replace(f"@{key}@", c_escape(val))
-    return out
-
-
 # --------------------------------------------------------------------------
 # Main
 # --------------------------------------------------------------------------
@@ -281,6 +306,17 @@ def generate_version_header():
     custom_branch = env.GetProjectOption("custom_version_branch", os.environ.get("OVERRIDE_GIT_BRANCH", ""))
     custom_rev = env.GetProjectOption("custom_version_rev", os.environ.get("OVERRIDE_GIT_REV", ""))
     force_dirty = str(env.GetProjectOption("custom_version_dirty", os.environ.get("OVERRIDE_DIRTY", "")))
+
+    # Reject control characters or newlines in overrides
+    for name, val in [
+        ("custom_version_tag / OVERRIDE_GIT_TAG", custom_tag),
+        ("custom_version_branch / OVERRIDE_GIT_BRANCH", custom_branch),
+        ("custom_version_rev / OVERRIDE_GIT_REV", custom_rev),
+        ("custom_version_dirty / OVERRIDE_DIRTY", force_dirty),
+    ]:
+        if val and any(unicodedata.category(c) == "Cc" for c in val):
+            sys.stderr.write(f"VERSION INFO: [ERROR] {name} contains invalid control characters or newlines.\n")
+            env.Exit(1)
 
     git_info = collect_git_info(project_dir, [file_version_cpp, file_version_txt])
 
@@ -343,7 +379,11 @@ def generate_version_header():
         changed = write_if_changed(file_version_txt, version_tag)
         dprint(f"version.txt {'written' if changed else 'unchanged'}")
     except OSError as e:
-        warn(f"could not write {file_version_txt}: {e}")
+        msg = f"could not write {file_version_txt}: {e}"
+        sys.stderr.write(f"VERSION INFO: [ERROR] {msg}\n")
+        if os.environ.get("STRICT_VERSION") == "1":
+            env.Exit(1)
+        warn(msg)
 
     # One always-on line: proves the script ran and shows the result.
     sys.stderr.write(

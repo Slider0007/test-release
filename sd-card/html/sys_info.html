@@ -425,67 +425,6 @@
       return value.substring(0, 10) + ' ' + value.substring(11, 19) + ' (UTC' + value.substring(19, 24) + ')';
     }
 
-    function renderVersionField(targetId, versionValue) {
-      const target = document.getElementById(targetId);
-      if (!target) return;
-      target.textContent = '';
-
-      const val = versionValue != null ? String(versionValue).trim() : '';
-
-      // Handle empty or unknown values
-      if (!val || val === '?') {
-        target.textContent = 'Unknown';
-        return;
-      }
-
-      // WebUI version (or any non-firmware field) renders as plain text
-      if (targetId === 'html_version') {
-        target.textContent = val;
-        return;
-      }
-
-      const REPO = 'https://github.com/Slider0007/AI-on-the-edge-device';
-
-      const addLink = (href, text) => {
-        const a = document.createElement('a');
-        a.href = href;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        a.textContent = text;
-        target.appendChild(a);
-      };
-
-      // Dirty build: no commit/tag to link to, show as plain text
-      if (val.endsWith('+') || val === 'N/A') {
-        target.textContent = val;
-        return;
-      }
-
-      // Untagged build: [pr<N>-]<branch>-<rev7>
-      const m = val.match(/^(?:pr(\d+)-)?(.+)-([0-9a-f]{7})$/);
-      if (m) {
-        const [, pr, branch, commit] = m;
-        if (pr) {
-          // PR build: link the PR only (head commit may not exist in the main repo, e.g. forks)
-          addLink(`${REPO}/pull/${pr}`, `pr${pr}`);
-          target.append(document.createTextNode(`-${branch}-${commit}`));
-        } else {
-          target.append(document.createTextNode(`${branch}-`));
-          addLink(`${REPO}/commit/${commit}`, commit);
-        }
-        return;
-      }
-
-      // Release tag (v1.2.3 / 1.2.3): link to the release
-      if (/^v?\d+(\.\d+)+/.test(val)) {
-        addLink(`${REPO}/releases/tag/${encodeURIComponent(val)}`, val);
-        return;
-      }
-
-      // Anything else (e.g. "branch-unknown"): plain text
-      target.textContent = val;
-    }
-
     async function loadInfoData() {
       const res = await apiCallNotify('/info', {}, { action: 'Loading info', parseType: 'json' });
       if (!res.ok || !res.data) return;
@@ -606,8 +545,9 @@
       document.getElementById('heap_spiram_largest_free').textContent = _jsonData.heap_spiram_largest_free + ' byte';
       document.getElementById('heap_spiram_min_free').textContent = _jsonData.heap_spiram_min_free + ' byte';
 
-      renderVersionField('firmware_version', _jsonData.firmware_version);
-      renderVersionField('html_version', _jsonData.html_version);
+      const validateVersion = (v) => (!v || v === '' || v === '?') ? 'Unknown' : v;
+      document.getElementById('firmware_version').textContent = validateVersion(_jsonData.firmware_version);
+      document.getElementById('html_version').textContent = validateVersion(_jsonData.html_version);
 
       document.getElementById('build_time').textContent = formatIsoDatetime(_jsonData.build_time);
 
