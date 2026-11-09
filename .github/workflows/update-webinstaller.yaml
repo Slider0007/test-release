@@ -88,6 +88,8 @@ jobs:
           --dir ./artifacts
 
     - name: Prepare data
+      env:
+        VER: ${{ steps.rel.outputs.tag }}
       run: |
         echo "Updating files ..."
         unzip -o ./artifacts/AI-on-the-edge-device__${PLAT}__SLFork_*.zip -d ./artifacts/pkg
